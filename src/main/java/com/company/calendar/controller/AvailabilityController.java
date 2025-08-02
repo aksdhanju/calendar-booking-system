@@ -3,9 +3,11 @@ package com.company.calendar.controller;
 import com.company.calendar.dto.availability.AvailabilitySetupResponse;
 import com.company.calendar.dto.availability.AvailableSlotDto;
 import com.company.calendar.dto.availability.AvailabilitySetupRequest;
-import com.company.calendar.service.AvailabilityService;
+import com.company.calendar.dto.availability.AvailableSlotsResponse;
+import com.company.calendar.service.availability.AvailabilityService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -52,14 +54,25 @@ public class AvailabilityController {
     }
 
 
-    @GetMapping("/slots")
-    public ResponseEntity<List<AvailableSlotDto>> getAvailableSlots(
-            @RequestParam @NotBlank String ownerId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    @GetMapping("/{ownerId}/slots")
+    public ResponseEntity<AvailableSlotsResponse> getAvailableSlots(
+            @PathVariable
+            @NotBlank
+            String ownerId,
+            @RequestParam
+            @NotNull
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date) {
         //Search Available Time Slots API: Implement an API endpoint that allows an Invitee to
         //search for available time slots on a particular date.
         //actually in cal.com, its a month but for now we are supporting day.
         List<AvailableSlotDto> slots = availabilityService.getAvailableSlots(ownerId, date);
-        return ResponseEntity.ok(slots);
+        return ResponseEntity.ok(
+                AvailableSlotsResponse.builder()
+                        .success(true)
+                        .message("Available slots fetched successfully.")
+                        .slots(slots)
+                        .build()
+        );
     }
 }

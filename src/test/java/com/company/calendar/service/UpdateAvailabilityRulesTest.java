@@ -3,6 +3,7 @@ package com.company.calendar.service;
 import com.company.calendar.config.AppointmentProperties;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.repository.availabilityRule.AvailabilityRuleRepository;
+import com.company.calendar.service.availability.AvailabilityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
