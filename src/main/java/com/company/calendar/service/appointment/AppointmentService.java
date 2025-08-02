@@ -2,10 +2,16 @@ package com.company.calendar.service.appointment;
 
 import com.company.calendar.config.AppointmentProperties;
 import com.company.calendar.dto.BookAppointmentRequest;
+import com.company.calendar.dto.UpcomingAppointmentResponse;
+import com.company.calendar.repository.appointment.AppointmentRepository;
+import com.company.calendar.service.user.UserService;
 import com.company.calendar.validator.AppointmentTimeValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -14,14 +20,43 @@ public class AppointmentService {
     private final AppointmentTimeValidator appointmentTimeValidator;
     private final AppointmentProperties appointmentProperties;
     private final AppointmentBookingStrategy appointmentBookingStrategy;
+    private final AppointmentRepository appointmentRepository;
+    private final UserService userService;
 
     // Book an appointment if it's not already taken
     public boolean bookAppointment(String appointmentId, BookAppointmentRequest request) {
+        if (appointmentRepository.existsById(appointmentId)) {
+            return false; // Already booked with same ID, idempotent response
+        }
         var startTime = request.getStartTime();
         var duration = appointmentProperties.getDurationMinutes();
         var endTime = startTime.plusMinutes(duration);
         appointmentTimeValidator.validate(startTime, endTime);
         log.info("{}: appointment time validation passed", appointmentId);
         return appointmentBookingStrategy.book(request, duration, appointmentId);
+    }
+
+    public List<UpcomingAppointmentResponse> getUpcomingAppointments(String ownerId) {
+        var now = LocalDateTime.now();
+        var allAppointments = appointmentRepository.findByOwnerIdAfter(ownerId, now);
+
+        return allAppointments.stream()
+                .map(a -> {
+                    //fetch invitee details
+                    //Any relevant details about the Invitee or the appointment
+                    var invitee = userService.getUser(a.getInviteeId());
+                    var inviteeName = invitee != null ? invitee.getName() : null;
+                    var inviteeEmail = invitee != null ? invitee.getEmail() : null;
+
+                    return UpcomingAppointmentResponse.builder()
+                            .appointmentId(a.getAppointmentId())
+                            .startTime(a.getStartTime())
+                            .endTime(a.getEndTime())
+                            .inviteeId(a.getInviteeId())
+                            .inviteeName(inviteeName)
+                            .inviteeEmail(inviteeEmail)
+                            .build();
+                })
+                .toList();
     }
 }

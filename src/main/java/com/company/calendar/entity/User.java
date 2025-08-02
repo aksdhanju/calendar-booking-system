@@ -6,8 +6,7 @@ import lombok.Getter;
 @Getter
 public class User {
     private String id;
-    private UserType userType;
     //metadata
     private String name;
-    private String emailId;
+    private String email;
 }

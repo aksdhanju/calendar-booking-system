@@ -18,10 +18,6 @@ public class OptimisticBookingStrategy implements AppointmentBookingStrategy {
 
     @Override
     public boolean book(BookAppointmentRequest request, int durationMinutes, String appointmentId) {
-        if (appointmentRepository.existsById(appointmentId)) {
-            return false; // Already booked with same ID, idempotent response
-        }
-
         LocalDateTime startTime = request.getStartTime();
         LocalDateTime endTime = startTime.plusMinutes(durationMinutes);
 

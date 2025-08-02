@@ -12,4 +12,5 @@ public interface AppointmentRepository {
     boolean existsByOwnerIdAndStartTime(String ownerId, LocalDateTime startTime);
     void save(Appointment appointment);
     boolean saveIfSlotFree(Appointment appointment);
+    List<Appointment> findByOwnerIdAfter(String ownerId, LocalDateTime after);
 }

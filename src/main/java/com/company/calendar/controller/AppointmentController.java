@@ -2,6 +2,7 @@ package com.company.calendar.controller;
 
 import com.company.calendar.dto.BookAppointmentRequest;
 import com.company.calendar.dto.BookAppointmentResponse;
+import com.company.calendar.dto.UpcomingAppointmentResponse;
 import com.company.calendar.service.appointment.AppointmentService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/appointments")
@@ -20,7 +23,7 @@ public class AppointmentController {
     @PostMapping("/book")
     public ResponseEntity<BookAppointmentResponse> bookAppointment(
             @PathVariable @NotBlank String appointmentId, @RequestBody @Valid BookAppointmentRequest request) {
-        boolean created = appointmentService.bookAppointment(appointmentId, request);
+        var created = appointmentService.bookAppointment(appointmentId, request);
         return ResponseEntity
                 .status(created ? HttpStatus.CREATED : HttpStatus.OK)
                 .body(BookAppointmentResponse.builder()
@@ -28,5 +31,12 @@ public class AppointmentController {
                         .message(created ? "Appointment booked successfully." : "Appointment already exists.")
                         .appointmentId(appointmentId)
                         .build());
+    }
+
+    @GetMapping("/owner/{ownerId}/upcoming")
+    public ResponseEntity<List<UpcomingAppointmentResponse>> getUpcomingAppointments(
+            @PathVariable String ownerId) {
+        var appointments = appointmentService.getUpcomingAppointments(ownerId);
+        return ResponseEntity.ok(appointments);
     }
 }

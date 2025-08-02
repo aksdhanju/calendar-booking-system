@@ -72,4 +72,12 @@ public class InMemoryAppointmentRepository implements AppointmentRepository{
         );
     }
 
+    @Override
+    public List<Appointment> findByOwnerIdAfter(String ownerId, LocalDateTime after) {
+        return store.getOrDefault(ownerId, Collections.emptyList())
+                .stream()
+                .filter(a -> a.getStartTime().isAfter(after))
+                .sorted(Comparator.comparing(Appointment::getStartTime))
+                .toList();
+    }
 }
