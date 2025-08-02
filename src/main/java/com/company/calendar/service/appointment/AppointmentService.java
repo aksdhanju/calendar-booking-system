@@ -1,7 +1,7 @@
 package com.company.calendar.service.appointment;
 
 import com.company.calendar.config.AppointmentProperties;
-import com.company.calendar.dto.BookAppointmentRequest;
+import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.dto.appointment.UpcomingAppointmentResponse;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.entity.Appointment;
@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import java.util.List;
@@ -27,6 +28,7 @@ public class AppointmentService {
     private final AppointmentBookingStrategy appointmentBookingStrategy;
     private final AppointmentRepository appointmentRepository;
     private final UserService userService;
+    private final Clock clock;
 
     // Book an appointment if it's not already taken
     public boolean bookAppointment(String appointmentId, BookAppointmentRequest request) {
@@ -42,7 +44,7 @@ public class AppointmentService {
     }
 
     public UpcomingAppointmentsResponseDto getUpcomingAppointments(String ownerId, int page, int size) {
-        var now = LocalDateTime.now();
+        var now = LocalDateTime.now(clock);
         var pageable = PageRequest.of(page, size, Sort.by("startTime").ascending());
         var pagedAppointments = appointmentRepository.findByOwnerIdAndStartTimeAfter(ownerId, now, pageable);
 

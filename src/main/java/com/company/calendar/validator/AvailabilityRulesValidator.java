@@ -1,6 +1,6 @@
 package com.company.calendar.validator;
 
-import com.company.calendar.dto.AvailabilitySetupRequest;
+import com.company.calendar.dto.availability.AvailabilitySetupRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

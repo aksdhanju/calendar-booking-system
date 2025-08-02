@@ -1,4 +1,4 @@
-package com.company.calendar.dto;
+package com.company.calendar.dto.appointment;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

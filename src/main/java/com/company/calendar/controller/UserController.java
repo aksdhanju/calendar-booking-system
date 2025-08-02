@@ -1,13 +1,13 @@
 package com.company.calendar.controller;
 
-import com.company.calendar.dto.*;
+import com.company.calendar.dto.user.*;
 import com.company.calendar.service.user.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 //Any relevant details about the Invitee or the appointment
 
@@ -19,34 +19,33 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody @Valid CreateUserRequest request) {
+    public ResponseEntity<UserResponse<Object>> createUser(@RequestBody @Valid CreateUserRequest request) {
         userService.createUser(request);
-        return ResponseEntity.status(201).body("User created successfully.");
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(UserResponse.builder().success(true).message("User created successfully.").build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserRequest request) {
+    public ResponseEntity<UserResponse<Object>> updateUser(@PathVariable @NotBlank String id, @RequestBody @Valid UpdateUserRequest request) {
         userService.updateUser(id, request);
-        return ResponseEntity.ok("User updated successfully.");
+        return ResponseEntity.ok(UserResponse.builder().success(true).message("User updated successfully.").build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable String id) {
+    public ResponseEntity<UserResponse<Object>> deleteUser(@PathVariable @NotBlank String id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok("User deleted successfully.");
+        return ResponseEntity.ok(UserResponse.builder().success(true).message("User deleted successfully.").build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable String id) {
-        var user = userService.getUser(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(user);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-        return ResponseEntity.ok(userService.listAllUsers());
+    public ResponseEntity<UserResponse<GetUserResponse>> getUser(@PathVariable @NotBlank String id) {
+        return userService.getUser(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(UserResponse.<GetUserResponse>builder()
+                                .success(false)
+                                .message("User not found.")
+                                .data(null)
+                                .build()));
     }
 }

@@ -1,6 +1,6 @@
 package com.company.calendar.exceptions;
 
-import com.company.calendar.dto.BookAppointmentResponse;
+import com.company.calendar.dto.appointment.BookAppointmentResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

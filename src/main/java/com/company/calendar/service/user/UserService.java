@@ -1,25 +1,30 @@
 package com.company.calendar.service.user;
 
-import com.company.calendar.dto.*;
+import com.company.calendar.dto.user.*;
 import com.company.calendar.entity.User;
+import com.company.calendar.exceptions.UserAlreadyExistsException;
+import com.company.calendar.exceptions.UserNotFoundException;
 import com.company.calendar.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
 
     public void createUser(CreateUserRequest request) {
+        if (userRepository.findById(request.getId()).isPresent()) {
+            throw new UserAlreadyExistsException(request.getId());
+        }
         var user = User.builder()
                 .id(request.getId())
                 .name(request.getName())
@@ -29,6 +34,9 @@ public class UserService {
     }
 
     public void updateUser(String id, UpdateUserRequest request) {
+        if (userRepository.findById(id).isEmpty()) {
+            throw new UserNotFoundException(id);
+        }
         var user = User.builder()
                 .id(id)
                 .name(request.getName())
@@ -38,37 +46,36 @@ public class UserService {
     }
 
     public void deleteUser(String id) {
+        if (userRepository.findById(id).isEmpty()) {
+            throw new UserNotFoundException(id);
+        }
         userRepository.deleteById(id);
     }
 
-    public UserResponse getUser(String id) {
+    public Optional<UserResponse<GetUserResponse>> getUser(String id) {
         return userRepository.findById(id)
-                .map(u -> UserResponse.builder()
-                        .id(u.getId())
-                        .name(u.getName())
-                        .email(u.getEmail())
-                        .build())
-                .orElse(null);
+                .map(user -> {
+                    GetUserResponse response = GetUserResponse.builder()
+                            .id(user.getId())
+                            .name(user.getName())
+                            .email(user.getEmail())
+                            .build();
+
+                    return UserResponse.<GetUserResponse>builder()
+                            .success(true)
+                            .message("User fetched successfully.")
+                            .data(response)
+                            .build();
+                });
     }
 
-    public List<UserResponse> listAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(u -> UserResponse.builder()
-                        .id(u.getId())
-                        .name(u.getName())
-                        .email(u.getEmail())
-                        .build())
-                .collect(toList());
-    }
-
-    public Map<String, UserResponse> getUsersByIds(Set<String> ids) {
+    public Map<String, GetUserResponse> getUsersByIds(Set<String> ids) {
         return userRepository.findByIds(ids).stream()
-                .map(user -> UserResponse.builder()
+                .map(user -> GetUserResponse.builder()
                         .id(user.getId())
                         .name(user.getName())
                         .email(user.getEmail())
                         .build())
-                .collect(Collectors.toMap(UserResponse::getId, u -> u));
+                .collect(Collectors.toMap(GetUserResponse::getId, u -> u));
     }
 }

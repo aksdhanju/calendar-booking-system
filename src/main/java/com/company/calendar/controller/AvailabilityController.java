@@ -1,9 +1,8 @@
 package com.company.calendar.controller;
 
-import com.company.calendar.dto.AvailabilitySetupResponse;
-import com.company.calendar.dto.AvailableSlotDto;
-import com.company.calendar.dto.AvailabilitySetupRequest;
-import com.company.calendar.dto.BookAppointmentResponse;
+import com.company.calendar.dto.availability.AvailabilitySetupResponse;
+import com.company.calendar.dto.availability.AvailableSlotDto;
+import com.company.calendar.dto.availability.AvailabilitySetupRequest;
 import com.company.calendar.service.AvailabilityService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

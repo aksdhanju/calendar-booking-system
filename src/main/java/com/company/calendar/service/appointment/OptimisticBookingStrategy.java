@@ -1,6 +1,6 @@
 package com.company.calendar.service.appointment;
 
-import com.company.calendar.dto.BookAppointmentRequest;
+import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.entity.Appointment;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import lombok.RequiredArgsConstructor;

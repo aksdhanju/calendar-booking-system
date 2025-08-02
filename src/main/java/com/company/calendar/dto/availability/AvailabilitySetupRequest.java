@@ -1,4 +1,4 @@
-package com.company.calendar.dto;
+package com.company.calendar.dto.availability;
 
 import com.company.calendar.enums.RuleType;
 import com.company.calendar.validator.ValidAvailabilityRules;

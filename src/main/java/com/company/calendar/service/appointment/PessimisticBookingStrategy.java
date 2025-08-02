@@ -1,6 +1,6 @@
 package com.company.calendar.service.appointment;
 
-import com.company.calendar.dto.BookAppointmentRequest;
+import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.entity.Appointment;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor

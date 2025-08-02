@@ -1,7 +1,7 @@
 package com.company.calendar.controller;
 
-import com.company.calendar.dto.BookAppointmentRequest;
-import com.company.calendar.dto.BookAppointmentResponse;
+import com.company.calendar.dto.appointment.BookAppointmentRequest;
+import com.company.calendar.dto.appointment.BookAppointmentResponse;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.service.appointment.AppointmentService;
 import jakarta.validation.Valid;
@@ -35,9 +35,12 @@ public class AppointmentController {
 
     @GetMapping("/owner/{ownerId}/upcoming")
     public ResponseEntity<UpcomingAppointmentsResponseDto> getUpcomingAppointments(
-            @PathVariable @NotBlank String ownerId,
+            @PathVariable
+            @NotBlank
+            String ownerId,
             @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "Page index must be 0 or greater")
+            @Max(value = 100, message = "Page index must not exceed 100")
             int page,
             @RequestParam(defaultValue = "10")
             @Min(value = 1, message = "Page size must be at least 1")
