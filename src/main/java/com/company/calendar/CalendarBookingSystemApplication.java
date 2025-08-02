@@ -1,4 +1,4 @@
-package com.company.calendar.calendar_booking_system;
+package com.company.calendar;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: calendar-booking-system
+
+appointment:
+  time-validator-strategy: fullHour
+  duration-minutes: 60
+  booking-strategy: optimistic
+  repository: in-memory

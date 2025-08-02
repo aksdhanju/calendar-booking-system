@@ -1,4 +1,4 @@
-package com.company.calendar.calendar_booking_system;
+package com.company.calendar;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
