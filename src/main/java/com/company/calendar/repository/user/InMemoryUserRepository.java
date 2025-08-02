@@ -32,4 +32,12 @@ public class InMemoryUserRepository implements UserRepository {
     public List<User> findAll() {
         return new ArrayList<>(userStore.values());
     }
+
+    @Override
+    public List<User> findByIds(Set<String> ids) {
+        return userStore.entrySet().stream()
+                .filter(entry -> ids.contains(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .toList();
+    }
 }

@@ -5,6 +5,8 @@ import com.company.calendar.entity.Appointment;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface AppointmentRepository {
     boolean existsById(String appointmentId);
@@ -12,5 +14,5 @@ public interface AppointmentRepository {
     boolean existsByOwnerIdAndStartTime(String ownerId, LocalDateTime startTime);
     void save(Appointment appointment);
     boolean saveIfSlotFree(Appointment appointment);
-    List<Appointment> findByOwnerIdAfter(String ownerId, LocalDateTime after);
+    Page<Appointment> findByOwnerIdAndStartTimeAfter(String ownerId, LocalDateTime after, Pageable pageable);
 }

@@ -1,4 +1,4 @@
-package com.company.calendar.dto;
+package com.company.calendar.dto.appointment;
 
 import lombok.Builder;
 import lombok.Getter;

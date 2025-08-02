@@ -2,15 +2,20 @@ package com.company.calendar.service.appointment;
 
 import com.company.calendar.config.AppointmentProperties;
 import com.company.calendar.dto.BookAppointmentRequest;
-import com.company.calendar.dto.UpcomingAppointmentResponse;
+import com.company.calendar.dto.appointment.UpcomingAppointmentResponse;
+import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
+import com.company.calendar.entity.Appointment;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.service.user.UserService;
 import com.company.calendar.validator.AppointmentTimeValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import java.util.List;
 
 @Service
@@ -36,15 +41,37 @@ public class AppointmentService {
         return appointmentBookingStrategy.book(request, duration, appointmentId);
     }
 
-    public List<UpcomingAppointmentResponse> getUpcomingAppointments(String ownerId) {
+    public UpcomingAppointmentsResponseDto getUpcomingAppointments(String ownerId, int page, int size) {
         var now = LocalDateTime.now();
-        var allAppointments = appointmentRepository.findByOwnerIdAfter(ownerId, now);
+        var pageable = PageRequest.of(page, size, Sort.by("startTime").ascending());
+        var pagedAppointments = appointmentRepository.findByOwnerIdAndStartTimeAfter(ownerId, now, pageable);
 
-        return allAppointments.stream()
+        if (pagedAppointments.isEmpty()) {
+            return UpcomingAppointmentsResponseDto.builder()
+                    .success(true)
+                    .message("No upcoming appointments found")
+                    .appointments(List.of())  // empty list
+                    .currentPage(page)
+                    .totalPages(0)
+                    .totalItems(0)
+                    .build();
+        }
+        // N+1 Query Problem
+        // Inside the .map(), we are calling userService.getUser(inviteeId) for every appointment.
+        // If there are 100 appointments, this will make 100 DB/API calls.
+
+        // Batch fetch invitees
+        var inviteeIds = pagedAppointments.stream()
+                .map(Appointment::getInviteeId)
+                .collect(Collectors.toSet());
+
+        var inviteeMap = userService.getUsersByIds(inviteeIds); // Map<String, User>
+
+        var upcomingAppointments =  pagedAppointments.stream()
                 .map(a -> {
                     //fetch invitee details
                     //Any relevant details about the Invitee or the appointment
-                    var invitee = userService.getUser(a.getInviteeId());
+                    var invitee = inviteeMap.get(a.getInviteeId());
                     var inviteeName = invitee != null ? invitee.getName() : null;
                     var inviteeEmail = invitee != null ? invitee.getEmail() : null;
 
@@ -58,5 +85,14 @@ public class AppointmentService {
                             .build();
                 })
                 .toList();
+
+        return UpcomingAppointmentsResponseDto.builder()
+                .success(true)
+                .message("Fetched upcoming appointments successfully")
+                .appointments(upcomingAppointments)
+                .currentPage(pagedAppointments.getNumber())
+                .totalPages(pagedAppointments.getTotalPages())
+                .totalItems(pagedAppointments.getTotalElements())
+                .build();
     }
 }

@@ -2,6 +2,9 @@ package com.company.calendar.repository.appointment;
 
 import com.company.calendar.entity.Appointment;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -73,11 +76,21 @@ public class InMemoryAppointmentRepository implements AppointmentRepository{
     }
 
     @Override
-    public List<Appointment> findByOwnerIdAfter(String ownerId, LocalDateTime after) {
-        return store.getOrDefault(ownerId, Collections.emptyList())
+    public Page<Appointment> findByOwnerIdAndStartTimeAfter(String ownerId, LocalDateTime after, Pageable pageable) {
+        List<Appointment> filteredAppointments = store.getOrDefault(ownerId, Collections.emptyList())
                 .stream()
                 .filter(a -> a.getStartTime().isAfter(after))
                 .sorted(Comparator.comparing(Appointment::getStartTime))
+                .skip(pageable.getOffset()) // skip before collecting
+                .limit(pageable.getPageSize()) // limit before collecting
                 .toList();
+
+        // Count total matches for pagination metadata
+        long total = store.getOrDefault(ownerId, Collections.emptyList())
+                .stream()
+                .filter(a -> a.getStartTime().isAfter(after))
+                .count();
+
+        return new PageImpl<>(filteredAppointments, pageable, total);
     }
 }

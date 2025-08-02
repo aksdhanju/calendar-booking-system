@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -57,5 +60,15 @@ public class UserService {
                         .email(u.getEmail())
                         .build())
                 .collect(toList());
+    }
+
+    public Map<String, UserResponse> getUsersByIds(Set<String> ids) {
+        return userRepository.findByIds(ids).stream()
+                .map(user -> UserResponse.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .build())
+                .collect(Collectors.toMap(UserResponse::getId, u -> u));
     }
 }

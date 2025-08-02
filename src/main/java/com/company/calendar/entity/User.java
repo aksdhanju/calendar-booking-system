@@ -1,9 +1,10 @@
 package com.company.calendar.entity;
 
-import com.company.calendar.enums.UserType;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class User {
     private String id;
     //metadata

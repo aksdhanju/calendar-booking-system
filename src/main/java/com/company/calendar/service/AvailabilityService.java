@@ -1,5 +1,6 @@
 package com.company.calendar.service;
 
+import com.company.calendar.config.AppointmentProperties;
 import com.company.calendar.dto.AvailableSlotDto;
 import com.company.calendar.entity.Appointment;
 import com.company.calendar.entity.AvailabilityRule;
@@ -27,6 +28,7 @@ public class AvailabilityService {
 
     private final AvailabilityRuleRepository availabilityRuleRepository;
     private final AppointmentRepository appointmentRepository;
+    private final AppointmentProperties appointmentProperties;
 
     // POST — create only if rules don't already exist
     public void createAvailabilityRules(AvailabilitySetupRequest request) {
@@ -78,24 +80,23 @@ public class AvailabilityService {
         List<AvailableSlotDto> availableSlots = new ArrayList<>();
 
         //availableSlots = Total Slots - Booked Slots
+        var duration = appointmentProperties.getDurationMinutes();
         for (AvailabilityRule rule : rules) {
             LocalTime slotStart = rule.getStartTime();
             LocalTime slotEnd = rule.getEndTime();
 
-            while (!slotStart.plusMinutes(60).isAfter(slotEnd)) {
+            while (!slotStart.plusMinutes(duration).isAfter(slotEnd)) {
                 // Is this slot already booked?
                 if (!bookedStartTimes.contains(slotStart)) {
                     LocalDateTime startDateTime = LocalDateTime.of(date, slotStart);
-                    LocalDateTime endDateTime = startDateTime.plusMinutes(60);
+                    LocalDateTime endDateTime = startDateTime.plusMinutes(duration);
 
                     availableSlots.add(new AvailableSlotDto(startDateTime, endDateTime, true));
                 }
 
-                slotStart = slotStart.plusMinutes(60); // Move to next aligned 60-min slot
+                slotStart = slotStart.plusMinutes(duration); // Move to next aligned 60-min slot
             }
         }
-
         return availableSlots;
-
     }
 }

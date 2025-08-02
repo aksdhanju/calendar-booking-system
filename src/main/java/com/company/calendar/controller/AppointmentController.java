@@ -2,7 +2,7 @@ package com.company.calendar.controller;
 
 import com.company.calendar.dto.BookAppointmentRequest;
 import com.company.calendar.dto.BookAppointmentResponse;
-import com.company.calendar.dto.UpcomingAppointmentResponse;
+import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.service.appointment.AppointmentService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/appointments")
@@ -34,9 +32,11 @@ public class AppointmentController {
     }
 
     @GetMapping("/owner/{ownerId}/upcoming")
-    public ResponseEntity<List<UpcomingAppointmentResponse>> getUpcomingAppointments(
-            @PathVariable String ownerId) {
-        var appointments = appointmentService.getUpcomingAppointments(ownerId);
-        return ResponseEntity.ok(appointments);
+    public ResponseEntity<UpcomingAppointmentsResponseDto> getUpcomingAppointments(
+            @PathVariable @NotBlank String ownerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        var upcomingAppointments = appointmentService.getUpcomingAppointments(ownerId, page, size);
+        return ResponseEntity.ok(upcomingAppointments);
     }
 }

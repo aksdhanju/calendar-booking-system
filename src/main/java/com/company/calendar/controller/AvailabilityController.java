@@ -1,12 +1,15 @@
 package com.company.calendar.controller;
 
+import com.company.calendar.dto.AvailabilitySetupResponse;
 import com.company.calendar.dto.AvailableSlotDto;
 import com.company.calendar.dto.AvailabilitySetupRequest;
+import com.company.calendar.dto.BookAppointmentResponse;
 import com.company.calendar.service.AvailabilityService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,22 +24,32 @@ public class AvailabilityController {
     private final AvailabilityService availabilityService;
 
     @PostMapping("/setup")
-    public ResponseEntity<String> createAvailability(@RequestBody @Valid AvailabilitySetupRequest request) {
+    public ResponseEntity<AvailabilitySetupResponse> createAvailability(@RequestBody @Valid AvailabilitySetupRequest request) {
         //C in CRUD
         //Use Only if you want a first-time creation endpoint that fails if rules already exist for the user.
         //POST → used once per ownerId; error if already exists.
         availabilityService.createAvailabilityRules(request);
-        return ResponseEntity.ok("Availability rules saved successfully.");
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(AvailabilitySetupResponse.builder()
+                        .success(true)
+                        .message("Availability rules created successfully")
+                        .build());
     }
 
     @PutMapping("/setup")
-    public ResponseEntity<String> updateAvailability(@RequestBody @Valid AvailabilitySetupRequest request) {
+    public ResponseEntity<AvailabilitySetupResponse> setAvailability(@RequestBody @Valid AvailabilitySetupRequest request) {
         //This is like a create or overwrite all endpoint for setting availability for fist time by owner
         //avoiding PATCH. Can be a future requirement.
         //idempotency key handling can be done in PUT
         //exception handling changes to be done
         availabilityService.updateAvailabilityRules(request);
-        return ResponseEntity.ok("Availability rules updated successfully.");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(AvailabilitySetupResponse.builder()
+                        .success(true)
+                        .message("Availability rules set successfully")
+                        .build());
     }
 
 
