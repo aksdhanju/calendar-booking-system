@@ -1,6 +1,6 @@
 package com.company.calendar.validator;
 
-import com.company.calendar.dto.availability.AvailabilitySetupRequest;
+import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -8,16 +8,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AvailabilityRulesValidator implements ConstraintValidator<ValidAvailabilityRules, AvailabilitySetupRequest> {
+public class AvailabilityRulesValidator implements ConstraintValidator<ValidAvailabilityRules, AvailabilityRuleSetupRequest> {
 
     @Override
-    public boolean isValid(AvailabilitySetupRequest request, ConstraintValidatorContext context) {
-        List<AvailabilitySetupRequest.AvailabilityRuleRequest> rules = request.getRules();
+    public boolean isValid(AvailabilityRuleSetupRequest request, ConstraintValidatorContext context) {
+        List<AvailabilityRuleSetupRequest.AvailabilityRuleRequest> rules = request.getRules();
         if (rules == null) return true;
 
         Set<String> uniqueKeys = new HashSet<>();
 
-        for (AvailabilitySetupRequest.AvailabilityRuleRequest rule : rules) {
+        for (AvailabilityRuleSetupRequest.AvailabilityRuleRequest rule : rules) {
             if (rule.getStartTime() == null || rule.getEndTime() == null || rule.getDayOfWeek() == null) {
                 continue;
             }

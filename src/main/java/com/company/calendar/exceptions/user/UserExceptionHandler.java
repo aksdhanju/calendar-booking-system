@@ -1,4 +1,4 @@
-package com.company.calendar.exceptions;
+package com.company.calendar.exceptions.user;
 
 import com.company.calendar.dto.user.UserResponse;
 import org.springframework.http.HttpStatus;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
 
-@RestControllerAdvice(basePackages = "com.company.calendar.controller")
+@RestControllerAdvice(basePackages = "com.company.calendar.controller.UserController.class")
 public class UserExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)

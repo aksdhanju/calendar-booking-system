@@ -1,7 +1,7 @@
 package com.company.calendar.service.availability;
 
 import com.company.calendar.config.AppointmentProperties;
-import com.company.calendar.dto.availability.AvailabilitySetupRequest;
+import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.dto.availability.AvailableSlotDto;
 import com.company.calendar.entity.AvailabilityRule;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,11 @@ public class AvailabilityServiceHelper {
                     LocalDateTime startDateTime = LocalDateTime.of(date, slotStart);
                     LocalDateTime endDateTime = startDateTime.plusMinutes(duration);
 
-                    availableSlots.add(new AvailableSlotDto(startDateTime, endDateTime, true));
+                    availableSlots.add(AvailableSlotDto.builder()
+                            .startTime(startDateTime)
+                            .endTime(endDateTime)
+                            .bookable(true)
+                            .build());
                 }
                 slotStart = slotStart.plusMinutes(duration);
             }
@@ -44,7 +48,7 @@ public class AvailabilityServiceHelper {
         return availableSlots;
     }
 
-    public List<AvailabilityRule> buildRules(AvailabilitySetupRequest request) {
+    public List<AvailabilityRule> buildRules(AvailabilityRuleSetupRequest request) {
         return request.getRules().stream()
                 .map(r -> AvailabilityRule.builder()
                         .ownerId(request.getOwnerId())

@@ -15,23 +15,13 @@ public class InMemoryAvailabilityRuleRepository implements AvailabilityRuleRepos
 
     private final Map<String, List<AvailabilityRule>> store = new ConcurrentHashMap<>();
 
-    // Create only if ownerId doesn't already exist
     @Override
-    public void create(String ownerId, List<AvailabilityRule> rules) {
-        if (store.containsKey(ownerId)) {
-            throw new IllegalStateException("Availability rules already exist for ownerId: " + ownerId);
-        }
+    public void save(String ownerId, List<AvailabilityRule> rules) {
         store.put(ownerId, rules);
     }
 
-    // Overwrite or insert
-    @Override
-    public void upsert(String ownerId, List<AvailabilityRule> rules) {
-        store.put(ownerId, rules); // Always replaces the existing rules
-    }
-
     public List<AvailabilityRule> findByOwnerId(String ownerId) {
-        return store.getOrDefault(ownerId, Collections.emptyList());
+        return store.getOrDefault(ownerId, List.of());
     }
 
     @Override

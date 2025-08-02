@@ -14,7 +14,7 @@ import java.time.LocalTime;
 
 @Getter
 @ValidAvailabilityRules
-public class AvailabilitySetupRequest {
+public class AvailabilityRuleSetupRequest {
 
     @NotBlank(message = "Owner ID must not be blank")
     private String ownerId;

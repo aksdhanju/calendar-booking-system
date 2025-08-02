@@ -1,12 +1,12 @@
 package com.company.calendar.dto.availability;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@Builder
 public class AvailableSlotDto {
     private LocalDateTime startTime;
     private LocalDateTime endTime;

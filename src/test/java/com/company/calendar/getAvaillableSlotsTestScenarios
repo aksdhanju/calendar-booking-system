@@ -1,0 +1,6 @@
+Scenarios to Cover
+No availability rules found → return empty list.
+Rules found, no booked appointments → generate full slots.
+Rules found, some slots booked → generate only available slots.
+Rules found, all slots booked → generate empty slot list.
+Helper returns empty or non-empty response → validate correctness.

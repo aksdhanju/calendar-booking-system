@@ -2,8 +2,8 @@ package com.company.calendar.service.user;
 
 import com.company.calendar.dto.user.*;
 import com.company.calendar.entity.User;
-import com.company.calendar.exceptions.UserAlreadyExistsException;
-import com.company.calendar.exceptions.UserNotFoundException;
+import com.company.calendar.exceptions.user.UserAlreadyExistsException;
+import com.company.calendar.exceptions.user.UserNotFoundException;
 import com.company.calendar.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

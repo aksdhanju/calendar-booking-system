@@ -8,10 +8,7 @@ import java.util.List;
 
 public interface AvailabilityRuleRepository {
 
-    void create(String ownerId, List<AvailabilityRule> rules);
-
-    // Overwrite or insert
-    void upsert(String ownerId, List<AvailabilityRule> rules);
+    void save(String ownerId, List<AvailabilityRule> rules);
 
     List<AvailabilityRule> findByOwnerId(String ownerId);
 
