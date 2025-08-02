@@ -5,7 +5,6 @@ import com.company.calendar.enums.RuleType;
 import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +25,7 @@ public class InMemoryAvailabilityRuleRepository implements AvailabilityRuleRepos
 
     @Override
     public List<AvailabilityRule> findByOwnerIdAndDayOfWeekAndRuleType(String ownerId, DayOfWeek dayOfWeek, RuleType ruleType) {
-        List<AvailabilityRule> rules = store.getOrDefault(ownerId, Collections.emptyList());
+        List<AvailabilityRule> rules = store.getOrDefault(ownerId, List.of());
         return rules.stream().filter(rule ->
                 rule.getDayOfWeek().equals(dayOfWeek)
                         && rule.getRuleType() == ruleType)

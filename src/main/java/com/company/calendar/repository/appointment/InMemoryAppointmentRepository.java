@@ -27,7 +27,7 @@ public class InMemoryAppointmentRepository implements AppointmentRepository{
 
     @Override
     public List<Appointment> findByOwnerIdAndDate(String ownerId, LocalDate date) {
-        return store.getOrDefault(ownerId, Collections.emptyList())
+        return store.getOrDefault(ownerId, List.of())
                 .stream()
                 .filter(a -> a.getStartTime().toLocalDate().equals(date))
                 .toList();
@@ -35,7 +35,7 @@ public class InMemoryAppointmentRepository implements AppointmentRepository{
 
     @Override
     public boolean existsByOwnerIdAndStartTime(String ownerId, LocalDateTime startTime) {
-        return store.getOrDefault(ownerId, Collections.emptyList())
+        return store.getOrDefault(ownerId, List.of())
                 .stream()
                 .anyMatch(a -> a.getStartTime().equals(startTime));
     }
