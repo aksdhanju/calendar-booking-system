@@ -77,20 +77,18 @@ public class InMemoryAppointmentRepository implements AppointmentRepository{
 
     @Override
     public Page<Appointment> findByOwnerIdAndStartTimeAfter(String ownerId, LocalDateTime after, Pageable pageable) {
-        List<Appointment> filteredAppointments = store.getOrDefault(ownerId, Collections.emptyList())
-                .stream()
+        List<Appointment> filteredAppointments = store.getOrDefault(ownerId, List.of()).stream()
                 .filter(a -> a.getStartTime().isAfter(after))
                 .sorted(Comparator.comparing(Appointment::getStartTime))
-                .skip(pageable.getOffset()) // skip before collecting
-                .limit(pageable.getPageSize()) // limit before collecting
                 .toList();
 
-        // Count total matches for pagination metadata
-        long total = store.getOrDefault(ownerId, Collections.emptyList())
-                .stream()
-                .filter(a -> a.getStartTime().isAfter(after))
-                .count();
+        long total = filteredAppointments.size();
 
-        return new PageImpl<>(filteredAppointments, pageable, total);
+        List<Appointment> pagedAppointments = filteredAppointments.stream()
+                .skip(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .toList();
+
+        return new PageImpl<>(pagedAppointments, pageable, total);
     }
 }

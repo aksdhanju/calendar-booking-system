@@ -71,7 +71,7 @@ public class AppointmentService {
                 .map(a -> {
                     //fetch invitee details
                     //Any relevant details about the Invitee or the appointment
-                    var invitee = inviteeMap.get(a.getInviteeId());
+                    var invitee = inviteeMap.getOrDefault(a.getInviteeId(), null);
                     var inviteeName = invitee != null ? invitee.getName() : null;
                     var inviteeEmail = invitee != null ? invitee.getEmail() : null;
 

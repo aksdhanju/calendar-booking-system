@@ -5,6 +5,8 @@ import com.company.calendar.dto.BookAppointmentResponse;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.service.appointment.AppointmentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,8 +36,13 @@ public class AppointmentController {
     @GetMapping("/owner/{ownerId}/upcoming")
     public ResponseEntity<UpcomingAppointmentsResponseDto> getUpcomingAppointments(
             @PathVariable @NotBlank String ownerId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0")
+            @Min(value = 0, message = "Page index must be 0 or greater")
+            int page,
+            @RequestParam(defaultValue = "10")
+            @Min(value = 1, message = "Page size must be at least 1")
+            @Max(value = 100, message = "Page size must not exceed 100")
+            int size) {
         var upcomingAppointments = appointmentService.getUpcomingAppointments(ownerId, page, size);
         return ResponseEntity.ok(upcomingAppointments);
     }
