@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -18,12 +17,16 @@ public class OptimisticBookingStrategy implements AppointmentBookingStrategy {
     private final AppointmentRepository appointmentRepository;
 
     @Override
-    public String book(BookAppointmentRequest request, int durationMinutes) {
+    public boolean book(BookAppointmentRequest request, int durationMinutes, String appointmentId) {
+        if (appointmentRepository.existsById(appointmentId)) {
+            return false; // Already booked with same ID, idempotent response
+        }
+
         LocalDateTime startTime = request.getStartTime();
         LocalDateTime endTime = startTime.plusMinutes(durationMinutes);
 
         Appointment appointment = Appointment.builder()
-                .appointmentId(UUID.randomUUID().toString())
+                .appointmentId(appointmentId)
                 .ownerId(request.getOwnerId())
                 .inviteeId(request.getInviteeId())
                 .startTime(startTime)
@@ -34,6 +37,6 @@ public class OptimisticBookingStrategy implements AppointmentBookingStrategy {
         if (!success) {
             throw new IllegalStateException("This time slot is already booked.");
         }
-        return appointment.getAppointmentId();
+        return true;
     }
 }

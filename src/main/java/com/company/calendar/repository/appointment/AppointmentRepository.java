@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AppointmentRepository {
+    boolean existsById(String appointmentId);
     List<Appointment> findByOwnerIdAndDate(String ownerId, LocalDate date);
     boolean existsByOwnerIdAndStartTime(String ownerId, LocalDateTime startTime);
     void save(Appointment appointment);

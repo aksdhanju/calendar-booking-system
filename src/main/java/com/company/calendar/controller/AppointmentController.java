@@ -4,6 +4,7 @@ import com.company.calendar.dto.BookAppointmentRequest;
 import com.company.calendar.dto.BookAppointmentResponse;
 import com.company.calendar.service.appointment.AppointmentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +18,14 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
 
     @PostMapping("/book")
-    public ResponseEntity<BookAppointmentResponse> bookAppointment(@RequestBody @Valid BookAppointmentRequest request) {
-        var appointmentId = appointmentService.bookAppointment(request);
+    public ResponseEntity<BookAppointmentResponse> bookAppointment(
+            @PathVariable @NotBlank String appointmentId, @RequestBody @Valid BookAppointmentRequest request) {
+        boolean created = appointmentService.bookAppointment(appointmentId, request);
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(created ? HttpStatus.CREATED : HttpStatus.OK)
                 .body(BookAppointmentResponse.builder()
                         .success(true)
-                        .message("Appointment booked successfully.")
+                        .message(created ? "Appointment booked successfully." : "Appointment already exists.")
                         .appointmentId(appointmentId)
                         .build());
     }

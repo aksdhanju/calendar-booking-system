@@ -17,7 +17,11 @@ public class PessimisticBookingStrategy implements AppointmentBookingStrategy{
     private final AppointmentRepository appointmentRepository;
 
     @Override
-    public String book(BookAppointmentRequest request, int durationMinutes) {
+    public boolean book(BookAppointmentRequest request, int durationMinutes, String appointmentId) {
+        if (appointmentRepository.existsById(appointmentId)) {
+            return false; // Already booked with same ID, idempotent response
+        }
+
         LocalDateTime startTime = request.getStartTime();
 
         synchronized (this) {
@@ -27,7 +31,7 @@ public class PessimisticBookingStrategy implements AppointmentBookingStrategy{
             }
 
             Appointment appointment = Appointment.builder()
-                    .appointmentId(UUID.randomUUID().toString())
+                    .appointmentId(appointmentId)
                     .ownerId(request.getOwnerId())
                     .inviteeId(request.getInviteeId())
                     .startTime(startTime)
@@ -35,7 +39,7 @@ public class PessimisticBookingStrategy implements AppointmentBookingStrategy{
                     .build();
 
             appointmentRepository.save(appointment);
-            return appointment.getAppointmentId();
+            return true;
         }
     }
 }

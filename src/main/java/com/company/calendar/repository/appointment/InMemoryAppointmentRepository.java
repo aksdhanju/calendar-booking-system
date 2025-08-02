@@ -15,6 +15,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InMemoryAppointmentRepository implements AppointmentRepository{
 
     private final Map<String, List<Appointment>> store = new ConcurrentHashMap<>();
+    private final Map<String, Appointment> appointmentIdIndex = new ConcurrentHashMap<>();
+
+    @Override
+    public boolean existsById(String appointmentId) {
+        return appointmentIdIndex.containsKey(appointmentId);
+    }
 
     @Override
     public List<Appointment> findByOwnerIdAndDate(String ownerId, LocalDate date) {
@@ -32,9 +38,11 @@ public class InMemoryAppointmentRepository implements AppointmentRepository{
     }
 
     @Override
+    //@Transactional here or not?
     public void save(Appointment appointment) {
         store.computeIfAbsent(appointment.getOwnerId(), k -> new ArrayList<>())
                 .add(appointment);
+        appointmentIdIndex.put(appointment.getAppointmentId(), appointment);
     }
 
     @Override
@@ -57,7 +65,11 @@ public class InMemoryAppointmentRepository implements AppointmentRepository{
 
             existingList.add(appointment);
             return existingList;
-        }).stream().anyMatch(a -> a.getStartTime().equals(startTime) && a.getInviteeId().equals(appointment.getInviteeId()));
+        }).stream().anyMatch(a ->
+                a.getStartTime().equals(startTime) &&
+                        a.getInviteeId().equals(appointment.getInviteeId()) &&
+                        a.getAppointmentId().equals(appointment.getAppointmentId())
+        );
     }
 
 }
