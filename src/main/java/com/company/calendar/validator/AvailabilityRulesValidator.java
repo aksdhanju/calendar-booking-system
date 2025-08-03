@@ -35,12 +35,6 @@ public class AvailabilityRulesValidator implements ConstraintValidator<ValidAvai
             }
 
             //2. Must be between 00:00 and 23:00
-            if (start.getHour() < 0 || start.getHour() > 23 || end.getHour() < 0 || end.getHour() > 23) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate("Start and end hour must be between 00:00 and 23:00")
-                        .addConstraintViolation();
-                return false;
-            }
 
             //3. Start must be before end
             if (!start.isBefore(end)) {

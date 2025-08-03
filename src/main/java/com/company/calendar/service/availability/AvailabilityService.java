@@ -12,6 +12,8 @@ import com.company.calendar.repository.availabilityRule.AvailabilityRuleReposito
 import com.company.calendar.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -77,7 +79,11 @@ public class AvailabilityService {
         return generateAvailableSlotsFromRules(rules, bookedStartTimes, date);
     }
 
-    private List<AvailableSlotDto> generateAvailableSlotsFromRules(List<AvailabilityRule> rules, Set<LocalTime> bookedStartTimes, LocalDate date) {
+    private List<AvailableSlotDto> generateAvailableSlotsFromRules(
+            List<AvailabilityRule> rules,
+            Set<LocalTime> bookedStartTimes,
+            LocalDate date
+    ) {
         List<AvailableSlotDto> availableSlots = new ArrayList<>();
         int duration = appointmentProperties.getDurationMinutes();
 
@@ -88,14 +94,14 @@ public class AvailabilityService {
             while (true) {
                 LocalTime slotEndTime = slotStart.plusMinutes(duration);
 
-                // Exit condition: if next slot's end time goes past or wraps around
-                if (slotEndTime.isAfter(slotEnd) || slotEndTime.isBefore(slotStart)) {
-                    break;
-                }
-
                 if (!bookedStartTimes.contains(slotStart)) {
                     LocalDateTime startDateTime = LocalDateTime.of(date, slotStart);
                     LocalDateTime endDateTime = startDateTime.plusMinutes(duration);
+
+                    // Handle special case: if endTime is midnight and it's the last slot of day
+                    if (slotEndTime.equals(LocalTime.MIDNIGHT)) {
+                        endDateTime = LocalDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT);
+                    }
 
                     availableSlots.add(AvailableSlotDto.builder()
                             .startTime(startDateTime)
@@ -103,6 +109,12 @@ public class AvailabilityService {
                             .bookable(true)
                             .build());
                 }
+
+                boolean wrapsToNextDay = slotEndTime.isBefore(slotStart);
+                if (wrapsToNextDay || slotEndTime.isAfter(slotEnd)) {
+                    break;
+                }
+
                 slotStart = slotStart.plusMinutes(duration);
             }
         }
