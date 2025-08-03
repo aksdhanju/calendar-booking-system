@@ -18,12 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InMemoryAppointmentRepository implements AppointmentRepository{
 
     private final Map<String, List<Appointment>> store = new ConcurrentHashMap<>();
-    private final Map<String, Appointment> appointmentIdIndex = new ConcurrentHashMap<>();
-
-    @Override
-    public boolean existsById(String appointmentId) {
-        return appointmentIdIndex.containsKey(appointmentId);
-    }
 
     @Override
     public List<Appointment> findByOwnerIdAndDate(String ownerId, LocalDate date) {
@@ -41,16 +35,14 @@ public class InMemoryAppointmentRepository implements AppointmentRepository{
     }
 
     @Override
-    //@Transactional here or not?
     public void save(Appointment appointment) {
         store.computeIfAbsent(appointment.getOwnerId(), k -> new ArrayList<>())
                 .add(appointment);
-        appointmentIdIndex.put(appointment.getAppointmentId(), appointment);
     }
 
     @Override
     //You can add a new method to atomically check-and-insert an appointment in a thread-safe way:
-    public boolean saveIfSlotFree(Appointment appointment) {
+        public boolean saveIfSlotFree(Appointment appointment) {
         String ownerId = appointment.getOwnerId();
         LocalDateTime startTime = appointment.getStartTime();
 

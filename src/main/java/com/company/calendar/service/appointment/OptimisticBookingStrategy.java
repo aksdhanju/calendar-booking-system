@@ -2,6 +2,7 @@ package com.company.calendar.service.appointment;
 
 import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.entity.Appointment;
+import com.company.calendar.exceptions.SlotAlreadyBookedException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,10 +30,6 @@ public class OptimisticBookingStrategy implements AppointmentBookingStrategy {
                 .endTime(endTime)
                 .build();
 
-        boolean success = appointmentRepository.saveIfSlotFree(appointment);
-        if (!success) {
-            throw new IllegalStateException("This time slot is already booked.");
-        }
-        return true;
+        return appointmentRepository.saveIfSlotFree(appointment);
     }
 }

@@ -23,6 +23,10 @@ public class UserService {
 
     public void createUser(CreateUserRequest request) {
         if (userRepository.findById(request.getId()).isPresent()) {
+            //idempotency check
+            //user id is natural idempotency key here.
+            //dont need a new client/server generated  idempotency key
+            //we need to ensure “create-resource-once” behavior, safely retry, and avoid unintended duplication.
             throw new UserAlreadyExistsException(request.getId());
         }
         var user = User.builder()

@@ -14,18 +14,20 @@ import java.time.LocalDateTime;
 @ConditionalOnProperty(name = "appointment.booking-strategy", havingValue = "pessimistic")
 public class PessimisticBookingStrategy implements AppointmentBookingStrategy{
     private final AppointmentRepository appointmentRepository;
+    private final LockManager lockManager;
 
     @Override
     public boolean book(BookAppointmentRequest request, int durationMinutes, String appointmentId) {
         LocalDateTime startTime = request.getStartTime();
+        Object ownerLock = lockManager.getLock(request.getOwnerId());
         //not doing 2 times validation here that slot in request is free or not. We are assuming it will be free.
         //if it wont be, means some one else has booked it in meanwhile/concurrently, then slotFree will come as false
         //and we will exit.
 
-        synchronized (this) {
+        synchronized (ownerLock) {
             boolean slotFree = appointmentRepository.existsByOwnerIdAndStartTime(request.getOwnerId(), startTime);
             if (!slotFree) {
-                throw new IllegalStateException("This time slot is already booked.");
+                return false;
             }
 
             Appointment appointment = Appointment.builder()

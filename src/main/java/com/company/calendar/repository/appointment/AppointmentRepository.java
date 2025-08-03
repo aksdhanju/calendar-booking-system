@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface AppointmentRepository {
-    boolean existsById(String appointmentId);
     List<Appointment> findByOwnerIdAndDate(String ownerId, LocalDate date);
     boolean existsByOwnerIdAndStartTime(String ownerId, LocalDateTime startTime);
     void save(Appointment appointment);

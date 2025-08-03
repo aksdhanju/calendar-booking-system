@@ -5,6 +5,7 @@ import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.dto.appointment.UpcomingAppointmentResponse;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.entity.Appointment;
+import com.company.calendar.exceptions.SlotAlreadyBookedException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.service.user.UserService;
 import com.company.calendar.validator.AppointmentTimeValidator;
@@ -16,6 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -30,17 +34,43 @@ public class AppointmentService {
     private final UserService userService;
     private final Clock clock;
 
+    // In-memory Idempotency store
+    private final Map<String, String> idempotencyStore = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Object> lockMap = new ConcurrentHashMap<>();
+
     // Book an appointment if it's not already taken
-    public boolean bookAppointment(String appointmentId, BookAppointmentRequest request) {
-        if (appointmentRepository.existsById(appointmentId)) {
-            return false; // Already booked with same ID, idempotent response
+    public String bookAppointment(String idempotencyKey, BookAppointmentRequest request) {
+        // Fast path – return if already present
+        String existing = idempotencyStore.getOrDefault(idempotencyKey, null);
+        if (existing != null) return existing;
+
+        // Get or create a lock object for this key
+        Object lockObject = lockMap.computeIfAbsent(idempotencyKey, k -> new Object());
+
+        synchronized (lockObject) {
+            try {
+                // Recheck after acquiring lock (double-checked locking)
+                existing = idempotencyStore.get(idempotencyKey);
+                if (existing != null) return existing;
+
+                var startTime = request.getStartTime();
+                var duration = appointmentProperties.getDurationMinutes();
+                var endTime = startTime.plusMinutes(duration);
+                appointmentTimeValidator.validate(startTime, endTime);
+
+                var appointmentId = UUID.randomUUID().toString();
+                boolean success = appointmentBookingStrategy.book(request, duration, appointmentId);
+                if (!success) {
+                    log.info("Slot already booked, not saving appointment for key: {}", request.getOwnerId());
+                    throw new SlotAlreadyBookedException(request.getOwnerId()); // Booking failed
+                }
+
+                idempotencyStore.put(idempotencyKey, appointmentId);
+                return appointmentId;
+            } finally {
+                lockMap.remove(idempotencyKey);
+            }
         }
-        var startTime = request.getStartTime();
-        var duration = appointmentProperties.getDurationMinutes();
-        var endTime = startTime.plusMinutes(duration);
-        appointmentTimeValidator.validate(startTime, endTime);
-        log.info("{}: appointment time validation passed", appointmentId);
-        return appointmentBookingStrategy.book(request, duration, appointmentId);
     }
 
     public UpcomingAppointmentsResponseDto getUpcomingAppointments(String ownerId, int page, int size) {

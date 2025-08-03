@@ -24,13 +24,13 @@ public class AppointmentController {
 
     @PostMapping("/book")
     public ResponseEntity<BookAppointmentResponse> bookAppointment(
-            @PathVariable @NotBlank String appointmentId, @RequestBody @Valid BookAppointmentRequest request) {
-        var created = appointmentService.bookAppointment(appointmentId, request);
+                @RequestHeader("Idempotency-Key") @NotBlank String idempotencyKey, @RequestBody @Valid BookAppointmentRequest request) {
+        var appointmentId = appointmentService.bookAppointment(idempotencyKey, request);
         return ResponseEntity
-                .status(created ? HttpStatus.CREATED : HttpStatus.OK)
+                .status(appointmentId != null ? HttpStatus.CREATED : HttpStatus.OK)
                 .body(BookAppointmentResponse.builder()
                         .success(true)
-                        .message(created ? "Appointment booked successfully." : "Appointment already exists.")
+                        .message(appointmentId != null ? "Appointment booked successfully." : "Appointment already exists.")
                         .appointmentId(appointmentId)
                         .build());
     }
