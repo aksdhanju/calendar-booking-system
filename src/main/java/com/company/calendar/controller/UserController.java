@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 //Any relevant details about the Invitee or the appointment
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
     private final UserService userService;
@@ -25,10 +27,10 @@ public class UserController {
                 .body(UserResponse.builder().success(true).message("User created successfully.").build());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<UserResponse<Object>> updateUser(@PathVariable @NotBlank String id, @RequestBody @Valid UpdateUserRequest request) {
         userService.updateUser(id, request);
-        return ResponseEntity.ok(UserResponse.builder().success(true).message("User updated successfully.").build());
+        return ResponseEntity.ok(UserResponse.builder().success(true).message("User set successfully.").build());
     }
 
     @DeleteMapping("/{id}")

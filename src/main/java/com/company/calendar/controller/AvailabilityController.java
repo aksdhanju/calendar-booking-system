@@ -5,12 +5,15 @@ import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.dto.availability.AvailableSlotsResponse;
 import com.company.calendar.service.availability.AvailabilityService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,6 +21,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/availability")
 @RequiredArgsConstructor
+@Validated
 public class AvailabilityController {
 
     private final AvailabilityService availabilityService;
@@ -60,7 +64,14 @@ public class AvailabilityController {
             @RequestParam
             @NotNull
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate date) {
+            LocalDate date,
+            @RequestParam(defaultValue = "0")
+            @Min(value = 0, message = "Page index must be 0 or greater")
+            int page,
+            @RequestParam(defaultValue = "10")
+            @Min(value = 1, message = "Page size must be at least 1")
+            @Max(value = 100, message = "Page size must not exceed 100")
+            int size){
         //Search Available Time Slots API: Implement an API endpoint that allows an Invitee to
         //search for available time slots on a particular date.
         //actually in cal.com, its a month but for now we are supporting day.

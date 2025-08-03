@@ -35,7 +35,7 @@ public class UserService {
 
     public void updateUser(String id, UpdateUserRequest request) {
         if (userRepository.findById(id).isEmpty()) {
-            throw new UserNotFoundException(id);
+            log.warn("User not found with id: {}", id);
         }
         var user = User.builder()
                 .id(id)

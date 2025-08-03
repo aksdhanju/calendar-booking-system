@@ -1,10 +1,10 @@
 package com.company.calendar.dto.appointment;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
 @Builder
+@Getter
 public class BookAppointmentResponse {
     private boolean success;
     private String message;

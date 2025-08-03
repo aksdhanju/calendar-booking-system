@@ -85,7 +85,14 @@ public class AvailabilityService {
             LocalTime slotStart = rule.getStartTime();
             LocalTime slotEnd = rule.getEndTime();
 
-            while (!slotStart.plusMinutes(duration).isAfter(slotEnd)) {
+            while (true) {
+                LocalTime slotEndTime = slotStart.plusMinutes(duration);
+
+                // Exit condition: if next slot's end time goes past or wraps around
+                if (slotEndTime.isAfter(slotEnd) || slotEndTime.isBefore(slotStart)) {
+                    break;
+                }
+
                 if (!bookedStartTimes.contains(slotStart)) {
                     LocalDateTime startDateTime = LocalDateTime.of(date, slotStart);
                     LocalDateTime endDateTime = startDateTime.plusMinutes(duration);

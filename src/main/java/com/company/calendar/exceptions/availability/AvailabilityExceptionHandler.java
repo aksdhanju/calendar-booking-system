@@ -1,5 +1,6 @@
 package com.company.calendar.exceptions.availability;
 
+import com.company.calendar.controller.AvailabilityController;
 import com.company.calendar.dto.availability.AvailabilitySetupResponse;
 import com.company.calendar.exceptions.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
 
-@RestControllerAdvice(basePackages = "com.company.calendar.controller.AvailabilityController.class")
+@RestControllerAdvice(basePackageClasses = AvailabilityController.class)
 public class AvailabilityExceptionHandler {
 
     @ExceptionHandler(AvailabilityRulesAlreadyExistsException.class)
