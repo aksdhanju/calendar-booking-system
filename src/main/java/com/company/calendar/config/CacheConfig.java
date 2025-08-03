@@ -25,5 +25,13 @@ public class CacheConfig {
                 .maximumSize(10_000)
                 .build();
     }
+
+    @Bean
+    public Cache<String, Object> appointmentOwnerLockMap() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .maximumSize(10_000)
+                .build();
+    }
 }
 

@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class AppointmentController {
 
     @PostMapping("/book")
     public ResponseEntity<BookAppointmentResponse> bookAppointment(
-                @RequestHeader("Idempotency-Key") @NotBlank String idempotencyKey, @RequestBody @Valid BookAppointmentRequest request) {
+                @RequestHeader("Idempotency-Key") @NotBlank String idempotencyKey, @RequestBody @Valid @NotNull BookAppointmentRequest request) {
         var appointmentId = appointmentService.bookAppointment(idempotencyKey, request);
         return ResponseEntity
                 .status(appointmentId != null ? HttpStatus.CREATED : HttpStatus.OK)
