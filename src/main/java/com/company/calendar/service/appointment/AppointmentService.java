@@ -9,6 +9,7 @@ import com.company.calendar.exceptions.SlotAlreadyBookedException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.service.user.UserService;
 import com.company.calendar.validator.AppointmentTimeValidator;
+import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -17,9 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -33,24 +32,22 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final UserService userService;
     private final Clock clock;
-
-    // In-memory Idempotency store
-    private final Map<String, String> idempotencyStore = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, Object> lockMap = new ConcurrentHashMap<>();
+    private final Cache<String, String> appointmentIdempotencyStore;
+    private final Cache<String, Object> appointmentLockMap;
 
     // Book an appointment if it's not already taken
     public String bookAppointment(String idempotencyKey, BookAppointmentRequest request) {
         // Fast path – return if already present
-        String existing = idempotencyStore.getOrDefault(idempotencyKey, null);
+        String existing = appointmentIdempotencyStore.getIfPresent(idempotencyKey);
         if (existing != null) return existing;
 
-        // Get or create a lock object for this key
-        Object lockObject = lockMap.computeIfAbsent(idempotencyKey, k -> new Object());
+        // Get or create a lock per idempotency key
+        Object lock = appointmentLockMap.get(idempotencyKey, k -> new Object());
 
-        synchronized (lockObject) {
+        synchronized (lock) {
             try {
                 // Recheck after acquiring lock (double-checked locking)
-                existing = idempotencyStore.get(idempotencyKey);
+                existing = appointmentIdempotencyStore.getIfPresent(idempotencyKey);
                 if (existing != null) return existing;
 
                 var startTime = request.getStartTime();
@@ -65,10 +62,11 @@ public class AppointmentService {
                     throw new SlotAlreadyBookedException(request.getOwnerId()); // Booking failed
                 }
 
-                idempotencyStore.put(idempotencyKey, appointmentId);
+                appointmentIdempotencyStore.put(idempotencyKey, appointmentId);
                 return appointmentId;
             } finally {
-                lockMap.remove(idempotencyKey);
+                // clean up lockMap explicitly to avoid memory bloat
+                appointmentLockMap.invalidate(idempotencyKey);
             }
         }
     }
