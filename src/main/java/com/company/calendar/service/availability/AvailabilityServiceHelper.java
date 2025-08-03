@@ -55,7 +55,6 @@ public class AvailabilityServiceHelper {
                         .dayOfWeek(r.getDayOfWeek())
                         .startTime(r.getStartTime())
                         .endTime(r.getEndTime())
-                        .ruleType(r.getRuleType())
                         .build()
                 ).collect(Collectors.toList());
     }

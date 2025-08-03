@@ -21,20 +21,30 @@ Now Akash and Prince are preparing for interviews. And apply to Accolade. Both a
 Scenario 1: Both do booking of different slot
 Scenario 2: Both do booking of same slot but for different owner.
 Scenario 3: Both do booking of same slot for same owner.
-[9:43 AM, 8/3/2025] Akashdeep Singh: Scenario 1:
-[9:44 AM, 8/3/2025] Akashdeep Singh: Akash does booking for Galen for Saturday 4pm. He should be able to do booking successful.
-[9:46 AM, 8/3/2025] Akashdeep Singh: Prince also wants to book time with Galen. When he will call get Available slots api for Galen owner, he should get Saturday 4pm-5pm as BOOKED.
-Let's say he does booking from 5pm-6pm. He should be able to do booking successfully.
-[9:47 AM, 8/3/2025] Akashdeep Singh: Now Galen calls get upcoming appointments api. He should be able to get Akash and Prince's upcoming appointments in response. Along with details like name, email etc.
-[9:49 AM, 8/3/2025] Akashdeep Singh: Scenario 2 same as Scenario 1
-[9:49 AM, 8/3/2025] Akashdeep Singh: Scenario 3:
-[9:51 AM, 8/3/2025] Akashdeep Singh: On a side note, there should also be a provision that if appointment date has passed, we should remove appointment from hashmap. How we can do that?
-Using cron or background thread
-[9:54 AM, 8/3/2025] Akashdeep Singh: Akash and Prince call get available slots api for Mohit owner at same time for Round 2. Both get 1pm to 8pm slots free for Monday to Friday. Both do booking for 5pm-6pm slot on Thursday at same time.
-Expectation is one booking should succeeded and other should fail.
-[9:55 AM, 8/3/2025] Akashdeep Singh: The invitee whose booking failed now calls get available slots api for Mohit owner. He should see 5pm-6pm slot as BOOKED. He will now select another slot like 7pm-8pm and call book api to do booking. He should be able to do the booking.
-[9:56 AM, 8/3/2025] Akashdeep Singh: Now mohit calls upcoming appointments api and sees 2 appointments on Thursday (date also). One for Thursday 5pm-6pm and second for Thursday 7pm-8pm
 
+Scenario 1:
+Akash does booking for Galen for Saturday 4pm. He should be able to do booking successful.
+ Prince also wants to book time with Galen. When he will call get
+ Available slots api for Galen owner, he should get Saturday 4pm-5pm as BOOKED.
+Let's say he does booking from 5pm-6pm. He should be able to do booking successfully.
+Now Galen calls get upcoming appointments api. He should be able to get
+ Akash and Prince's upcoming appointments in response. Along with details like name, email etc.
+
+Scenario 2 same as Scenario 1
+
+Scenario 3:
+On a side note, there should also be a provision that if appointment date has passed,
+ we should remove appointment from hashmap. How we can do that?
+Using cron or background thread
+Akash and Prince call get available slots api for Mohit owner at same
+ time for Round 2. Both get 1pm to 8pm slots free for Monday to Friday.
+  Both do booking for 5pm-6pm slot on Thursday at same time.
+Expectation is one booking should succeeded and other should fail.
+The invitee whose booking failed now calls get available slots api for Mohit owner.
+ He should see 5pm-6pm slot as BOOKED. He will now select another slot like 7pm-8pm
+ and call book api to do booking. He should be able to do the booking.
+Now mohit calls upcoming appointments api and sees 2 appointments on Thursday (date also).
+One for Thursday 5pm-6pm and second for Thursday 7pm-8pm
 
 
 Step 1:
@@ -91,44 +101,37 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
     {
       "dayOfWeek": "MONDAY",
       "startTime": "16:00",
-      "endTime": "23:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "23:00"
     },
     {
       "dayOfWeek": "TUESDAY",
       "startTime": "16:00",
-      "endTime": "23:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "23:00"
     },
     {
       "dayOfWeek": "WEDNESDAY",
       "startTime": "16:00",
-      "endTime": "23:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "23:00"
     },
     {
       "dayOfWeek": "THURSDAY",
       "startTime": "16:00",
-      "endTime": "23:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "23:00"
     },
     {
       "dayOfWeek": "FRIDAY",
       "startTime": "16:00",
-      "endTime": "23:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "23:00"
     },
     {
       "dayOfWeek": "SATURDAY",
       "startTime": "16:00",
-      "endTime": "23:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "23:00"
     },
     {
       "dayOfWeek": "SUNDAY",
       "startTime": "16:00",
-      "endTime": "23:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "23:00"
     }
   ]
 }'
@@ -150,47 +153,41 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
     {
       "dayOfWeek": "MONDAY",
       "startTime": "09:00",
-      "endTime": "17:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "17:00"
     },
     {
       "dayOfWeek": "TUESDAY",
       "startTime": "09:00",
-      "endTime": "17:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "17:00"
     },
     {
       "dayOfWeek": "WEDNESDAY",
       "startTime": "09:00",
-      "endTime": "17:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "17:00"
     },
     {
       "dayOfWeek": "THURSDAY",
       "startTime": "09:00",
-      "endTime": "17:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "17:00"
     },
     {
       "dayOfWeek": "FRIDAY",
       "startTime": "09:00",
-      "endTime": "17:00",
-      "ruleType": "AVAILABLE"
+      "endTime": "17:00"
     },
     {
       "dayOfWeek": "SATURDAY",
       "startTime": "09:00",
-      "endTime": "17:00",
-      "ruleType": "UNAVAILABLE"
+      "endTime": "17:00"
     },
     {
       "dayOfWeek": "SUNDAY",
       "startTime": "09:00",
-      "endTime": "17:00",
-      "ruleType": "UNAVAILABLE"
+      "endTime": "17:00"
     }
   ]
 }'
+
 
 Response 200 OK:
 {

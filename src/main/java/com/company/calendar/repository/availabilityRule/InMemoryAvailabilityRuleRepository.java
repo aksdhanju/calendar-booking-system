@@ -1,7 +1,6 @@
 package com.company.calendar.repository.availabilityRule;
 
 import com.company.calendar.entity.AvailabilityRule;
-import com.company.calendar.enums.RuleType;
 import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
@@ -24,11 +23,10 @@ public class InMemoryAvailabilityRuleRepository implements AvailabilityRuleRepos
     }
 
     @Override
-    public List<AvailabilityRule> findByOwnerIdAndDayOfWeekAndRuleType(String ownerId, DayOfWeek dayOfWeek, RuleType ruleType) {
+    public List<AvailabilityRule> findByOwnerIdAndDayOfWeek(String ownerId, DayOfWeek dayOfWeek) {
         List<AvailabilityRule> rules = store.getOrDefault(ownerId, List.of());
         return rules.stream().filter(rule ->
-                rule.getDayOfWeek().equals(dayOfWeek)
-                        && rule.getRuleType() == ruleType)
+                rule.getDayOfWeek().equals(dayOfWeek))
                 .toList();
     }
 }

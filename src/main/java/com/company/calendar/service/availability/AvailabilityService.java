@@ -3,7 +3,6 @@ package com.company.calendar.service.availability;
 import com.company.calendar.config.AppointmentProperties;
 import com.company.calendar.dto.availability.AvailableSlotDto;
 import com.company.calendar.entity.AvailabilityRule;
-import com.company.calendar.enums.RuleType;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.exceptions.availability.AvailabilityRulesAlreadyExistsException;
 import com.company.calendar.exceptions.user.UserNotFoundException;
@@ -12,8 +11,6 @@ import com.company.calendar.repository.availabilityRule.AvailabilityRuleReposito
 import com.company.calendar.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -36,6 +33,9 @@ public class AvailabilityService {
     private final UserService userService;
 
     public void createAvailabilityRules(AvailabilityRuleSetupRequest request) {
+        if (userService.getUser(request.getOwnerId()).isEmpty()) {
+            throw new UserNotFoundException(request.getOwnerId());
+        }
         var existingRules = availabilityRuleRepository.findByOwnerId(request.getOwnerId());
         if (!existingRules.isEmpty()) {
             throw new AvailabilityRulesAlreadyExistsException(request.getOwnerId());
@@ -44,6 +44,9 @@ public class AvailabilityService {
     }
 
     public void updateAvailabilityRules(AvailabilityRuleSetupRequest request) {
+        if (userService.getUser(request.getOwnerId()).isEmpty()) {
+            throw new UserNotFoundException(request.getOwnerId());
+        }
         buildAndSaveRules(request);
     }
 
@@ -54,7 +57,6 @@ public class AvailabilityService {
                         .dayOfWeek(r.getDayOfWeek())
                         .startTime(r.getStartTime())
                         .endTime(r.getEndTime())
-                        .ruleType(r.getRuleType())
                         .build()
                 ).collect(Collectors.toList());
         availabilityRuleRepository.save(request.getOwnerId(), rules);
@@ -66,8 +68,7 @@ public class AvailabilityService {
         }
         //available = total - booked
         var dayOfWeek = date.getDayOfWeek();
-        var rules = availabilityRuleRepository
-                .findByOwnerIdAndDayOfWeekAndRuleType(ownerId, dayOfWeek, RuleType.AVAILABLE);
+        var rules = availabilityRuleRepository.findByOwnerIdAndDayOfWeek(ownerId, dayOfWeek);
 
         if (CollectionUtils.isEmpty(rules)) return List.of();
 

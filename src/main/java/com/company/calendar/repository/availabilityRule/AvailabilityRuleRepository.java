@@ -1,7 +1,6 @@
 package com.company.calendar.repository.availabilityRule;
 
 import com.company.calendar.entity.AvailabilityRule;
-import com.company.calendar.enums.RuleType;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -12,5 +11,5 @@ public interface AvailabilityRuleRepository {
 
     List<AvailabilityRule> findByOwnerId(String ownerId);
 
-    List<AvailabilityRule> findByOwnerIdAndDayOfWeekAndRuleType(String ownerId, DayOfWeek dayOfWeek, RuleType ruleType);
+    List<AvailabilityRule> findByOwnerIdAndDayOfWeek(String ownerId, DayOfWeek dayOfWeek);
 }

@@ -3,7 +3,6 @@ package com.company.calendar.service;
 import com.company.calendar.config.AppointmentProperties;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.entity.AvailabilityRule;
-import com.company.calendar.enums.RuleType;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.repository.availabilityRule.AvailabilityRuleRepository;
 import com.company.calendar.service.availability.AvailabilityService;

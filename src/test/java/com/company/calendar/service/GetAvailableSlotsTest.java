@@ -6,7 +6,6 @@ import com.company.calendar.dto.user.GetUserResponse;
 import com.company.calendar.dto.user.UserResponse;
 import com.company.calendar.entity.Appointment;
 import com.company.calendar.entity.AvailabilityRule;
-import com.company.calendar.enums.RuleType;
 import com.company.calendar.exceptions.user.UserNotFoundException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.repository.availabilityRule.AvailabilityRuleRepository;
@@ -23,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -84,7 +82,7 @@ public class GetAvailableSlotsTest {
     @DisplayName("Should return empty list when no availability rules exist for the day")
     void shouldReturnEmptyWhenNoRules() {
         when(userService.getUser(ownerId)).thenReturn(mockUserResponse(ownerId));
-        when(availabilityRuleRepository.findByOwnerIdAndDayOfWeekAndRuleType(ownerId, date.getDayOfWeek(), RuleType.AVAILABLE))
+        when(availabilityRuleRepository.findByOwnerIdAndDayOfWeek(ownerId, date.getDayOfWeek()))
                 .thenReturn(List.of());
 
         List<AvailableSlotDto> slots = availabilityService.getAvailableSlots(ownerId, date);
@@ -102,10 +100,9 @@ public class GetAvailableSlotsTest {
                 .dayOfWeek(date.getDayOfWeek())
                 .startTime(LocalTime.of(9, 0))
                 .endTime(LocalTime.of(14, 0))
-                .ruleType(RuleType.AVAILABLE)
                 .build();
 
-        when(availabilityRuleRepository.findByOwnerIdAndDayOfWeekAndRuleType(ownerId, date.getDayOfWeek(), RuleType.AVAILABLE))
+        when(availabilityRuleRepository.findByOwnerIdAndDayOfWeek(ownerId, date.getDayOfWeek()))
                 .thenReturn(List.of(rule));
         when(appointmentRepository.findByOwnerIdAndDate(ownerId, date)).thenReturn(List.of());
         when(appointmentProperties.getDurationMinutes()).thenReturn(60);
@@ -126,10 +123,9 @@ public class GetAvailableSlotsTest {
                 .dayOfWeek(date.getDayOfWeek())
                 .startTime(LocalTime.of(10, 0))
                 .endTime(LocalTime.of(11, 0))
-                .ruleType(RuleType.AVAILABLE)
                 .build();
 
-        when(availabilityRuleRepository.findByOwnerIdAndDayOfWeekAndRuleType(ownerId, date.getDayOfWeek(), RuleType.AVAILABLE))
+        when(availabilityRuleRepository.findByOwnerIdAndDayOfWeek(ownerId, date.getDayOfWeek()))
                 .thenReturn(List.of(rule));
 
         var appointment = Appointment.builder()
@@ -155,7 +151,6 @@ public class GetAvailableSlotsTest {
                 .dayOfWeek(date.getDayOfWeek())
                 .startTime(LocalTime.of(9, 0))
                 .endTime(LocalTime.of(10, 0))
-                .ruleType(RuleType.AVAILABLE)
                 .build();
 
         var rule2 = AvailabilityRule.builder()
@@ -163,10 +158,9 @@ public class GetAvailableSlotsTest {
                 .dayOfWeek(date.getDayOfWeek())
                 .startTime(LocalTime.of(11, 0))
                 .endTime(LocalTime.of(12, 0))
-                .ruleType(RuleType.AVAILABLE)
                 .build();
 
-        when(availabilityRuleRepository.findByOwnerIdAndDayOfWeekAndRuleType(ownerId, date.getDayOfWeek(), RuleType.AVAILABLE))
+        when(availabilityRuleRepository.findByOwnerIdAndDayOfWeek(ownerId, date.getDayOfWeek()))
                 .thenReturn(List.of(rule1, rule2));
         when(appointmentRepository.findByOwnerIdAndDate(ownerId, date)).thenReturn(List.of());
         when(appointmentProperties.getDurationMinutes()).thenReturn(30);

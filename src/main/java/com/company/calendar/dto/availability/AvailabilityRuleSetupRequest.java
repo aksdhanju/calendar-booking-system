@@ -1,6 +1,5 @@
 package com.company.calendar.dto.availability;
 
-import com.company.calendar.enums.RuleType;
 import com.company.calendar.validator.ValidAvailabilityRules;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -32,6 +31,5 @@ public class AvailabilityRuleSetupRequest {
         private DayOfWeek dayOfWeek;
         private LocalTime startTime;
         private LocalTime endTime;
-        private RuleType ruleType;
     }
 }

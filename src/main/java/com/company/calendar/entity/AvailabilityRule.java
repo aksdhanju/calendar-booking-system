@@ -1,6 +1,5 @@
 package com.company.calendar.entity;
 
-import com.company.calendar.enums.RuleType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,5 +13,4 @@ public class AvailabilityRule {
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private LocalTime endTime;
-    private RuleType ruleType; // AVAILABLE or UNAVAILABLE
 }
