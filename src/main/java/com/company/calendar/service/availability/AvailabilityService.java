@@ -19,7 +19,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,27 +33,41 @@ public class AvailabilityService {
     private final AppointmentRepository appointmentRepository;
     private final AppointmentProperties appointmentProperties;
     private final UserService userService;
+    private final Map<String, Object> ownerLocks = new ConcurrentHashMap<>();
+
 
     public void createAvailabilityRules(AvailabilityRuleSetupRequest request) {
         if (userService.getUser(request.getOwnerId()).isEmpty()) {
             throw new UserNotFoundException(request.getOwnerId());
         }
-        var existingRules = availabilityRuleRepository.findByOwnerId(request.getOwnerId());
-        if (!existingRules.isEmpty()) {
+        //compare and swap approach
+        var rules = buildRules(request);
+        boolean saved = availabilityRuleRepository.saveIfAbsent(request.getOwnerId(), rules);
+
+        if (!saved) {
             throw new AvailabilityRulesAlreadyExistsException(request.getOwnerId());
         }
-        buildAndSaveRules(request);
     }
 
     public void updateAvailabilityRules(AvailabilityRuleSetupRequest request) {
-        if (userService.getUser(request.getOwnerId()).isEmpty()) {
-            throw new UserNotFoundException(request.getOwnerId());
+        Object lock = ownerLocks.computeIfAbsent(request.getOwnerId(), id -> new Object());
+        //synchronized approach
+        //no high contention here. Its fine to take a lock per owner here. Pros/cons
+        synchronized (lock) {
+            try {
+                if (userService.getUser(request.getOwnerId()).isEmpty()) {
+                    throw new UserNotFoundException(request.getOwnerId());
+                }
+                var rules = buildRules(request);
+                availabilityRuleRepository.save(request.getOwnerId(), rules);
+            } finally {
+                ownerLocks.remove(request.getOwnerId(), lock);
+            }
         }
-        buildAndSaveRules(request);
     }
 
-    private void buildAndSaveRules(AvailabilityRuleSetupRequest request) {
-        List<AvailabilityRule> rules = request.getRules().stream()
+    private List<AvailabilityRule> buildRules(AvailabilityRuleSetupRequest request) {
+        return request.getRules().stream()
                 .map(r -> AvailabilityRule.builder()
                         .ownerId(request.getOwnerId())
                         .dayOfWeek(r.getDayOfWeek())
@@ -59,7 +75,6 @@ public class AvailabilityService {
                         .endTime(r.getEndTime())
                         .build()
                 ).collect(Collectors.toList());
-        availabilityRuleRepository.save(request.getOwnerId(), rules);
     }
 
     public List<AvailableSlotDto> getAvailableSlots(String ownerId, LocalDate date) {

@@ -18,6 +18,11 @@ public class InMemoryAvailabilityRuleRepository implements AvailabilityRuleRepos
         store.put(ownerId, rules);
     }
 
+    public boolean saveIfAbsent(String ownerId, List<AvailabilityRule> rules) {
+        // Only put if absent
+        return store.computeIfAbsent(ownerId, id -> rules) == rules;
+    }
+
     public List<AvailabilityRule> findByOwnerId(String ownerId) {
         return store.getOrDefault(ownerId, List.of());
     }

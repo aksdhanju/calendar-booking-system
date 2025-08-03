@@ -18,6 +18,9 @@ public class PessimisticBookingStrategy implements AppointmentBookingStrategy{
     @Override
     public boolean book(BookAppointmentRequest request, int durationMinutes, String appointmentId) {
         LocalDateTime startTime = request.getStartTime();
+        //not doing 2 times validation here that slot in request is free or not. We are assuming it will be free.
+        //if it wont be, means some one else has booked it in meanwhile/concurrently, then slotFree will come as false
+        //and we will exit.
 
         synchronized (this) {
             boolean slotFree = appointmentRepository.existsByOwnerIdAndStartTime(request.getOwnerId(), startTime);

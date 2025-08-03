@@ -9,6 +9,8 @@ public interface AvailabilityRuleRepository {
 
     void save(String ownerId, List<AvailabilityRule> rules);
 
+    boolean saveIfAbsent(String ownerId, List<AvailabilityRule> rules);
+
     List<AvailabilityRule> findByOwnerId(String ownerId);
 
     List<AvailabilityRule> findByOwnerIdAndDayOfWeek(String ownerId, DayOfWeek dayOfWeek);
