@@ -3,6 +3,7 @@ package com.company.calendar.validator;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -14,7 +15,7 @@ public class AvailabilityRulesValidator implements ConstraintValidator<ValidAvai
     @Override
     public boolean isValid(AvailabilityRuleSetupRequest request, ConstraintValidatorContext context) {
         List<AvailabilityRuleSetupRequest.AvailabilityRuleRequest> rules = request.getRules();
-        if (rules == null) return true;
+        if (CollectionUtils.isEmpty(rules)) return false;
 
         Set<String> uniqueKeys = new HashSet<>();
 
@@ -37,9 +38,9 @@ public class AvailabilityRulesValidator implements ConstraintValidator<ValidAvai
             //2. Must be between 00:00 and 23:00
 
             //3. Start must be before end
-            if (!start.isBefore(end)) {
+            if (start.isAfter(end)) {
                 context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate("Start time must be before end time")
+                context.buildConstraintViolationWithTemplate("Start time must not be after end time")
                         .addConstraintViolation();
                 return false;
             }

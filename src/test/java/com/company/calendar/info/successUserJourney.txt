@@ -6,6 +6,8 @@ Step 2:
 @Validated
 duplicate in request body
 merge intervals case?
+Important note: endTime is included in interval. Its start time of available slot
+start time can be equal to end time?
 Galen will set up his availability slots from 4pm(16:00) to 11pm(23:00) every day
 Mohit will set his availability slots from 9am(09:00) to 5pm(17:00) every day except Saturday, Sunday
 
@@ -23,6 +25,7 @@ Scenario 2: Both do booking of same slot but for different owner.
 Scenario 3: Both do booking of same slot for same owner.
 
 Scenario 1:
+First Akash does booking, then Prince. one after the other.
 Akash does booking for Galen for Saturday 4pm. He should be able to do booking successful.
  Prince also wants to book time with Galen. When he will call get
  Available slots api for Galen owner, he should get Saturday 4pm-5pm as BOOKED.
