@@ -138,7 +138,7 @@ public class GetAvailableSlotsTest {
         List<AvailableSlotDto> slots = availabilityService.getAvailableSlots(ownerId, date);
 
         assertThat(slots).hasSize(1);
-        assertThat(slots.get(0).getStartTime().toLocalTime()).isEqualTo(LocalTime.of(10, 30));
+        assertThat(slots.get(0).getStartDateTime().toLocalTime()).isEqualTo(LocalTime.of(10, 30));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class GetAvailableSlotsTest {
         List<AvailableSlotDto> slots = availabilityService.getAvailableSlots(ownerId, date);
 
         assertThat(slots).hasSize(4); // 2 slots per rule
-        assertThat(slots).extracting(s -> s.getStartTime().toLocalTime())
+        assertThat(slots).extracting(s -> s.getStartDateTime().toLocalTime())
                 .containsExactlyInAnyOrder(
                         LocalTime.of(9, 0), LocalTime.of(9, 30),
                         LocalTime.of(11, 0), LocalTime.of(11, 30)

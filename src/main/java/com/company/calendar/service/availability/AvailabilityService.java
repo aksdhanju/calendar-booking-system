@@ -98,7 +98,7 @@ public class AvailabilityService {
         return availabilityRuleRepository.findByOwnerIdAndDayOfWeek(ownerId, dayOfWeek);
     }
 
-    private List<AvailableSlotDto> generateAvailableSlotsFromRules(
+    public List<AvailableSlotDto> generateAvailableSlotsFromRules(
             List<AvailabilityRule> rules,
             Set<LocalTime> bookedStartTimes,
             LocalDate date
@@ -123,8 +123,8 @@ public class AvailabilityService {
                     }
 
                     availableSlots.add(AvailableSlotDto.builder()
-                            .startTime(startDateTime)
-                            .endTime(endDateTime)
+                            .startDateTime(startDateTime)
+                            .endDateTime(endDateTime)
                             .bookable(true)
                             .build());
                 }

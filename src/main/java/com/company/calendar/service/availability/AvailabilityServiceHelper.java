@@ -37,8 +37,8 @@ public class AvailabilityServiceHelper {
                     LocalDateTime endDateTime = startDateTime.plusMinutes(duration);
 
                     availableSlots.add(AvailableSlotDto.builder()
-                            .startTime(startDateTime)
-                            .endTime(endDateTime)
+                            .startDateTime(startDateTime)
+                            .endDateTime(endDateTime)
                             .bookable(true)
                             .build());
                 }

@@ -130,8 +130,116 @@ curl --location 'http://localhost:8080/appointments/book' \
  }
 
 10: Owner has  available slots but not for the date and time we asked for
+Extra check: Lets say owner 1 is not even available from 08:00 to 09:00
+So no invitee should be allowed to initiate booking in this slot.
+Invitees can initiate booking in available slots of owner only. If invitees preferred slot is one of the available slots of owner,
+invitee can book appointment with owner provided some other invitee does not book before first invitee.
+and provided booking of first invitee does not fail
+
 Response: 400 Bad Request
  {
      "success": false,
      "message": "No available slot found at: 2024-08-04 22:00:00 for owner: 1"
  }
+
+11. I should not be allowed to do bookings in past time
+
+
+
+For further test cases, owner should have available slots. Please create them using
+updateAvailabilityRules endpoint
+
+
+
+ 12.Appointment booked successfully
+ Request:
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: abc-123' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "inviteeId" : "3",
+  "startDateTime" : "2024-08-04 22:00:00"
+}'
+
+ Response 201 CREATED
+ {
+     "success": true,
+     "message": "Appointment booked successfully.",
+     "appointmentId": "6cf5cfce-950b-4fdb-b680-355393303fca",
+     "errorCode": null
+ }
+
+
+ 13. Now try with same idempotency key
+
+ Request:
+ curl --location 'http://localhost:8080/appointments/book' \
+ --header 'Idempotency-Key: abc-123' \
+ --header 'Content-Type: application/json' \
+ --data '{
+   "ownerId": "1",
+   "inviteeId" : "3",
+   "startDateTime" : "2024-08-04 22:00:00"
+ }'
+
+ Response 200 OK
+ {
+     "success": true,
+     "message": "Appointment already exists.",
+     "appointmentId": "6cf5cfce-950b-4fdb-b680-355393303fca",
+     "errorCode": null
+ }
+
+ 14. Now try with different idempotency key but same request body
+ Request
+ curl --location 'http://localhost:8080/appointments/book' \
+ --header 'Idempotency-Key: xyz-456' \
+ --header 'Content-Type: application/json' \
+ --data '{
+   "ownerId": "1",
+   "inviteeId" : "3",
+   "startDateTime" : "2024-08-04 22:00:00"
+ }'
+
+Response 400 Bad Request
+{
+    "success": false,
+    "message": "Appointment slot already booked for owner: 1"
+}
+
+
+15 Now different invitee tries to book same slot as above
+Request:
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: abc123' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "inviteeId" : "4",
+  "startDateTime" : "2024-08-04 22:00:00"
+}'
+Response: 400 Bad Request
+{
+    "success": false,
+    "message": "Appointment slot already booked for owner: 1"
+}
+
+
+16. Please note: Akash(User 3 - Invitee)can still do booking on Mohit's calendar(User 2- Owner)
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: xyz13eewc' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "2",
+  "inviteeId" : "3",
+  "startDateTime" : "2024-08-04 16:00:00"
+}'
+
+Response: 201 Created
+{
+    "success": true,
+    "message": "Appointment booked successfully.",
+    "appointmentId": "a5890317-6f0f-4a26-ad54-df3b30cf6358",
+    "errorCode": null
+}

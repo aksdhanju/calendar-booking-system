@@ -20,4 +20,14 @@ public class AppointmentExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+    @ExceptionHandler(SlotAlreadyBookedException.class)
+    public ResponseEntity<BaseErrorResponse> handleSlotAlreadyBookedException(SlotAlreadyBookedException ex) {
+        BaseErrorResponse response = BaseErrorResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }

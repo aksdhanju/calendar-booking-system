@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Set;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class AppointmentValidator {
         }
 
         if (userService.getUser(request.getInviteeId()).isEmpty()) {
-            throw new UserNotFoundException(request.getOwnerId());
+            throw new UserNotFoundException(request.getInviteeId());
         }
 
         var startDateTime = request.getStartDateTime();
@@ -38,8 +40,11 @@ public class AppointmentValidator {
         if (CollectionUtils.isEmpty(availabilityRules)) {
             throw new AvailableSlotNotFoundException(DateUtils.formatDateTime(startDateTime), request.getOwnerId());
         }
-        var isAvailableSlotPresent = availabilityRules.stream()
-                .anyMatch(rule -> rule.getStartTime().equals(startDateTime.toLocalTime()));
+
+        //Extra check: Please check test case 10
+        var availableSlots =  availabilityService.generateAvailableSlotsFromRules(availabilityRules, Set.of(), startDateTime.toLocalDate());
+        var isAvailableSlotPresent = availableSlots.stream()
+                .anyMatch(rule -> rule.getStartDateTime().equals(startDateTime));
 
         if (!isAvailableSlotPresent) {
             throw new AvailableSlotNotFoundException(DateUtils.formatDateTime(startDateTime), request.getOwnerId());
