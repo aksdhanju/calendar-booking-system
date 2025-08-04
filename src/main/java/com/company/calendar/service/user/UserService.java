@@ -22,19 +22,16 @@ public class UserService {
     private final UserRepository userRepository;
 
     public void createUser(CreateUserRequest request) {
-        if (userRepository.findById(request.getId()).isPresent()) {
-            //idempotency check
-            //user id is natural idempotency key here.
-            //dont need a new client/server generated  idempotency key
-            //we need to ensure “create-resource-once” behavior, safely retry, and avoid unintended duplication.
-            throw new UserAlreadyExistsException(request.getId());
-        }
         var user = User.builder()
                 .id(request.getId())
                 .name(request.getName())
                 .email(request.getEmail())
                 .build();
-        userRepository.save(user);
+
+        var inserted = userRepository.saveIfAbsent(user);
+        if (!inserted) {
+            throw new UserAlreadyExistsException(request.getId());
+        }
     }
 
     public void updateUser(String id, UpdateUserRequest request) {
@@ -46,6 +43,7 @@ public class UserService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .build();
+        //ok with lost updates here
         userRepository.save(user);
     }
 

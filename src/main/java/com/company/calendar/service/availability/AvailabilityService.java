@@ -82,9 +82,7 @@ public class AvailabilityService {
             throw new UserNotFoundException(ownerId);
         }
         //available = total - booked
-        var dayOfWeek = date.getDayOfWeek();
-        var rules = availabilityRuleRepository.findByOwnerIdAndDayOfWeek(ownerId, dayOfWeek);
-
+        var rules = getRulesForOwnerAndDay(ownerId, date);
         if (CollectionUtils.isEmpty(rules)) return List.of();
 
         var appointments = appointmentRepository.findByOwnerIdAndDate(ownerId, date);
@@ -93,6 +91,11 @@ public class AvailabilityService {
                 .collect(Collectors.toSet());
 
         return generateAvailableSlotsFromRules(rules, bookedStartTimes, date);
+    }
+
+    public List<AvailabilityRule> getRulesForOwnerAndDay(String ownerId, LocalDate date) {
+        var dayOfWeek = date.getDayOfWeek();
+        return availabilityRuleRepository.findByOwnerIdAndDayOfWeek(ownerId, dayOfWeek);
     }
 
     private List<AvailableSlotDto> generateAvailableSlotsFromRules(

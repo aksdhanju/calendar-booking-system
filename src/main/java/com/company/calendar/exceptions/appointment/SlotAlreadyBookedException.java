@@ -1,4 +1,4 @@
-package com.company.calendar.exceptions;
+package com.company.calendar.exceptions.appointment;
 
 public class SlotAlreadyBookedException extends RuntimeException {
     public SlotAlreadyBookedException(String id) {

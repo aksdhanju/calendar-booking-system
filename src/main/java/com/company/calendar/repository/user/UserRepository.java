@@ -8,6 +8,7 @@ import java.util.Set;
 
 public interface UserRepository {
     void save(User user);
+    boolean saveIfAbsent(User user);
     Optional<User> findById(String id);
     void deleteById(String id);
     List<User> findByIds(Set<String> ids);

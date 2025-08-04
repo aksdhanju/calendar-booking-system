@@ -2,17 +2,21 @@ package com.company.calendar.exceptions;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice(basePackages = "com.company.calendar.controller")
+@RestControllerAdvice
+@Order(3)
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -44,7 +48,9 @@ public class GlobalExceptionHandler {
         if (cause instanceof InvalidFormatException ife) {
             // Optional: Check if it's about LocalTime
             if (ife.getTargetType().equals(LocalTime.class)) {
-                message = "Invalid time format. Please use a valid HH:mm between 00:00 and 23:00";
+                message = "Invalid time format. Please use a valid HH:mm format  between 00:00 and 23:00";
+            } else if (ife.getTargetType().equals(LocalDateTime.class)){
+                message = "Invalid date time format. Please use a valid yyyy-MM-dd HH:mm:ss format";
             } else {
                 message = "Invalid value: " + ife.getValue();
             }
@@ -86,6 +92,26 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<BaseErrorResponse> handleMissingRequestHeader(MissingRequestHeaderException ex) {
+        BaseErrorResponse response = BaseErrorResponse.builder()
+                .success(false)
+                .message("Missing required header: " + ex.getHeaderName())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(InvalidStartDateTimeException.class)
+    public ResponseEntity<BaseErrorResponse> handleInvalidStartDateTimeException(InvalidStartDateTimeException ex) {
+        BaseErrorResponse response = BaseErrorResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(Exception.class)

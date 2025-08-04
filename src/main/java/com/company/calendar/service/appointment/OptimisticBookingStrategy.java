@@ -2,7 +2,6 @@ package com.company.calendar.service.appointment;
 
 import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.entity.Appointment;
-import com.company.calendar.exceptions.SlotAlreadyBookedException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -19,7 +18,7 @@ public class OptimisticBookingStrategy implements AppointmentBookingStrategy {
 
     @Override
     public boolean book(BookAppointmentRequest request, int durationMinutes, String appointmentId) {
-        LocalDateTime startTime = request.getStartTime();
+        LocalDateTime startTime = request.getStartDateTime();
         LocalDateTime endTime = startTime.plusMinutes(durationMinutes);
 
         Appointment appointment = Appointment.builder()

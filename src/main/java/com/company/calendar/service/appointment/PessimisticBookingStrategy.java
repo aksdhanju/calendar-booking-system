@@ -19,7 +19,7 @@ public class PessimisticBookingStrategy implements AppointmentBookingStrategy {
 
     @Override
     public boolean book(BookAppointmentRequest request, int durationMinutes, String appointmentId) {
-        LocalDateTime startTime = request.getStartTime();
+        LocalDateTime startTime = request.getStartDateTime();
         Object ownerLock = appointmentOwnerLockMap.get(request.getOwnerId(), k -> new Object());
         //not doing 2 times validation here that slot in request is free or not. We are assuming it will be free.
         //if it wont be, means some one else has booked it in meanwhile/concurrently, then slotFree will come as false

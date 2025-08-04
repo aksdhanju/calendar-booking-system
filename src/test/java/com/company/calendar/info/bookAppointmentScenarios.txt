@@ -1,0 +1,137 @@
+Input validation scenarios
+SOme points for book Appointments endpoint
+1. startDateTime is of the format yyyy-MM-dd HH:mm:ss
+
+
+1. Pass startDateTime in different format from yyyy-MM-dd HH:mm:ss
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: abc-123' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "inviteeId" : "3",
+  "startDateTime" : "2024-08-04 22:00"
+}'
+
+Response: 400 Bad Request
+{
+       "success": false,
+       "message": "Invalid date time format. Please use a valid yyyy-MM-dd HH:mm:ss format"
+   }
+
+
+2. Pass non existent owner id(user not earlier created in system)
+Response 404 Not Found
+{
+    "success": false,
+    "message": "User not found with id: 1"
+}
+
+3.  Pass non existent invitee id(user not earlier created in system)
+Response 404 Not Found
+{
+    "success": false,
+    "message": "User not found with id: 3"
+}
+
+4. Pass ownerId or inviteeId or startDateTime as "" or "  " or null
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: abc-123' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "inviteeId" : "",
+  "startDateTime" : "2024-08-04 22:00:00"
+}'
+Response: 400 Bad Request
+{
+    "success": false,
+    "message": "Validation failed: inviteeId: must not be blank"
+}
+5. pass request body as null
+curl --location --request POST 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: abc-123' \
+--data ''
+Response: 400 Bad Request
+{
+    "success": false,
+    "message": "Invalid request format."
+}
+
+6. Idempotency key is null or Blank("")
+Response: 400 Bad Request
+{
+    "success": false,
+    "message": "Missing required header: Idempotency-Key"
+}
+
+7. start minute or start second or start nano second is not 0
+Give startDateTime like
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: abc-123' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "inviteeId" : "3",
+  "startDateTime" : "2024-08-04 22:20:00" //or "2024-08-04 22:00:20"
+}'
+
+Response: 400 Bad Request
+{
+    "success": false,
+    "message": "Appointments must start at the top of the hour and last 60 minutes."
+}
+
+8. Pass following property in application.yml
+appointment.duration-minutes = 30
+ Currently our application only supports 60 min as duration otherwise exception is thrown
+ However logic is extensible enough to add New AppointmentTimeValidator based on
+ configKey in application.yml:
+ appointment.time-validator-strategy = fullHour
+
+Request:
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: abc-123' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "inviteeId" : "3",
+  "startDateTime" : "2024-08-04 22:00:00"
+}'
+
+
+Response:  400 Bad Request
+{
+    "success": false,
+    "message": "Appointment must be exactly 60 minutes long."
+}
+
+9. Owner has no available slots.
+ Pass start time which is not available as per rules of owner
+ Slot should not be booked if its not free
+is this scenario really possible. According to me, No. But I am still handling it in code.
+Ideally call will come to bookAppointment endpoint for only free slots(some of which may
+ have been booked in the meanwhile because of concurrent users/same user)
+Request:
+Note: There should no free slot from 2024-08-04 22:00:00 to 2024-08-04 23:00:00 for ownerId = 1
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: abc-123' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "inviteeId" : "3",
+  "startDateTime" : "2024-08-04 22:00:00"
+}'
+
+ Response: 400 Bad Request
+ {
+     "success": false,
+     "message": "No available slot found at: 2024-08-04 22:00:00 for owner: 1"
+ }
+
+10: Owner has  available slots but not for the date and time we asked for
+Response: 400 Bad Request
+ {
+     "success": false,
+     "message": "No available slot found at: 2024-08-04 22:00:00 for owner: 1"
+ }

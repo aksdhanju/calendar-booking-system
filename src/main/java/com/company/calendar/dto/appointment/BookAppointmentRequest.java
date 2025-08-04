@@ -1,12 +1,15 @@
 package com.company.calendar.dto.appointment;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Builder
 public class BookAppointmentRequest {
     @NotBlank
     private String ownerId;
@@ -15,5 +18,6 @@ public class BookAppointmentRequest {
     private String inviteeId;
 
     @NotNull
-    private LocalDateTime startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime startDateTime;
 }

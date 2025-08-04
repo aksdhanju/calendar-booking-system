@@ -5,5 +5,5 @@ spring:
 appointment:
   time-validator-strategy: fullHour
   duration-minutes: 60
-  booking-strategy: optimistic
+  booking-strategy: pessimistic
   repository: in-memory

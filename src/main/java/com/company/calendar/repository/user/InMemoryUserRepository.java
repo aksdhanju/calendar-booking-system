@@ -18,6 +18,10 @@ public class InMemoryUserRepository implements UserRepository {
         userStore.put(user.getId(), user);
     }
 
+    public boolean saveIfAbsent(User user) {
+        return userStore.computeIfAbsent(user.getId(), id -> user) == user;
+    }
+
     @Override
     public Optional<User> findById(String id) {
         return Optional.ofNullable(userStore.get(id));

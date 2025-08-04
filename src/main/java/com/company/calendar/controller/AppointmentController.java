@@ -1,7 +1,7 @@
 package com.company.calendar.controller;
 
 import com.company.calendar.dto.appointment.BookAppointmentRequest;
-import com.company.calendar.dto.appointment.BookAppointmentResponse;
+import com.company.calendar.dto.appointment.BookAppointmentResponseDto;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.service.appointment.AppointmentService;
 import jakarta.validation.Valid;
@@ -24,15 +24,15 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
 
     @PostMapping("/book")
-    public ResponseEntity<BookAppointmentResponse> bookAppointment(
+    public ResponseEntity<BookAppointmentResponseDto> bookAppointment(
                 @RequestHeader("Idempotency-Key") @NotBlank String idempotencyKey, @RequestBody @Valid @NotNull BookAppointmentRequest request) {
-        var appointmentId = appointmentService.bookAppointment(idempotencyKey, request);
+        var bookAppointmentResult = appointmentService.bookAppointment(idempotencyKey, request);
         return ResponseEntity
-                .status(appointmentId != null ? HttpStatus.CREATED : HttpStatus.OK)
-                .body(BookAppointmentResponse.builder()
+                .status(bookAppointmentResult.isNewlyCreated() ? HttpStatus.CREATED : HttpStatus.OK)
+                .body(BookAppointmentResponseDto.builder()
                         .success(true)
-                        .message(appointmentId != null ? "Appointment booked successfully." : "Appointment already exists.")
-                        .appointmentId(appointmentId)
+                        .message(bookAppointmentResult.isNewlyCreated() ? "Appointment booked successfully." : "Appointment already exists.")
+                        .appointmentId(bookAppointmentResult.getAppointmentId())
                         .build());
     }
 
