@@ -10,5 +10,4 @@ import java.time.LocalDateTime;
 public class AvailableSlotDto {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
-    private boolean bookable;
 }

@@ -1,0 +1,152 @@
+Test Scenarios:
+1. Owner id is blank or null or not present
+2. Owner id size is greater than 64
+3. Owner contains char other than letters, digits, hyphens, and underscores
+4. Owner is not present/created in system
+5. date is null
+6. date is not in expected date format
+7. date should be either todays date or future date, not past date
+8. (Success)No rules found for owner and day
+9. (Success)at least 1 Rule found but no existing appointment/booking found
+10. (Success)at least 1 Rule found and at least 1 existing appointment/booking found
+There can be multiple scenarios in 10.
+
+
+
+
+1. Owner id is blank or null or not present
+curl --location 'http://localhost:8080/availability//slots?date=2025-08-09'
+404 Not Found
+{
+    "success": false,
+    "message": "Resource not found: availability/slots"
+}
+2. Owner id size is greater than 64
+3. Owner contains char other than letters, digits, hyphens, and underscores
+curl --location 'http://localhost:8080/availability/$$123/slots?date=2025-08-09'
+400 Bad Request
+{
+    "success": false,
+    "message": "Validation failed: Owner Id can only contain letters, digits, hyphens, and underscores"
+}
+4. Owner is not present/created in system
+Request:
+curl --location 'http://localhost:8080/availability/1/slots?date=2025-08-04'
+Response:
+ 404 Not Found
+{
+    "success": false,
+    "message": "User not found with id: 1"
+}
+
+5. date is null
+curl --location 'http://localhost:8080/availability/1/slots'
+
+400 Bad Request
+{
+    "success": false,
+    "message": "Validation failed: Missing required request parameter: date"
+}
+6. date is not in expected date format
+curl --location 'http://localhost:8080/availability/1/slots?date=2025-08'
+400 Bad Request
+{
+    "success": false,
+    "message": "Validation failed: Invalid value '2025-08' for request parameter 'date'. Expected format: yyyy-MM-dd"
+}
+
+7. date should be either todays date or future date, not past date
+How to reproduce: Pass a date in past
+curl --location 'http://localhost:8080/availability/1/slots?date=2025-08-04'
+400 Bad request
+{
+    "success": false,
+    "message": "Validation failed: must be a date in the present or in the future"
+}
+8. (Success)No rules found for owner and day
+8.1 Now create user/owner = 1
+8.2 Hit below api
+curl --location 'http://localhost:8080/availability/1/slots?date=2025-08-06'
+Response 200 OK
+{
+    "success": true,
+    "message": "No Available slots found for owner id: 1",
+    "slots": []
+}
+
+9. (Success)at least 1 Rule found but no existing appointment/booking found
+9.1 Now create user/owner = 1
+9.2 Create availability rules for owner = 1 with create/update availability rules api
+9.3 Hit below api
+Request:
+curl --location 'http://localhost:8080/availability/1/slots?date=2025-08-06'
+Response 200 OK
+{
+    "success": true,
+    "message":  "Available slots fetched successfully for owner id: 1",
+    "slots": [
+        {
+            "startDateTime": "2025-08-06 16:00:00",
+            "endDateTime": "2025-08-06 17:00:00"
+        },
+        {
+            "startDateTime": "2025-08-06 17:00:00",
+            "endDateTime": "2025-08-06 18:00:00"
+        },
+        {
+            "startDateTime": "2025-08-06 18:00:00",
+            "endDateTime": "2025-08-06 19:00:00"
+        },
+        {
+            "startDateTime": "2025-08-06 19:00:00",
+            "endDateTime": "2025-08-06 20:00:00"
+        },
+        {
+            "startDateTime": "2025-08-06 20:00:00",
+            "endDateTime": "2025-08-06 21:00:00"
+        },
+        {
+            "startDateTime": "2025-08-06 21:00:00",
+            "endDateTime": "2025-08-06 22:00:00"
+        },
+        {
+            "startDateTime": "2025-08-06 22:00:00",
+            "endDateTime": "2025-08-06 23:00:00"
+        },
+        {
+            "startDateTime": "2025-08-06 23:00:00",
+            "endDateTime": "2025-08-07 00:00:00"
+        }
+    ]
+}
+
+10. (Success)at least 1 Rule found and at least 1 existing appointment/booking found
+10.1 Now create user/owner = 1
+10.2 Create availability rules for owner = 1 with create/update availability rules api
+10.3 Create bookings for user/invitee = 3 for 16:00, 17:00, 18:00, 19:00 and 22:00
+Remaining slots should be visible as free to owner
+
+curl --location 'http://localhost:8080/availability/1/slots?date=2025-08-06'
+{
+    "success": true,
+    "message": "Available slots fetched successfully for owner id: 1",
+    "slots": [
+        {
+            "endDateTime": "2025-08-06 21:00:00",
+            "startDateTime": "2025-08-06 20:00:00"
+        },
+        {
+            "endDateTime": "2025-08-06 22:00:00",
+            "startDateTime": "2025-08-06 21:00:00"
+        },
+        {
+            "endDateTime": "2025-08-07 00:00:00",
+            "startDateTime": "2025-08-06 23:00:00"
+        }
+    ]
+}
+
+
+
+There can be multiple scenarios in 10.
+

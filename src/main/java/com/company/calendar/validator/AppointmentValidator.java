@@ -3,7 +3,7 @@ package com.company.calendar.validator;
 import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.exceptions.appointment.AvailableSlotNotFoundException;
 import com.company.calendar.exceptions.user.UserNotFoundException;
-import com.company.calendar.service.availability.AvailabilityService;
+import com.company.calendar.service.availability.AvailabilityServiceHelper;
 import com.company.calendar.service.user.UserService;
 import com.company.calendar.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.Set;
 @Slf4j
 @RequiredArgsConstructor
 public class AppointmentValidator {
-    private final AvailabilityService availabilityService;
+    private final AvailabilityServiceHelper availabilityServiceHelper;
     private final UserService userService;
     private final AppointmentTimeValidator appointmentTimeValidator;
 
@@ -36,13 +36,13 @@ public class AppointmentValidator {
         appointmentTimeValidator.validate(startDateTime, endDateTime);
 
         //Extra check: check if we have a free slot as per this appointment
-        var availabilityRules = availabilityService.getRulesForOwnerAndDay(request.getOwnerId(), startDateTime.toLocalDate());
+        var availabilityRules = availabilityServiceHelper.getRulesForOwnerAndDay(request.getOwnerId(), startDateTime.toLocalDate());
         if (CollectionUtils.isEmpty(availabilityRules)) {
             throw new AvailableSlotNotFoundException(DateUtils.formatDateTime(startDateTime), request.getOwnerId());
         }
 
         //Extra check: Please check test case 10
-        var availableSlots =  availabilityService.generateAvailableSlotsFromRules(availabilityRules, Set.of(), startDateTime.toLocalDate());
+        var availableSlots =  availabilityServiceHelper.generateAvailableSlotsFromRules(availabilityRules, Set.of(), startDateTime.toLocalDate());
         var isAvailableSlotPresent = availableSlots.stream()
                 .anyMatch(rule -> rule.getStartDateTime().equals(startDateTime));
 

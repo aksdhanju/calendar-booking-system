@@ -5,8 +5,7 @@ import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.dto.availability.AvailableSlotsResponse;
 import com.company.calendar.service.availability.AvailabilityService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -58,20 +57,23 @@ public class AvailabilityController {
     public ResponseEntity<AvailableSlotsResponse> getAvailableSlots(
             @PathVariable
             @NotBlank
+            @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Owner Id can only contain letters, digits, hyphens, and underscores")
+            @Size(max = 64, message = "Owner Id must be between 1 and 64 characters")
             String ownerId,
             @RequestParam
             @NotNull
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @FutureOrPresent
             LocalDate date){
         //Search Available Time Slots API: Implement an API endpoint that allows an Invitee to
         //search for available time slots on a particular date.
         //actually in cal.com, its a month but for now we are supporting day.
         var slots = availabilityService.getAvailableSlots(ownerId, date);
-        var message = slots.isEmpty() ? "No Available slots found" : "Available slots fetched successfully.";
+        var message = slots.isEmpty() ? "No Available slots found" : "Available slots fetched successfully";
         return ResponseEntity.ok(
                 AvailableSlotsResponse.builder()
                         .success(true)
-                        .message(message)
+                        .message(message +  " for owner id: " + ownerId)
                         .slots(slots)
                         .build()
         );

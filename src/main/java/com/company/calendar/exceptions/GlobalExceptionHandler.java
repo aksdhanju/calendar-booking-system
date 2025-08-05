@@ -11,9 +11,12 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.stream.Collectors;
@@ -136,6 +139,46 @@ public class GlobalExceptionHandler {
         BaseErrorResponse response = BaseErrorResponse.builder()
                 .success(false)
                 .message("Validation failed: " + errorMessages)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<BaseErrorResponse> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
+        String parameterName = ex.getParameterName();
+        String message = "Missing required request parameter: " + parameterName;
+
+        BaseErrorResponse response = BaseErrorResponse.builder()
+                .success(false)
+                .message("Validation failed: " + message)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<BaseErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String paramName = ex.getName(); // e.g., "date"
+        String value = ex.getValue() != null ? ex.getValue().toString() : "null";
+        String message;
+
+        if (ex.getRequiredType() == LocalDate.class) {
+            message = String.format(
+                    "Invalid value '%s' for request parameter '%s'. Expected format: yyyy-MM-dd",
+                    value, paramName
+            );
+        } else {
+            String requiredType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "Unknown";
+            message = String.format(
+                    "Invalid value '%s' for request parameter '%s'. Expected type: %s",
+                    value, paramName, requiredType
+            );
+        }
+
+        BaseErrorResponse response = BaseErrorResponse.builder()
+                .success(false)
+                .message("Validation failed: " + message)
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
