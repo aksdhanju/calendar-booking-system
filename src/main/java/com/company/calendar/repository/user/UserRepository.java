@@ -12,4 +12,6 @@ public interface UserRepository {
     Optional<User> findById(String id);
     void deleteById(String id);
     List<User> findByIds(Set<String> ids);
+    Optional<User> findByEmail(String email);
+    boolean existsByEmailExcludingId(String email, String excludedUserId);
 }

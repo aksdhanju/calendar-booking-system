@@ -197,7 +197,7 @@ curl --location 'http://localhost:8080/appointments/book' \
  Response 201 CREATED
  {
      "success": true,
-     "message": "Appointment booked successfully.",
+     "message": "Appointment booked successfully for owner id: 1",
      "appointmentId": "6cf5cfce-950b-4fdb-b680-355393303fca",
      "errorCode": null
  }
@@ -218,7 +218,7 @@ curl --location 'http://localhost:8080/appointments/book' \
  Response 200 OK
  {
      "success": true,
-     "message": "Appointment already exists.",
+     "message": "Appointment already exists for owner id: 1",
      "appointmentId": "6cf5cfce-950b-4fdb-b680-355393303fca",
      "errorCode": null
  }
@@ -271,7 +271,7 @@ curl --location 'http://localhost:8080/appointments/book' \
 Response: 201 Created
 {
     "success": true,
-    "message": "Appointment booked successfully.",
+    "message": "Appointment booked successfully for owner id: 1",
     "appointmentId": "a5890317-6f0f-4a26-ad54-df3b30cf6358",
     "errorCode": null
 }

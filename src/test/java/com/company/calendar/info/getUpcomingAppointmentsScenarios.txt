@@ -116,7 +116,7 @@ curl --location 'http://localhost:8080/appointments/owner/2/upcoming'
 Response 200 OK
 {
     "success": true,
-    "message": "No upcoming appointments found",
+    "message": "No upcoming appointments found for owner id: 2",
     "appointments": [],
     "currentPage": 0,
     "totalPages": 0,
@@ -137,7 +137,7 @@ curl --location 'http://localhost:8080/appointments/owner/1/upcoming'
 Response:
 {
     "success": true,
-    "message": "Fetched upcoming appointments successfully",
+    "message": "Fetched upcoming appointments successfully for owner id: 1",
     "appointments": [
         {
             "appointmentId": "f954f74b-c4fb-4082-8b69-97939f9a5c5a",
@@ -160,7 +160,7 @@ curl --location 'http://localhost:8080/appointments/owner/1/upcoming'
 Response:
 {
     "success": true,
-    "message": "Fetched upcoming appointments successfully",
+    "message": "Fetched upcoming appointments successfully for owner id: 1",
     "appointments": [
         {
             "appointmentId": "f954f74b-c4fb-4082-8b69-97939f9a5c5a",

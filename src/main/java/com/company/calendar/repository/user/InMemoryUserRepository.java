@@ -12,14 +12,31 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InMemoryUserRepository implements UserRepository {
 
     private final Map<String, User> userStore = new ConcurrentHashMap<>();
+    private final Map<String, User> emailToUser = new ConcurrentHashMap<>();
+    private final Object userLock = new Object();
 
     @Override
     public void save(User user) {
-        userStore.put(user.getId(), user);
+        synchronized (userLock) {
+            userStore.put(user.getId(), user);
+            emailToUser.put(user.getEmail(), user);
+        }
     }
 
     public boolean saveIfAbsent(User user) {
-        return userStore.computeIfAbsent(user.getId(), id -> user) == user;
+        synchronized (userLock) {
+            if (userStore.containsKey(user.getId())) {
+                return false;
+            }
+
+            if (emailToUser.containsKey(user.getEmail())) {
+                return false;
+            }
+
+            userStore.put(user.getId(), user);
+            emailToUser.put(user.getEmail(), user);
+            return true;
+        }
     }
 
     @Override
@@ -38,5 +55,16 @@ public class InMemoryUserRepository implements UserRepository {
                 .filter(entry -> ids.contains(entry.getKey()))
                 .map(Map.Entry::getValue)
                 .toList();
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return Optional.ofNullable(emailToUser.get(email));
+    }
+
+    @Override
+    public boolean existsByEmailExcludingId(String email, String excludedUserId) {
+        User existing = emailToUser.getOrDefault(email, null);
+        return existing != null && !existing.getId().equals(excludedUserId);
     }
 }

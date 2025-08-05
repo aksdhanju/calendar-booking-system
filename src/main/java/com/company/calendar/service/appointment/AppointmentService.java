@@ -42,8 +42,13 @@ public class AppointmentService {
     // Book an appointment if it's not already taken
     public BookAppointmentResult bookAppointment(String idempotencyKey, BookAppointmentRequest request) {
         // Fast path – return if already present
+        var ownerId = request.getOwnerId();
         var existing = appointmentIdempotencyStore.getIfPresent(idempotencyKey);
-        if (existing != null) return BookAppointmentResult.builder().appointmentId(existing).newlyCreated(false).build();
+        if (existing != null)
+            return BookAppointmentResult.builder()
+                    .appointmentId(existing)
+                    .message("Appointment already exists for owner id: " + ownerId)
+                    .newlyCreated(false).build();
 
         // Get or create a lock per idempotency key
         var lock = appointmentLockMap.get(idempotencyKey, k -> new Object());
@@ -52,7 +57,12 @@ public class AppointmentService {
             try {
                 // Recheck after acquiring lock (double-checked locking)
                 existing = appointmentIdempotencyStore.getIfPresent(idempotencyKey);
-                if (existing != null) return BookAppointmentResult.builder().appointmentId(existing).newlyCreated(false).build();
+                if (existing != null)
+                    return BookAppointmentResult.builder()
+                            .appointmentId(existing)
+                            .newlyCreated(false)
+                            .message("Appointment already exists for owner id: " + ownerId)
+                            .build();
 
                 var duration = appointmentProperties.getDurationMinutes();
                 appointmentValidator.validateAppointment(request, duration);
@@ -60,12 +70,16 @@ public class AppointmentService {
                 var appointmentId = UUID.randomUUID().toString();
                 var success = appointmentBookingStrategy.book(request, duration, appointmentId);
                 if (!success) {
-                    log.info("Slot already booked, not saving appointment for key: {}", request.getOwnerId());
+                    log.info("Slot already booked, not saving appointment for key: {}", ownerId);
                     throw new SlotAlreadyBookedException(request.getOwnerId()); // Booking failed
                 }
 
                 appointmentIdempotencyStore.put(idempotencyKey, appointmentId);
-                return BookAppointmentResult.builder().appointmentId(appointmentId).newlyCreated(true).build();
+                return BookAppointmentResult.builder()
+                        .appointmentId(appointmentId)
+                        .newlyCreated(true)
+                        .message("Appointment booked successfully for owner id: " + ownerId)
+                        .build();
             } finally {
                 // clean up lockMap explicitly to avoid memory bloat
                 appointmentLockMap.invalidate(idempotencyKey);
@@ -84,7 +98,7 @@ public class AppointmentService {
         if (pagedAppointments.isEmpty()) {
             return UpcomingAppointmentsResponseDto.builder()
                     .success(true)
-                    .message("No upcoming appointments found")
+                    .message("No upcoming appointments found for owner id: " + ownerId)
                     .appointments(List.of())  // empty list
                     .currentPage(page)
                     .totalPages(0)
@@ -102,7 +116,7 @@ public class AppointmentService {
 
         var inviteeMap = userService.getUsersByIds(inviteeIds); // Map<String, User>
 
-        var upcomingAppointments =  pagedAppointments.stream()
+        var upcomingAppointments = pagedAppointments.stream()
                 .map(a -> {
                     //fetch invitee details
                     //Any relevant details about the Invitee or the appointment
@@ -123,7 +137,7 @@ public class AppointmentService {
 
         return UpcomingAppointmentsResponseDto.builder()
                 .success(true)
-                .message("Fetched upcoming appointments successfully")
+                .message("Fetched upcoming appointments successfully for owner id: " + ownerId)
                 .appointments(upcomingAppointments)
                 .currentPage(pagedAppointments.getNumber())
                 .totalPages(pagedAppointments.getTotalPages())

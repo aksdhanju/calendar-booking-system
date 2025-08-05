@@ -8,4 +8,5 @@ import lombok.Getter;
 public class BookAppointmentResult {
     private String appointmentId;
     private boolean newlyCreated;
+    private String message;
 }

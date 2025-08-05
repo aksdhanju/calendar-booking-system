@@ -36,7 +36,7 @@ public class AppointmentController {
                 .status(bookAppointmentResult.isNewlyCreated() ? HttpStatus.CREATED : HttpStatus.OK)
                 .body(BookAppointmentResponseDto.builder()
                         .success(true)
-                        .message(bookAppointmentResult.isNewlyCreated() ? "Appointment booked successfully." : "Appointment already exists.")
+                        .message(bookAppointmentResult.getMessage())
                         .appointmentId(bookAppointmentResult.getAppointmentId())
                         .build());
     }

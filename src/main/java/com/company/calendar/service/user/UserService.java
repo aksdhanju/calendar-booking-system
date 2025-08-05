@@ -24,6 +24,11 @@ public class UserService {
 
     public String createUser(CreateUserRequest request) {
         var id = request.getId();
+
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("User already exists with email: " + request.getEmail());
+        }
+
         var user = User.builder()
                 .id(id)
                 .name(request.getName())
@@ -32,7 +37,7 @@ public class UserService {
 
         var inserted = userRepository.saveIfAbsent(user);
         if (!inserted) {
-            throw new UserAlreadyExistsException(id);
+            throw new UserAlreadyExistsException("User already exists with id: " + id);
         }
         return "User created successfully for id: " + id;
     }
@@ -43,6 +48,11 @@ public class UserService {
             log.warn("User not found with id: {}", id);
             created = false;
         }
+
+        if (userRepository.existsByEmailExcludingId(request.getEmail(), id)) {
+            throw new UserAlreadyExistsException("User already exists with email: " + request.getEmail());
+        }
+
         var user = User.builder()
                 .id(id)
                 .name(request.getName())

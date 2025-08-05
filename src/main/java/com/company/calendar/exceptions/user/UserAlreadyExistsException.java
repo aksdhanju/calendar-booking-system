@@ -1,7 +1,7 @@
 package com.company.calendar.exceptions.user;
 
 public class UserAlreadyExistsException extends RuntimeException {
-    public UserAlreadyExistsException(String id) {
-        super("User already exists with id: " + id);
+    public UserAlreadyExistsException(String message) {
+        super(message);
     }
 }
