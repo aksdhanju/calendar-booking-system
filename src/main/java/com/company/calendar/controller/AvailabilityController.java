@@ -1,6 +1,6 @@
 package com.company.calendar.controller;
 
-import com.company.calendar.dto.availability.AvailabilitySetupResponse;
+import com.company.calendar.dto.availability.AvailabilityRuleSetupResponse;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.dto.availability.AvailableSlotsResponse;
 import com.company.calendar.service.availability.AvailabilityService;
@@ -24,31 +24,31 @@ public class AvailabilityController {
     private final AvailabilityService availabilityService;
 
     @PostMapping("/setup")
-    public ResponseEntity<AvailabilitySetupResponse> createAvailability(@RequestBody @Valid AvailabilityRuleSetupRequest request) {
+    public ResponseEntity<AvailabilityRuleSetupResponse> createAvailability(@RequestBody @Valid AvailabilityRuleSetupRequest request) {
         //C in CRUD
         //Use Only if you want a first-time creation endpoint that fails if rules already exist for the user.
         //POST → used once per ownerId; error if already exists.
         var message = availabilityService.createAvailabilityRules(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(AvailabilitySetupResponse.builder()
+                .body(AvailabilityRuleSetupResponse.builder()
                         .success(true)
                         .message(message)
                         .build());
     }
 
     @PutMapping("/setup")
-    public ResponseEntity<AvailabilitySetupResponse> setAvailability(@RequestBody @Valid AvailabilityRuleSetupRequest request) {
+    public ResponseEntity<AvailabilityRuleSetupResponse> setAvailability(@RequestBody @Valid AvailabilityRuleSetupRequest request) {
         //This is like a create or overwrite all endpoint for setting availability for fist time by owner
         //avoiding PATCH. Can be a future requirement.
         //idempotency key handling can be done in PUT
         //exception handling changes to be done
-        var message = availabilityService.updateAvailabilityRules(request);
+        var result = availabilityService.updateAvailabilityRules(request);
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(AvailabilitySetupResponse.builder()
+                .status(result.isCreated() ? HttpStatus.OK : HttpStatus.CREATED)
+                .body(AvailabilityRuleSetupResponse.builder()
                         .success(true)
-                        .message(message)
+                        .message(result.getMessage())
                         .build());
     }
 

@@ -36,8 +36,13 @@ public class UserController {
                                                            @RequestBody
                                                            @Valid
                                                            UpdateUserRequest request) {
-        var message = userService.updateUser(id, request);
-        return ResponseEntity.ok(UserResponse.builder().success(true).message(message).build());
+        var updateUserResult = userService.updateUser(id, request);
+        return ResponseEntity
+                .status(updateUserResult.isCreated() ? HttpStatus.OK: HttpStatus.CREATED)
+                .body(UserResponse.builder()
+                        .success(true)
+                        .message(updateUserResult.getMessage())
+                        .build());
     }
 
     @DeleteMapping("/{id}")

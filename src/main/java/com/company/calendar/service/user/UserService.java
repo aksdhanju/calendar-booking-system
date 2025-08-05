@@ -1,5 +1,6 @@
 package com.company.calendar.service.user;
 
+import com.company.calendar.dto.user.UpdateUserResult;
 import com.company.calendar.dto.user.*;
 import com.company.calendar.entity.User;
 import com.company.calendar.exceptions.user.UserAlreadyExistsException;
@@ -33,12 +34,14 @@ public class UserService {
         if (!inserted) {
             throw new UserAlreadyExistsException(id);
         }
-        return "User created successfully for id:" + id;
+        return "User created successfully for id: " + id;
     }
 
-    public String updateUser(String id, UpdateUserRequest request) {
+    public UpdateUserResult updateUser(String id, UpdateUserRequest request) {
+        boolean created = true;
         if (userRepository.findById(id).isEmpty()) {
             log.warn("User not found with id: {}", id);
+            created = false;
         }
         var user = User.builder()
                 .id(id)
@@ -47,7 +50,10 @@ public class UserService {
                 .build();
         //ok with lost updates here
         userRepository.save(user);
-        return "User set successfully for id: " + id;
+        return UpdateUserResult.builder()
+                .message(created ? "User updated successfully for id: " + id : "User created successfully for id: " + id)
+                .created(created)
+                .build();
     }
 
     public String deleteUser(String id) {
@@ -69,7 +75,7 @@ public class UserService {
 
                     return UserResponse.<GetUserResponse>builder()
                             .success(true)
-                            .message("User fetched successfully.")
+                            .message("User fetched successfully for id: " + id)
                             .data(response)
                             .build();
                 });

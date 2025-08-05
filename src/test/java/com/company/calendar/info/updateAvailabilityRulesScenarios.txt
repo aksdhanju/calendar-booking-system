@@ -220,7 +220,7 @@ curl --location --request PUT 'http://localhost:8080/users/1' \
 Response 201 CREATED
 {
     "success": true,
-    "message": "User set successfully for id: 1"
+    "message": "User created successfully for id: 1"
 }
 
 Create/Update availability rules curl
@@ -268,10 +268,10 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
   ]
 }'
 
-Response 200 OK
+Response 201 CREATED
 {
     "success": true,
-    "message": "Availability rules set successfully for owner id: 1"
+    "message": "Availability rules created successfully for owner id: 1"
 }
 
 
@@ -280,6 +280,6 @@ You would experience idempotent behaviour. Rules would be updated/overwritten in
 Response 200 OK:
 {
     "success": true,
-    "message": "Availability rules set successfully for owner id: 1"
+    "message": "Availability rules updated successfully for owner id: 1"
 }
 

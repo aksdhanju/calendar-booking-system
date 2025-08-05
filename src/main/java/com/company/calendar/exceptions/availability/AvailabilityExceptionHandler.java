@@ -1,7 +1,7 @@
 package com.company.calendar.exceptions.availability;
 
 import com.company.calendar.controller.AvailabilityController;
-import com.company.calendar.dto.availability.AvailabilitySetupResponse;
+import com.company.calendar.dto.availability.AvailabilityRuleSetupResponse;
 import com.company.calendar.exceptions.user.UserNotFoundException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 public class AvailabilityExceptionHandler {
 
     @ExceptionHandler(AvailabilityRulesAlreadyExistsException.class)
-    public ResponseEntity<AvailabilitySetupResponse> handleRulesAlreadyExists(AvailabilityRulesAlreadyExistsException ex) {
-        AvailabilitySetupResponse response = AvailabilitySetupResponse.builder()
+    public ResponseEntity<AvailabilityRuleSetupResponse> handleRulesAlreadyExists(AvailabilityRulesAlreadyExistsException ex) {
+        AvailabilityRuleSetupResponse response = AvailabilityRuleSetupResponse.builder()
                 .success(false)
                 .message(ex.getMessage())
                 .build();
@@ -26,8 +26,8 @@ public class AvailabilityExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<AvailabilitySetupResponse> handleUserNotFound(UserNotFoundException ex) {
-        AvailabilitySetupResponse response = AvailabilitySetupResponse.builder()
+    public ResponseEntity<AvailabilityRuleSetupResponse> handleUserNotFound(UserNotFoundException ex) {
+        AvailabilityRuleSetupResponse response = AvailabilityRuleSetupResponse.builder()
                 .success(false)
                 .message(ex.getMessage())
                 .build();
@@ -35,13 +35,13 @@ public class AvailabilityExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<AvailabilitySetupResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
+    public ResponseEntity<AvailabilityRuleSetupResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
         String errorMessages = ex.getBindingResult().getFieldErrors()
                 .stream()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .collect(Collectors.joining("; "));
 
-        AvailabilitySetupResponse response = AvailabilitySetupResponse.builder()
+        AvailabilityRuleSetupResponse response = AvailabilityRuleSetupResponse.builder()
                 .success(false)
                 .message("Validation failed: " + errorMessages)
                 .build();
@@ -50,8 +50,8 @@ public class AvailabilityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<AvailabilitySetupResponse> handleGeneric(Exception ex) {
-        AvailabilitySetupResponse response = AvailabilitySetupResponse.builder()
+    public ResponseEntity<AvailabilityRuleSetupResponse> handleGeneric(Exception ex) {
+        AvailabilityRuleSetupResponse response = AvailabilityRuleSetupResponse.builder()
                 .success(false)
                 .message("Unexpected error: " + ex.getMessage())
                 .build();

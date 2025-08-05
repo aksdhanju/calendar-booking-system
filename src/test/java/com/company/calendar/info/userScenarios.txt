@@ -2,3 +2,88 @@ Create User Scenarios
 Update User Scenarios
 Delete User Scenarios
 Get User Scenarios
+
+These scenarios are common for all above endpoints
+1. id should not be blank
+2. id size should not be greater than 64 char
+3. id can only contain letters, digits, hyphens, and underscores
+4. name field should not be blank
+5. name should not have char count greater than 50 char
+6. email should have expected format
+7. email field should not be blank
+8. email should not have char count greater than 50 char
+9.request body should not be null
+10. user successful creation
+11. User already created. We hit api again
+
+Create User Scenarios
+10. user successful creation
+Request:
+curl --location 'http://localhost:8080/users' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id" : "1",
+    "name": "Galen",
+    "email": "gsimmons@dealmerridion.com"
+}'
+
+Response: 201 Created
+{
+    "success": true,
+    "message": "User created successfully for id: 1"
+}
+11. User already created. We hit api again
+curl --location 'http://localhost:8080/users' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id" : "1",
+    "name": "Galen",
+    "email": "gsimmons@dealmerridion.com"
+}'
+
+Response: 409 Conflict
+{
+    "success": false,
+    "message": "User already exists with id: 1"
+}
+
+
+Update User Scenarios
+10. user successful creation
+11. User already created. We hit api again
+
+
+10. user successful creation
+Request
+curl --location --request PUT 'http://localhost:8080/users/1' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Galen",
+    "email": "gsimmons@dealmerridion.com"
+}'
+Response 201 CREATED
+{
+    "success": true,
+    "message": "User created successfully for id: 1"
+}
+
+11. User already created. We hit api again
+Request:
+curl --location --request PUT 'http://localhost:8080/users/1' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Galen",
+    "email": "gsimmons@dealmerridion.com"
+}'
+
+Response 200 OK
+{
+    "success": true,
+    "message": "User updated successfully for id: 1"
+}
+
+Below 2 are not directly mentioned in requirement.
+Though I coded them, but not writing scenarios here as of now.
+If you have any question related to their functioning, please let me know.
+Delete User Scenarios
+Get User Scenarios

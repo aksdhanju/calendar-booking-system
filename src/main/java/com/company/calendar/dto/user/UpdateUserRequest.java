@@ -12,11 +12,11 @@ import lombok.Getter;
 @Getter
 public class UpdateUserRequest {
     @NotBlank(message = "Name should not be blank")
-    @Size(max = 30, message = "Id must be between 1 and 30 characters")
+    @Size(max = 50, message = "Id must be between 1 and 50 characters")
     private String name;
 
     @Email
     @NotBlank(message = "Email should not be blank")
-    @Size(max = 20, message = "Id must be between 1 and 20 characters")
+    @Size(max = 50, message = "Id must be between 1 and 50 characters")
     private String email;
 }

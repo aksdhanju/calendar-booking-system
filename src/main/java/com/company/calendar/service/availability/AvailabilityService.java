@@ -1,5 +1,6 @@
 package com.company.calendar.service.availability;
 
+import com.company.calendar.dto.availability.UpdateAvailabilityRulesResult;
 import com.company.calendar.entity.AvailabilityRule;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.exceptions.availability.AvailabilityRulesAlreadyExistsException;
@@ -43,17 +44,29 @@ public class AvailabilityService {
         return "Availability rules created successfully for owner id: " + ownerId;
     }
 
-    public String updateAvailabilityRules(AvailabilityRuleSetupRequest request) {
+    public UpdateAvailabilityRulesResult updateAvailabilityRules(AvailabilityRuleSetupRequest request) {
         var ownerId = request.getOwnerId();
         if (userService.getUser(ownerId).isEmpty()) {
             throw new UserNotFoundException(ownerId);
         }
 
+        var created = true;
+        if (availabilityRuleRepository.findByOwnerId(ownerId).isEmpty()) {
+            log.warn("Availability Rules not found with owner id: {}", ownerId);
+            created = false;
+        }
+
         var rules = buildRules(request);
+
         //no high contention here. Lost updates are fine here?
-        //For the same owner, I am enabling latest update to be persisted in in memory store
+        //For the same owner, I am enabling latest update to be persisted in in-memory store
         availabilityRuleRepository.save(ownerId, rules);
-        return "Availability rules set successfully for owner id: " + ownerId;
+        var message = created ? "Availability rules updated successfully for owner id: "
+                : "Availability rules created successfully for owner id: ";
+        return UpdateAvailabilityRulesResult.builder()
+                .created(created)
+                .message(message + ownerId)
+                .build();
     }
 
     private List<AvailabilityRule> buildRules(AvailabilityRuleSetupRequest request) {
