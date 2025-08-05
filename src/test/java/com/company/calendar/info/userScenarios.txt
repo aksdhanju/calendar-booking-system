@@ -1,0 +1,4 @@
+Create User Scenarios
+Update User Scenarios
+Delete User Scenarios
+Get User Scenarios

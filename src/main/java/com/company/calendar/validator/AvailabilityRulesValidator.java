@@ -21,7 +21,7 @@ public class AvailabilityRulesValidator implements ConstraintValidator<ValidAvai
 
         for (AvailabilityRuleSetupRequest.AvailabilityRuleRequest rule : rules) {
             if (rule.getStartTime() == null || rule.getEndTime() == null || rule.getDayOfWeek() == null) {
-                continue;
+                return false;
             }
 
             LocalTime start = rule.getStartTime();

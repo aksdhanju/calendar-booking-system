@@ -21,20 +21,22 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public void createUser(CreateUserRequest request) {
+    public String createUser(CreateUserRequest request) {
+        var id = request.getId();
         var user = User.builder()
-                .id(request.getId())
+                .id(id)
                 .name(request.getName())
                 .email(request.getEmail())
                 .build();
 
         var inserted = userRepository.saveIfAbsent(user);
         if (!inserted) {
-            throw new UserAlreadyExistsException(request.getId());
+            throw new UserAlreadyExistsException(id);
         }
+        return "User created successfully for id:" + id;
     }
 
-    public void updateUser(String id, UpdateUserRequest request) {
+    public String updateUser(String id, UpdateUserRequest request) {
         if (userRepository.findById(id).isEmpty()) {
             log.warn("User not found with id: {}", id);
         }
@@ -45,13 +47,15 @@ public class UserService {
                 .build();
         //ok with lost updates here
         userRepository.save(user);
+        return "User set successfully for id: " + id;
     }
 
-    public void deleteUser(String id) {
+    public String deleteUser(String id) {
         if (userRepository.findById(id).isEmpty()) {
             throw new UserNotFoundException(id);
         }
         userRepository.deleteById(id);
+        return "User deleted successfully for id: " + id;
     }
 
     public Optional<UserResponse<GetUserResponse>> getUser(String id) {

@@ -28,12 +28,12 @@ public class AvailabilityController {
         //C in CRUD
         //Use Only if you want a first-time creation endpoint that fails if rules already exist for the user.
         //POST → used once per ownerId; error if already exists.
-        availabilityService.createAvailabilityRules(request);
+        var message = availabilityService.createAvailabilityRules(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(AvailabilitySetupResponse.builder()
                         .success(true)
-                        .message("Availability rules created successfully")
+                        .message(message)
                         .build());
     }
 
@@ -43,12 +43,12 @@ public class AvailabilityController {
         //avoiding PATCH. Can be a future requirement.
         //idempotency key handling can be done in PUT
         //exception handling changes to be done
-        availabilityService.updateAvailabilityRules(request);
+        var message = availabilityService.updateAvailabilityRules(request);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(AvailabilitySetupResponse.builder()
                         .success(true)
-                        .message("Availability rules set successfully")
+                        .message(message)
                         .build());
     }
 
@@ -64,7 +64,7 @@ public class AvailabilityController {
             @NotNull
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             @FutureOrPresent
-            LocalDate date){
+            LocalDate date) {
         //Search Available Time Slots API: Implement an API endpoint that allows an Invitee to
         //search for available time slots on a particular date.
         //actually in cal.com, its a month but for now we are supporting day.
@@ -73,7 +73,7 @@ public class AvailabilityController {
         return ResponseEntity.ok(
                 AvailableSlotsResponse.builder()
                         .success(true)
-                        .message(message +  " for owner id: " + ownerId)
+                        .message(message + " for owner id: " + ownerId)
                         .slots(slots)
                         .build()
         );

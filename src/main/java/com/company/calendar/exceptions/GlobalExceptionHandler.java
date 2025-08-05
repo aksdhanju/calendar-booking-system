@@ -22,7 +22,7 @@ import java.time.LocalTime;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-@Order(3)
+@Order(4)
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -52,13 +52,17 @@ public class GlobalExceptionHandler {
         String message = "Invalid request format.";
 
         if (cause instanceof InvalidFormatException ife) {
+
+            String fieldName = ife.getPath().isEmpty() ? "unknown field" :
+                    ife.getPath().get(ife.getPath().size() - 1).getFieldName();
+
             // Optional: Check if it's about LocalTime
             if (ife.getTargetType().equals(LocalTime.class)) {
                 message = "Invalid time format. Please use a valid HH:mm format  between 00:00 and 23:00";
             } else if (ife.getTargetType().equals(LocalDateTime.class)){
                 message = "Invalid date time format. Please use a valid yyyy-MM-dd HH:mm:ss format";
             } else {
-                message = "Invalid value: " + ife.getValue();
+                message = "Invalid value for field '" + fieldName + "': " + ife.getValue();
             }
         }
 
@@ -82,19 +86,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BaseErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
-        String fieldErrors = ex.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .collect(Collectors.joining("; "));
+        String errorMessage = "";
 
-        String globalErrors = ex.getBindingResult().getGlobalErrors().stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.joining("; "));
-
-        String errorMessages = fieldErrors + (fieldErrors.isEmpty() || globalErrors.isEmpty() ? "" : "; ") + globalErrors;
+        if (!ex.getBindingResult().getFieldErrors().isEmpty()) {
+            var firstFieldError = ex.getBindingResult().getFieldErrors().getFirst();
+            errorMessage = firstFieldError.getDefaultMessage();
+        } else if (!ex.getBindingResult().getGlobalErrors().isEmpty()) {
+            errorMessage = ex.getBindingResult().getGlobalErrors().getFirst().getDefaultMessage();
+        }
 
         BaseErrorResponse response = BaseErrorResponse.builder()
                 .success(false)
-                .message("Validation failed: " + errorMessages)
+                .message("Validation failed: " + errorMessage)
                 .build();
 
         return ResponseEntity.badRequest().body(response);

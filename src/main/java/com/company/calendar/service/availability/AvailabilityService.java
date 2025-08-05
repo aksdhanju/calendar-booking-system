@@ -1,7 +1,5 @@
 package com.company.calendar.service.availability;
 
-import com.company.calendar.config.AppointmentProperties;
-import com.company.calendar.dto.availability.AvailableSlotDto;
 import com.company.calendar.entity.AvailabilityRule;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.exceptions.availability.AvailabilityRulesAlreadyExistsException;
@@ -18,7 +16,6 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,37 +27,33 @@ public class AvailabilityService {
     private final AppointmentRepository appointmentRepository;
     private final AvailabilityServiceHelper availabilityServiceHelper;
     private final UserService userService;
-    private final Map<String, Object> ownerLocks = new ConcurrentHashMap<>();
 
-
-    public void createAvailabilityRules(AvailabilityRuleSetupRequest request) {
-        if (userService.getUser(request.getOwnerId()).isEmpty()) {
-            throw new UserNotFoundException(request.getOwnerId());
+    public String createAvailabilityRules(AvailabilityRuleSetupRequest request) {
+        var ownerId = request.getOwnerId();
+        if (userService.getUser(ownerId).isEmpty()) {
+            throw new UserNotFoundException(ownerId);
         }
         //compare and swap approach
         var rules = buildRules(request);
-        boolean saved = availabilityRuleRepository.saveIfAbsent(request.getOwnerId(), rules);
+        boolean saved = availabilityRuleRepository.saveIfAbsent(ownerId, rules);
 
         if (!saved) {
-            throw new AvailabilityRulesAlreadyExistsException(request.getOwnerId());
+            throw new AvailabilityRulesAlreadyExistsException(ownerId);
         }
+        return "Availability rules created successfully for owner id: " + ownerId;
     }
 
-    public void updateAvailabilityRules(AvailabilityRuleSetupRequest request) {
-        Object lock = ownerLocks.computeIfAbsent(request.getOwnerId(), id -> new Object());
-        //synchronized approach
-        //no high contention here. Its fine to take a lock per owner here. Pros/cons
-        synchronized (lock) {
-            try {
-                if (userService.getUser(request.getOwnerId()).isEmpty()) {
-                    throw new UserNotFoundException(request.getOwnerId());
-                }
-                var rules = buildRules(request);
-                availabilityRuleRepository.save(request.getOwnerId(), rules);
-            } finally {
-                ownerLocks.remove(request.getOwnerId(), lock);
-            }
+    public String updateAvailabilityRules(AvailabilityRuleSetupRequest request) {
+        var ownerId = request.getOwnerId();
+        if (userService.getUser(ownerId).isEmpty()) {
+            throw new UserNotFoundException(ownerId);
         }
+
+        var rules = buildRules(request);
+        //no high contention here. Lost updates are fine here?
+        //For the same owner, I am enabling latest update to be persisted in in memory store
+        availabilityRuleRepository.save(ownerId, rules);
+        return "Availability rules set successfully for owner id: " + ownerId;
     }
 
     private List<AvailabilityRule> buildRules(AvailabilityRuleSetupRequest request) {

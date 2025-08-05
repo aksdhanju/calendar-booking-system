@@ -3,6 +3,7 @@ package com.company.calendar.exceptions.availability;
 import com.company.calendar.controller.AvailabilityController;
 import com.company.calendar.dto.availability.AvailabilitySetupResponse;
 import com.company.calendar.exceptions.user.UserNotFoundException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
 
+@Order(3)
 @RestControllerAdvice(basePackageClasses = AvailabilityController.class)
 public class AvailabilityExceptionHandler {
 

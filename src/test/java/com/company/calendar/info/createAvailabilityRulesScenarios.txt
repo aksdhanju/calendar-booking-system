@@ -1,0 +1,83 @@
+Test Scenarios
+Scenario 0 - 11 are similar(minor message name difference) as in updateAvailabilityRulesScenarios.txt
+
+0. request body is null
+1. Owner id must not be blank
+2. Owner Id can only contain letters, digits, hyphens, and underscores
+3. Owner Id must be between 1 and 64 characters
+4. rules/request body should not be null
+5. Max 24 rules can be set for an owner
+6. rules list should not be empty
+7. If any rules startTime, endTime, dayOfWeek is null, we throw exception
+8. startTime and endTime must be at full hour. Cant be 08:30. Should be 08:00
+9. startTime must be equal to or before endTime
+10. There should be no duplicate rules. dayOfWeek, startTime and endTime make a unique combination
+11. Owner does not exist in system
+12. (Success scenario)Now create user. And create availability rules for the user.
+Update rule to set availability slot as 16:00 to 23:00 every day for owner 1
+13.Availability rule already exists.
+
+
+
+12. (Success scenario)Now create user. And create availability rules for the user.
+Update rule to set availability slot as 16:00 to 23:00 every day for owner 1
+
+curl --location 'http://localhost:8080/availability/setup' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "rules": [
+    {
+      "dayOfWeek": "MONDAY",
+      "startTime": "16:00",
+      "endTime": "23:00"
+    },
+    {
+      "dayOfWeek": "TUESDAY",
+      "startTime": "16:00",
+      "endTime": "23:00"
+    },
+    {
+      "dayOfWeek": "WEDNESDAY",
+      "startTime": "16:00",
+      "endTime": "23:00"
+    },
+    {
+      "dayOfWeek": "THURSDAY",
+      "startTime": "16:00",
+      "endTime": "23:00"
+    },
+    {
+      "dayOfWeek": "FRIDAY",
+      "startTime": "16:00",
+      "endTime": "23:00"
+    },
+    {
+      "dayOfWeek": "SATURDAY",
+      "startTime": "16:00",
+      "endTime": "23:00"
+    },
+    {
+      "dayOfWeek": "SUNDAY",
+      "startTime": "16:00",
+      "endTime": "23:00"
+    }
+  ]
+}'
+
+Response: 201 Created
+{
+    "success": true,
+    "message": "Availability rules created successfully for owner id: 1"
+}
+
+
+13.Availability rule already exists.
+Request:
+same as above in 12.
+
+Response 409 Conflict:
+{
+    "success": false,
+    "message": "Availability rules already exist for owner: 1"
+}
