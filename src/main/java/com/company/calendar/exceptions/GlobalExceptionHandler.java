@@ -1,6 +1,8 @@
 package com.company.calendar.exceptions;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -109,6 +112,30 @@ public class GlobalExceptionHandler {
         BaseErrorResponse response = BaseErrorResponse.builder()
                 .success(false)
                 .message(ex.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<BaseErrorResponse> handleNoResourceFound(NoResourceFoundException ex) {
+        BaseErrorResponse response = BaseErrorResponse.builder()
+                .success(false)
+                .message("Resource not found: " + ex.getResourcePath())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<BaseErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
+        String errorMessages = ex.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining("; "));
+
+        BaseErrorResponse response = BaseErrorResponse.builder()
+                .success(false)
+                .message("Validation failed: " + errorMessages)
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);

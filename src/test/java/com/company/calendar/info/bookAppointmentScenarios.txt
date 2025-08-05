@@ -1,6 +1,24 @@
-Input validation scenarios
-SOme points for book Appointments endpoint
+Some points for book Appointments endpoint
 1. startDateTime is of the format yyyy-MM-dd HH:mm:ss
+
+Test scenarios
+1. Pass startDateTime in different format from yyyy-MM-dd HH:mm:ss
+2. Pass non existent owner id(user not earlier created in system)
+3.  Pass non existent invitee id(user not earlier created in system)
+4. Pass ownerId or inviteeId or startDateTime as "" or "  " or null
+5. pass request body as null
+6. Idempotency key is null or Blank("")
+7. start minute or start second or start nano second is not 0
+8. Pass following property in application.yml -> appointment.duration-minutes = 30
+9. Owner has no available slots.
+10: Owner has  available slots but not for the date and time we asked for
+11. I should not be allowed to do bookings in past time
+12.(successfull booking scenario)Appointment booked successfully
+13.Now try Step 12. with same idempotency key
+14.Now try Step 12. with different idempotency key but same request body
+15 Now try step 12 with different idempotency key. But different invitee tries to book same slot as above.
+16.Please note: Akash(User 3 - Invitee)can still do booking on Mohit's calendar(User 2- Owner)
+
 
 
 1. Pass startDateTime in different format from yyyy-MM-dd HH:mm:ss
@@ -143,12 +161,26 @@ Response: 400 Bad Request
  }
 
 11. I should not be allowed to do bookings in past time
+Give startDateTime in past
+Request:
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: xyz13eewc' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "2",
+  "inviteeId" : "3",
+  "startDateTime" : "2024-08-04 16:00:00"
+}'
 
+Response 400 Bad Request
+{
+    "success": false,
+    "message": "Validation failed: startDateTime: must be a future date"
+}
 
 
 For further test cases, owner should have available slots. Please create them using
 updateAvailabilityRules endpoint
-
 
 
  12.Appointment booked successfully

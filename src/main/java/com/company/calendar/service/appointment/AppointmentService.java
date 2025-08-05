@@ -7,8 +7,10 @@ import com.company.calendar.dto.appointment.UpcomingAppointmentResponse;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.entity.Appointment;
 import com.company.calendar.exceptions.appointment.SlotAlreadyBookedException;
+import com.company.calendar.exceptions.user.UserNotFoundException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.service.user.UserService;
+import com.company.calendar.utils.DateUtils;
 import com.company.calendar.validator.AppointmentValidator;
 import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
@@ -72,6 +74,9 @@ public class AppointmentService {
     }
 
     public UpcomingAppointmentsResponseDto getUpcomingAppointments(String ownerId, int page, int size) {
+        if (userService.getUser(ownerId).isEmpty()) {
+            throw new UserNotFoundException(ownerId);
+        }
         var now = LocalDateTime.now(clock);
         var pageable = PageRequest.of(page, size, Sort.by("startTime").ascending());
         var pagedAppointments = appointmentRepository.findByOwnerIdAndStartTimeAfter(ownerId, now, pageable);
@@ -107,8 +112,8 @@ public class AppointmentService {
 
                     return UpcomingAppointmentResponse.builder()
                             .appointmentId(a.getAppointmentId())
-                            .startTime(a.getStartTime())
-                            .endTime(a.getEndTime())
+                            .startTime(DateUtils.formatDateTime(a.getStartTime()))
+                            .endTime(DateUtils.formatDateTime(a.getEndTime()))
                             .inviteeId(a.getInviteeId())
                             .inviteeName(inviteeName)
                             .inviteeEmail(inviteeEmail)

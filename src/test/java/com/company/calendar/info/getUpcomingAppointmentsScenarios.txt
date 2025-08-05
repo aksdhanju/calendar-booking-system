@@ -1,0 +1,187 @@
+Get upcoming appointments scenarios
+
+1. Owner id is blank
+2. Owner id length is greater than 64
+3. Owner id corresponds to owner not present in system. Should return UserNotFoundException
+4. Owner id contains chars other than letters, digits, hyphens, and underscores
+5. Page value is less than 0
+6. Page value is greater than 100
+7. Size value is less than 1
+8. Size value is Greater than 100
+9. Page or size is blank. Should accept default values
+10. What if no upcoming appointments after current time. Provide expected response here. Its 200 OK
+11. Check logic of pagination working or not
+Sample example:
+if page = 0, size = 10 and there are total 12 appointments in db
+Here's how Spring Data JPA behaves:
+Calculations:
+totalItems: 12
+totalPages: (int) Math.ceil(12 / 10.0) = 2
+currentPage: 0 (as requested via PageRequest.of(page, size))
+
+Final values returned:
+{
+  "currentPage": 0,
+  "totalPages": 2,
+  "totalItems": 12
+}
+
+
+
+1. Owner id is blank
+Request
+curl --location 'http://localhost:8080/appointments/owner//upcoming'
+Response 404 Not Found
+{
+    "success": false,
+    "message": "Resource not found: appointments/owner/upcoming"
+}
+
+2. Owner id length is greater than 64
+
+Expected error
+Response 400 Bad Request
+{
+    "success": false,
+    "message": "Owner Id must be between 1 and 64 characters"
+}
+
+
+3. Owner id corresponds to owner not present in system. Should return UserNotFoundException
+
+Request:
+curl --location 'http://localhost:8080/appointments/owner/55/upcoming'
+
+Response:
+{
+    "success": false,
+    "message": "User not found with id: 55"
+}
+4. Owner id contains chars other than letters, digits, hyphens, and underscores
+Request:
+curl --location 'http://localhost:8080/appointments/owner/$/upcoming'
+
+Response 400 Bad Request
+{
+    "success": false,
+    "message": "Validation failed: Owner Id can only contain letters, digits, hyphens, and underscores"
+}
+
+
+5. Page value is less than 0
+Request:
+curl --location 'http://localhost:8080/appointments/owner/2/upcoming?page=-1'
+
+Response 400 Bad Request
+{
+    "success": false,
+    "message": "Validation failed: Page index must be 0 or greater"
+}
+6. Page value is greater than 100
+Request:
+curl --location 'http://localhost:8080/appointments/owner/2/upcoming?page=101'
+Response 400 Bad Request
+{
+    "success": false,
+    "message": "Validation failed: Page index must not exceed 100"
+}
+
+
+7. Size value is less than 1
+Request:
+curl --location 'http://localhost:8080/appointments/owner/2/upcoming?size=-2'
+Response 400 Bad Request
+{
+    "success": false,
+    "message": "Validation failed: Page size must be at least 1"
+}
+
+8. Size value is Greater than 100
+Request:
+curl --location 'http://localhost:8080/appointments/owner/2/upcoming?size=102'
+Response 400 Bad Request
+{
+    "success": false,
+    "message": "Validation failed: Page size must not exceed 100"
+}
+9. Page or size is blank. Should accept default values
+No specific input scenarios
+default value of page = 0 and size = 10
+
+10. What if no upcoming appointments after current time. Provide expected response here. Its 200 OK
+Create user 2(owner)
+Request:
+curl --location 'http://localhost:8080/appointments/owner/2/upcoming'
+
+Response 200 OK
+{
+    "success": true,
+    "message": "No upcoming appointments found",
+    "appointments": [],
+    "currentPage": 0,
+    "totalPages": 0,
+    "totalItems": 0
+}
+
+11.
+11.1 Now create 4 users users 1,2,3,4 as described in successUserJourney.txt
+11.2 Then create availability for user 1 as described in successUserJourney.txt
+11.3 Now book appointments for user 3(invitee) and user 4(invitee) on calendar of
+ user 1(owner) as described in successUserJourney.txt
+11.4 Now call get upcoming appointments api and see the result
+
+(11.4.1)
+Response on creating first booking by user = 3(invitee) and then calling upcoming appointments  for user = 1(owner)
+Request
+curl --location 'http://localhost:8080/appointments/owner/1/upcoming'
+Response:
+{
+    "success": true,
+    "message": "Fetched upcoming appointments successfully",
+    "appointments": [
+        {
+            "appointmentId": "f954f74b-c4fb-4082-8b69-97939f9a5c5a",
+            "startTime": "2025-08-06 16:00:00",
+            "endTime": "2025-08-06 17:00:00",
+            "inviteeId": "3",
+            "inviteeName": "Akash",
+            "inviteeEmail": "asingh@gmail.com"
+        }
+    ],
+    "currentPage": 0,
+    "totalPages": 1,
+    "totalItems": 1
+}
+
+(11.4.2)
+Response on creating first booking by user = 4(invitee) and then calling upcoming appointments  for user = 1(owner)
+Request
+curl --location 'http://localhost:8080/appointments/owner/1/upcoming'
+Response:
+{
+    "success": true,
+    "message": "Fetched upcoming appointments successfully",
+    "appointments": [
+        {
+            "appointmentId": "f954f74b-c4fb-4082-8b69-97939f9a5c5a",
+            "startTime": "2025-08-06 16:00:00",
+            "endTime": "2025-08-06 17:00:00",
+            "inviteeId": "3",
+            "inviteeName": "Akash",
+            "inviteeEmail": "asingh@gmail.com"
+        },
+        {
+            "appointmentId": "daf26453-d914-4604-937c-0f93dbfd4496",
+            "startTime": "2025-08-06 18:00:00",
+            "endTime": "2025-08-06 19:00:00",
+            "inviteeId": "4",
+            "inviteeName": "Prince",
+            "inviteeEmail": "pkumar@gmail.com"
+        }
+    ],
+    "currentPage": 0,
+    "totalPages": 1,
+    "totalItems": 2
+}
+
+Similarly you can create more appointments and then call Get upcoming appointments api to view them.
