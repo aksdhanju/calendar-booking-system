@@ -53,8 +53,6 @@ public class AvailabilityRulesValidator implements ConstraintValidator<ValidAvai
                         .addConstraintViolation();
                 return false;
             }
-
-            //5. TODO: Further logic of merging intervals in case of overlapping intervals
         }
         return true;
     }
