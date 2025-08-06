@@ -3,17 +3,11 @@ package com.company.calendar.service.appointment;
 import com.company.calendar.config.AppointmentProperties;
 import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.dto.appointment.BookAppointmentResult;
-import com.company.calendar.dto.appointment.UpcomingAppointmentResponse;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.entity.Appointment;
-import com.company.calendar.entity.User;
-import com.company.calendar.entity.UserMetadata;
 import com.company.calendar.exceptions.appointment.SlotAlreadyBookedException;
-import com.company.calendar.exceptions.user.UserNotFoundException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.service.user.UserService;
-import com.company.calendar.utils.AppointmentServiceUtil;
-import com.company.calendar.utils.DateUtils;
 import com.company.calendar.validator.AppointmentValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.List;
-
 import static com.company.calendar.utils.AppointmentServiceUtil.*;
 
 @Service
