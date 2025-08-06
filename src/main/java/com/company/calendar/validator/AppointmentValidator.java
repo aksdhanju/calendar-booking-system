@@ -2,7 +2,6 @@ package com.company.calendar.validator;
 
 import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.exceptions.appointment.AvailableSlotNotFoundException;
-import com.company.calendar.exceptions.user.UserNotFoundException;
 import com.company.calendar.service.availability.AvailabilityServiceHelper;
 import com.company.calendar.service.user.UserService;
 import com.company.calendar.utils.DateUtils;
@@ -22,13 +21,8 @@ public class AppointmentValidator {
     private final AppointmentTimeValidator appointmentTimeValidator;
 
     public boolean validateAppointment(BookAppointmentRequest request, long duration) {
-        if (userService.getUser(request.getOwnerId()).isEmpty()) {
-            throw new UserNotFoundException(request.getOwnerId());
-        }
-
-        if (userService.getUser(request.getInviteeId()).isEmpty()) {
-            throw new UserNotFoundException(request.getInviteeId());
-        }
+        userService.validateUserExists(request.getOwnerId());
+        userService.validateUserExists(request.getInviteeId());
 
         var startDateTime = request.getStartDateTime();
 

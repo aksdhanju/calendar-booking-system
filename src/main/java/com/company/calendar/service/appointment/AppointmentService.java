@@ -6,10 +6,13 @@ import com.company.calendar.dto.appointment.BookAppointmentResult;
 import com.company.calendar.dto.appointment.UpcomingAppointmentResponse;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.entity.Appointment;
+import com.company.calendar.entity.User;
+import com.company.calendar.entity.UserMetadata;
 import com.company.calendar.exceptions.appointment.SlotAlreadyBookedException;
 import com.company.calendar.exceptions.user.UserNotFoundException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.service.user.UserService;
+import com.company.calendar.utils.AppointmentServiceUtil;
 import com.company.calendar.utils.DateUtils;
 import com.company.calendar.validator.AppointmentValidator;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +22,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.List;
+
+import static com.company.calendar.utils.AppointmentServiceUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -85,22 +91,13 @@ public class AppointmentService {
     }
 
     public UpcomingAppointmentsResponseDto getUpcomingAppointments(String ownerId, int page, int size) {
-        if (userService.getUser(ownerId).isEmpty()) {
-            throw new UserNotFoundException(ownerId);
-        }
+        userService.validateUserExists(ownerId);
         var now = LocalDateTime.now();
         var pageable = PageRequest.of(page, size, Sort.by("startTime").ascending());
         var pagedAppointments = appointmentRepository.findByOwnerIdAndStartTimeAfter(ownerId, now, pageable);
 
         if (pagedAppointments.isEmpty()) {
-            return UpcomingAppointmentsResponseDto.builder()
-                    .success(true)
-                    .message("No upcoming appointments found for owner id: " + ownerId)
-                    .appointments(List.of())  // empty list
-                    .currentPage(page)
-                    .totalPages(0)
-                    .totalItems(0)
-                    .build();
+            return emptyResponse(ownerId, page);
         }
         // N+1 Query Problem
         // Inside the .map(), we are calling userService.getUser(inviteeId) for every appointment.
@@ -114,31 +111,9 @@ public class AppointmentService {
         var inviteeMap = userService.getUsersByIds(inviteeIds); // Map<String, User>
 
         var upcomingAppointments = pagedAppointments.stream()
-                .map(a -> {
-                    //fetch invitee details
-                    //Any relevant details about the Invitee or the appointment
-                    var invitee = inviteeMap.getOrDefault(a.getInviteeId(), null);
-                    var inviteeName = invitee != null ? invitee.getName() : null;
-                    var inviteeEmail = invitee != null ? invitee.getEmail() : null;
-
-                    return UpcomingAppointmentResponse.builder()
-                            .appointmentId(a.getAppointmentId())
-                            .startTime(DateUtils.formatDateTime(a.getStartTime()))
-                            .endTime(DateUtils.formatDateTime(a.getEndTime()))
-                            .inviteeId(a.getInviteeId())
-                            .inviteeName(inviteeName)
-                            .inviteeEmail(inviteeEmail)
-                            .build();
-                })
+                .map(appointment -> toResponse(appointment, inviteeMap))
                 .toList();
 
-        return UpcomingAppointmentsResponseDto.builder()
-                .success(true)
-                .message("Fetched upcoming appointments successfully for owner id: " + ownerId)
-                .appointments(upcomingAppointments)
-                .currentPage(pagedAppointments.getNumber())
-                .totalPages(pagedAppointments.getTotalPages())
-                .totalItems(pagedAppointments.getTotalElements())
-                .build();
+        return successResponse(ownerId, pagedAppointments, upcomingAppointments);
     }
 }

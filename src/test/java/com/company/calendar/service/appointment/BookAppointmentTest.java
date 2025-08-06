@@ -5,7 +5,6 @@ import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.dto.appointment.BookAppointmentResult;
 import com.company.calendar.exceptions.InvalidStartDateTimeException;
 import com.company.calendar.exceptions.appointment.SlotAlreadyBookedException;
-import com.company.calendar.service.user.UserService;
 import com.company.calendar.validator.AppointmentValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class BookAppointmentTest {
 
     @Mock
@@ -55,7 +51,7 @@ public class BookAppointmentTest {
         validRequest = BookAppointmentRequest.builder()
                 .ownerId("1")
                 .inviteeId("3")
-                .startDateTime(LocalDateTime.of(2025, 8, 25, 22, 0)) // aligned with hour
+                .startDateTime(LocalDateTime.of(2025, 8, 25, 22, 0))
                 .build();
         when(appointmentProperties.getDurationMinutes()).thenReturn(60);
     }

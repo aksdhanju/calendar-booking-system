@@ -2,7 +2,6 @@ package com.company.calendar.service.appointment;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;

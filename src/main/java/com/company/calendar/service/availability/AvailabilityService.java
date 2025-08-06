@@ -31,9 +31,7 @@ public class AvailabilityService {
 
     public String createAvailabilityRules(AvailabilityRuleSetupRequest request) {
         var ownerId = request.getOwnerId();
-        if (userService.getUser(ownerId).isEmpty()) {
-            throw new UserNotFoundException(ownerId);
-        }
+        userService.validateUserExists(ownerId);
         //compare and swap approach
         var rules = buildRules(request);
         boolean saved = availabilityRuleRepository.saveIfAbsent(ownerId, rules);
@@ -46,9 +44,7 @@ public class AvailabilityService {
 
     public UpdateAvailabilityRulesResult updateAvailabilityRules(AvailabilityRuleSetupRequest request) {
         var ownerId = request.getOwnerId();
-        if (userService.getUser(ownerId).isEmpty()) {
-            throw new UserNotFoundException(ownerId);
-        }
+        userService.validateUserExists(ownerId);
 
         var created = true;
         if (availabilityRuleRepository.findByOwnerId(ownerId).isEmpty()) {
@@ -81,9 +77,7 @@ public class AvailabilityService {
     }
 
     public List<Map<String, String>> getAvailableSlots(String ownerId, LocalDate date) {
-        if (userService.getUser(ownerId).isEmpty()) {
-            throw new UserNotFoundException(ownerId);
-        }
+        userService.validateUserExists(ownerId);
         //available = total - booked
         var rules = availabilityServiceHelper.getRulesForOwnerAndDay(ownerId, date);
         if (CollectionUtils.isEmpty(rules)) return List.of();

@@ -97,13 +97,14 @@ public class UserService {
                 });
     }
 
-    public Map<String, GetUserResponse> getUsersByIds(Set<String> ids) {
+    public Map<String, User> getUsersByIds(Set<String> ids) {
         return userRepository.findByIds(ids).stream()
-                .map(user -> GetUserResponse.builder()
-                        .id(user.getId())
-                        .name(user.getUserMetadata().getName())
-                        .email(user.getUserMetadata().getEmail())
-                        .build())
-                .collect(Collectors.toMap(GetUserResponse::getId, u -> u));
+                .collect(Collectors.toMap(User::getId, u -> u));
+    }
+
+    public void validateUserExists(String userId) {
+        if (getUser(userId).isEmpty()) {
+            throw new UserNotFoundException(userId);
+        }
     }
 }
