@@ -12,14 +12,12 @@ import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.service.user.UserService;
 import com.company.calendar.utils.DateUtils;
 import com.company.calendar.validator.AppointmentValidator;
-import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,17 +31,16 @@ public class AppointmentService {
     private final AppointmentProperties appointmentProperties;
     private final AppointmentBookingStrategy appointmentBookingStrategy;
     private final AppointmentRepository appointmentRepository;
-    private final Cache<String, String> appointmentIdempotencyStore;
-    private final Cache<String, Object> appointmentLockMap;
+    private final AppointmentIdempotencyStore appointmentIdempotencyStore;
+    private final AppointmentLockManager appointmentLockManager;
     private final AppointmentValidator appointmentValidator;
     private final UserService userService;
-    private final Clock clock;
 
     // Book an appointment if it's not already taken
     public BookAppointmentResult bookAppointment(String idempotencyKey, BookAppointmentRequest request) {
         // Fast path – return if already present
         var ownerId = request.getOwnerId();
-        var existing = appointmentIdempotencyStore.getIfPresent(idempotencyKey);
+        var existing = appointmentIdempotencyStore.get(idempotencyKey);
         if (existing != null)
             return BookAppointmentResult.builder()
                     .appointmentId(existing)
@@ -51,12 +48,12 @@ public class AppointmentService {
                     .newlyCreated(false).build();
 
         // Get or create a lock per idempotency key
-        var lock = appointmentLockMap.get(idempotencyKey, k -> new Object());
+        var lock = appointmentLockManager.getLock(idempotencyKey);
 
         synchronized (lock) {
             try {
                 // Recheck after acquiring lock (double-checked locking)
-                existing = appointmentIdempotencyStore.getIfPresent(idempotencyKey);
+                existing = appointmentIdempotencyStore.get(idempotencyKey);
                 if (existing != null)
                     return BookAppointmentResult.builder()
                             .appointmentId(existing)
@@ -82,7 +79,7 @@ public class AppointmentService {
                         .build();
             } finally {
                 // clean up lockMap explicitly to avoid memory bloat
-                appointmentLockMap.invalidate(idempotencyKey);
+                appointmentLockManager.releaseLock(idempotencyKey);
             }
         }
     }
@@ -91,7 +88,7 @@ public class AppointmentService {
         if (userService.getUser(ownerId).isEmpty()) {
             throw new UserNotFoundException(ownerId);
         }
-        var now = LocalDateTime.now(clock);
+        var now = LocalDateTime.now();
         var pageable = PageRequest.of(page, size, Sort.by("startTime").ascending());
         var pagedAppointments = appointmentRepository.findByOwnerIdAndStartTimeAfter(ownerId, now, pageable);
 

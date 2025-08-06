@@ -9,23 +9,6 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class CacheConfig {
-
-    @Bean
-    public Cache<String, Object> appointmentLockMap() {
-        return Caffeine.newBuilder()
-                .expireAfterWrite(5, TimeUnit.MINUTES)
-                .maximumSize(10_000)
-                .build();
-    }
-
-    @Bean
-    public Cache<String, String> appointmentIdempotencyStore() {
-        return Caffeine.newBuilder()
-                .expireAfterWrite(10, TimeUnit.MINUTES)
-                .maximumSize(10_000)
-                .build();
-    }
-
     @Bean
     public Cache<String, Object> appointmentOwnerLockMap() {
         return Caffeine.newBuilder()
