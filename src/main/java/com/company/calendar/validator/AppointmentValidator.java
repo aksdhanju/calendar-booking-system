@@ -21,7 +21,7 @@ public class AppointmentValidator {
     private final UserService userService;
     private final AppointmentTimeValidator appointmentTimeValidator;
 
-    public void validateAppointment(BookAppointmentRequest request, long duration) {
+    public boolean validateAppointment(BookAppointmentRequest request, long duration) {
         if (userService.getUser(request.getOwnerId()).isEmpty()) {
             throw new UserNotFoundException(request.getOwnerId());
         }
@@ -49,5 +49,6 @@ public class AppointmentValidator {
         if (!isAvailableSlotPresent) {
             throw new AvailableSlotNotFoundException(DateUtils.formatDateTime(startDateTime), request.getOwnerId());
         }
+        return true;
     }
 }

@@ -3,6 +3,7 @@ package com.company.calendar.service.user;
 import com.company.calendar.dto.user.UpdateUserResult;
 import com.company.calendar.dto.user.*;
 import com.company.calendar.entity.User;
+import com.company.calendar.entity.UserMetadata;
 import com.company.calendar.exceptions.user.UserAlreadyExistsException;
 import com.company.calendar.exceptions.user.UserNotFoundException;
 import com.company.calendar.repository.user.UserRepository;
@@ -31,8 +32,10 @@ public class UserService {
 
         var user = User.builder()
                 .id(id)
-                .name(request.getName())
-                .email(request.getEmail())
+                .userMetadata(UserMetadata.builder()
+                        .name(request.getName())
+                        .email(request.getEmail())
+                        .build())
                 .build();
 
         var inserted = userRepository.saveIfAbsent(user);
@@ -55,9 +58,12 @@ public class UserService {
 
         var user = User.builder()
                 .id(id)
-                .name(request.getName())
-                .email(request.getEmail())
+                .userMetadata(UserMetadata.builder()
+                        .name(request.getName())
+                        .email(request.getEmail())
+                        .build())
                 .build();
+
         //ok with lost updates here
         userRepository.save(user);
         return UpdateUserResult.builder()
@@ -79,8 +85,8 @@ public class UserService {
                 .map(user -> {
                     GetUserResponse response = GetUserResponse.builder()
                             .id(user.getId())
-                            .name(user.getName())
-                            .email(user.getEmail())
+                            .name(user.getUserMetadata().getName())
+                            .email(user.getUserMetadata().getEmail())
                             .build();
 
                     return UserResponse.<GetUserResponse>builder()
@@ -95,8 +101,8 @@ public class UserService {
         return userRepository.findByIds(ids).stream()
                 .map(user -> GetUserResponse.builder()
                         .id(user.getId())
-                        .name(user.getName())
-                        .email(user.getEmail())
+                        .name(user.getUserMetadata().getName())
+                        .email(user.getUserMetadata().getEmail())
                         .build())
                 .collect(Collectors.toMap(GetUserResponse::getId, u -> u));
     }

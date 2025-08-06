@@ -19,7 +19,7 @@ public class InMemoryUserRepository implements UserRepository {
     public void save(User user) {
         synchronized (userLock) {
             userStore.put(user.getId(), user);
-            emailToUser.put(user.getEmail(), user);
+            emailToUser.put(user.getUserMetadata().getEmail(), user);
         }
     }
 
@@ -29,12 +29,12 @@ public class InMemoryUserRepository implements UserRepository {
                 return false;
             }
 
-            if (emailToUser.containsKey(user.getEmail())) {
+            if (emailToUser.containsKey(user.getUserMetadata().getEmail())) {
                 return false;
             }
 
             userStore.put(user.getId(), user);
-            emailToUser.put(user.getEmail(), user);
+            emailToUser.put(user.getUserMetadata().getEmail(), user);
             return true;
         }
     }
