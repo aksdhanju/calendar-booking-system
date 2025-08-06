@@ -4,7 +4,6 @@ import com.company.calendar.dto.availability.UpdateAvailabilityRulesResult;
 import com.company.calendar.entity.AvailabilityRule;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.exceptions.availability.AvailabilityRulesAlreadyExistsException;
-import com.company.calendar.exceptions.user.UserNotFoundException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.repository.availabilityRule.AvailabilityRuleRepository;
 import com.company.calendar.service.user.UserService;
@@ -32,8 +31,9 @@ public class AvailabilityService {
     public String createAvailabilityRules(AvailabilityRuleSetupRequest request) {
         var ownerId = request.getOwnerId();
         userService.validateUserExists(ownerId);
+        var mergedRules = availabilityServiceHelper.mergeOverlappingSlots(request.getRules());
         //compare and swap approach
-        var rules = buildRules(request);
+        var rules = buildRules(ownerId, mergedRules);
         boolean saved = availabilityRuleRepository.saveIfAbsent(ownerId, rules);
 
         if (!saved) {
@@ -45,6 +45,7 @@ public class AvailabilityService {
     public UpdateAvailabilityRulesResult updateAvailabilityRules(AvailabilityRuleSetupRequest request) {
         var ownerId = request.getOwnerId();
         userService.validateUserExists(ownerId);
+        var mergedRules = availabilityServiceHelper.mergeOverlappingSlots(request.getRules());
 
         var created = true;
         if (availabilityRuleRepository.findByOwnerId(ownerId).isEmpty()) {
@@ -52,7 +53,7 @@ public class AvailabilityService {
             created = false;
         }
 
-        var rules = buildRules(request);
+        var rules = buildRules(ownerId, mergedRules);
 
         //no high contention here. Lost updates are fine here?
         //For the same owner, I am enabling latest update to be persisted in in-memory store
@@ -65,10 +66,10 @@ public class AvailabilityService {
                 .build();
     }
 
-    private List<AvailabilityRule> buildRules(AvailabilityRuleSetupRequest request) {
-        return request.getRules().stream()
+    private List<AvailabilityRule> buildRules(String ownerId, List<AvailabilityRuleSetupRequest.AvailabilityRuleRequest> rules) {
+        return rules.stream()
                 .map(r -> AvailabilityRule.builder()
-                        .ownerId(request.getOwnerId())
+                        .ownerId(ownerId)
                         .dayOfWeek(r.getDayOfWeek())
                         .startTime(r.getStartTime())
                         .endTime(r.getEndTime())
@@ -79,7 +80,7 @@ public class AvailabilityService {
     public List<Map<String, String>> getAvailableSlots(String ownerId, LocalDate date) {
         userService.validateUserExists(ownerId);
         //available = total - booked
-        var rules = availabilityServiceHelper.getRulesForOwnerAndDay(ownerId, date);
+        var rules = availabilityServiceHelper.getRulesForOwnerAndDay(ownerId, date.getDayOfWeek());
         if (CollectionUtils.isEmpty(rules)) return List.of();
 
         var appointments = appointmentRepository.findByOwnerIdAndDate(ownerId, date);

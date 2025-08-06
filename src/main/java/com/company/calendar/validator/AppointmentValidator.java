@@ -30,7 +30,7 @@ public class AppointmentValidator {
         appointmentTimeValidator.validate(startDateTime, endDateTime);
 
         //Extra check: check if we have a free slot as per this appointment
-        var availabilityRules = availabilityServiceHelper.getRulesForOwnerAndDay(request.getOwnerId(), startDateTime.toLocalDate());
+        var availabilityRules = availabilityServiceHelper.getRulesForOwnerAndDay(request.getOwnerId(), startDateTime.toLocalDate().getDayOfWeek());
         if (CollectionUtils.isEmpty(availabilityRules)) {
             throw new AvailableSlotNotFoundException(DateUtils.formatDateTime(startDateTime), request.getOwnerId());
         }

@@ -1,6 +1,7 @@
 package com.company.calendar.service.availability;
 
 import com.company.calendar.dto.availability.AvailableSlotDto;
+import com.company.calendar.entity.Appointment;
 import com.company.calendar.entity.AvailabilityRule;
 import com.company.calendar.exceptions.user.UserNotFoundException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -38,11 +41,18 @@ public class GetAvailableSlotsTest {
     private AvailabilityService availabilityService;
 
     private String ownerId;
-    private final LocalDate date = LocalDate.of(2025, 8, 9); // Saturday
+    private AvailabilityRule rule;
+    private final LocalDate date = LocalDate.of(2025, 8, 24);
 
     @BeforeEach
     void setUp() {
         ownerId = "1";
+        rule = AvailabilityRule.builder()
+                .ownerId(ownerId)
+                .dayOfWeek(date.getDayOfWeek())
+                .startTime(LocalTime.of(9, 0))
+                .endTime(LocalTime.of(11, 0))
+                .build();
     }
 
     @Test
@@ -72,13 +82,6 @@ public class GetAvailableSlotsTest {
     void testForSlotsWhenNoAppointments() {
         doNothing().when(userService).validateUserExists(any());
 
-        var rule = AvailabilityRule.builder()
-                .ownerId(ownerId)
-                .dayOfWeek(date.getDayOfWeek())
-                .startTime(LocalTime.of(9, 0))
-                .endTime(LocalTime.of(11, 0))
-                .build();
-
         when(availabilityServiceHelper.getRulesForOwnerAndDay(anyString(), any()))
                 .thenReturn(List.of(rule));
         when(appointmentRepository.findByOwnerIdAndDate(anyString(), any())).thenReturn(List.of());
@@ -107,8 +110,40 @@ public class GetAvailableSlotsTest {
 
     @Test
     @DisplayName("Should exclude booked slots")
-    void testForSlotsExcludingAppointments() {
+    void testForSlotsWithNonEmptyAppointments() {
+        doNothing().when(userService).validateUserExists(any());
+        when(availabilityServiceHelper.getRulesForOwnerAndDay(anyString(), any()))
+                .thenReturn(List.of(rule));
 
+        var inviteeId = "3";
+        var appointmentId = UUID.randomUUID().toString();
+        var appointment = Appointment.builder()
+                .startTime(LocalDateTime.of(date, LocalTime.of(10, 0)))
+                .endTime(LocalDateTime.of(date, LocalTime.of(11, 0)))
+                .ownerId(ownerId)
+                .inviteeId(inviteeId)
+                .appointmentId(appointmentId)
+                .build();
+
+        when(appointmentRepository.findByOwnerIdAndDate(anyString(), any())).thenReturn(List.of(appointment));
+
+        List<AvailableSlotDto> slotsExpected = List.of(
+                AvailableSlotDto.builder()
+                        .startDateTime(LocalDateTime.of(date, LocalTime.of(9, 0)))
+                        .endDateTime(LocalDateTime.of(date, LocalTime.of(10, 0)))
+                        .build(),
+                AvailableSlotDto.builder()
+                        .startDateTime(LocalDateTime.of(date, LocalTime.of(11, 0)))
+                        .endDateTime(LocalDateTime.of(date, LocalTime.of(12, 0)))
+                        .build()
+        );
+
+        when(availabilityServiceHelper.generateAvailableSlotsFromRules(any(), any(), any()))
+                .thenReturn(slotsExpected);
+
+        var slotsActual = availabilityService.getAvailableSlots(ownerId, date);
+        assertEquals(slotsExpected.size(), slotsActual.size());
+        assertEquals(2, slotsActual.size());
     }
 
     @Test
