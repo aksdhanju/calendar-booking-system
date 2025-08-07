@@ -42,10 +42,10 @@ public class UserService {
 
         var inserted = userRepository.saveIfAbsent(user);
         if (!inserted) {
-            log.warn("User already exists with id: {}", id);
-            throw new UserAlreadyExistsException("User already exists with id: " + id);
+            log.warn("User already exists in system");
+            throw new UserAlreadyExistsException("User already exists in system");
         }
-        var message = "User created successfully with id: {}" + id;
+        var message = "User created successfully with id: " + id;
         log.info(message);
         return message;
     }

@@ -78,7 +78,7 @@ public class AvailabilityService {
 
         return UpdateAvailabilityRulesResult.builder()
                 .created(alreadyCreated)
-                .message(message + ownerId)
+                .message(message)
                 .build();
     }
 

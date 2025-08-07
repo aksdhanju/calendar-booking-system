@@ -44,7 +44,7 @@ curl --location 'http://localhost:8080/users' \
 Response: 409 Conflict
 {
     "success": false,
-    "message": "User already exists with id: 1"
+    "message": "User already exists with email: gsimmons@dealmerridion.com"
 }
 
 

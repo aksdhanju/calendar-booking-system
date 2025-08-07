@@ -146,9 +146,4 @@ public class GetAvailableSlotsTest {
         assertEquals(slotsExpected.size(), slotsActual.size());
         assertEquals(2, slotsActual.size());
     }
-
-    @Test
-    @DisplayName("Should return multiple slots for multiple rules")
-    void testForSlotsWithMultipleRules() {
-    }
 }
