@@ -44,7 +44,7 @@ This system enables Calendar Owners to define their availability, and Invitees t
 
 ### Prerequisites
 
-- Java 17+
+- Java 21
 - Maven or Gradle
 
 ### Run the Application
