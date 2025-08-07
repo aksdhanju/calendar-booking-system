@@ -1,5 +1,8 @@
 package com.company.calendar.controller;
 
+import com.company.calendar.config.swagger.ApiResponsesCreateAvailability;
+import com.company.calendar.config.swagger.ApiResponsesGetAvailableSlots;
+import com.company.calendar.config.swagger.ApiResponsesSetAvailability;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupResponse;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.dto.availability.AvailableSlotsResponse;
@@ -29,6 +32,7 @@ public class AvailabilityController {
     private final AvailabilityService availabilityService;
 
     @Operation(summary = "Create availability rules", description = "Creates availability rules for the owner. Fails if already exists.")
+    @ApiResponsesCreateAvailability
     @PostMapping("/setup")
     public ResponseEntity<AvailabilityRuleSetupResponse> createAvailability(@RequestBody @Valid AvailabilityRuleSetupRequest request) {
         //C in CRUD
@@ -45,6 +49,7 @@ public class AvailabilityController {
     }
 
     @Operation(summary = "Update availability rules", description = "Sets or overwrites availability rules for the owner.")
+    @ApiResponsesSetAvailability
     @PutMapping("/setup")
     public ResponseEntity<AvailabilityRuleSetupResponse> setAvailability(@RequestBody @Valid AvailabilityRuleSetupRequest request) {
         //This is like a create or overwrite all endpoint for setting availability for fist time by owner
@@ -63,11 +68,7 @@ public class AvailabilityController {
 
     @Operation(summary = "Get available slots", description = "Fetches available time slots for the given owner on a specific date.")
     @GetMapping("/{ownerId}/slots")
-    //    @ApiResponses(value = {
-    //            @ApiResponse(responseCode = "200", description = "Available slots fetched successfully"),
-    //            @ApiResponse(responseCode = "400", description = "Invalid ownerId or date"),
-    //            @ApiResponse(responseCode = "500", description = "Unexpected error")
-    //    })
+    @ApiResponsesGetAvailableSlots
     public ResponseEntity<AvailableSlotsResponse> getAvailableSlots(
             @PathVariable
             @NotBlank

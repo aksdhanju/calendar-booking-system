@@ -10,10 +10,13 @@ import java.util.List;
 @Getter
 @Schema(description = "Response containing available time slots for an owner on a particular date")
 public class AvailableSlotsResponse {
-    @Schema(description = "Indicates if the request was successful")
+    @Schema(description = "Indicates if the request was successful", example = "true")
     private boolean success;
-    @Schema(description = "Descriptive message about the response")
+    @Schema(description = "Descriptive message about the response", example = "Available slots fetched successfully for owner id: 1")
     private String message;
-    @Schema(description = "List of available slots with start and end time")
+    @Schema(
+            description = "List of available slots with start and end time",
+            example = "[{\"startDateTime\":\"2025-08-08 10:00:00\",\"endDateTime\":\"2025-08-08 11:00:00\"}]"
+    )
     private List<AvailableSlotDto> slots;
 }
