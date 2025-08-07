@@ -1,7 +1,5 @@
 package com.company.calendar.service.appointment;
 
-import com.company.calendar.dto.user.GetUserResponse;
-import com.company.calendar.dto.user.UserResponse;
 import com.company.calendar.entity.Appointment;
 import com.company.calendar.entity.User;
 import com.company.calendar.entity.UserMetadata;

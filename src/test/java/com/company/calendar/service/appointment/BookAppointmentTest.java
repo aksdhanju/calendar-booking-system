@@ -34,7 +34,7 @@ public class BookAppointmentTest {
     private AppointmentIdempotencyStore appointmentIdempotencyStore;
 
     @Mock
-    private AppointmentLockManager appointmentLockManager;
+    private AppointmentIdempotencyLockManager appointmentIdempotencyLockManager;
 
     @Mock
     private AppointmentValidator appointmentValidator;
@@ -74,7 +74,7 @@ public class BookAppointmentTest {
     void testInvalidAppointmentTime() {
         when(appointmentIdempotencyStore.get(any())).thenReturn(null);
         Lock object = new ReentrantLock();
-        when(appointmentLockManager.getLock(any())).thenReturn(object);
+        when(appointmentIdempotencyLockManager.getLock(any())).thenReturn(object);
         var invalidRequest = BookAppointmentRequest.builder()
                 .ownerId("1")
                 .inviteeId("3")
@@ -82,7 +82,7 @@ public class BookAppointmentTest {
                 .build();
         when(appointmentValidator.validateAppointment(any(), anyLong()))
                 .thenThrow(new InvalidStartDateTimeException("Appointments must start at the top of the hour and last 60 minutes"));
-        doNothing().when(appointmentLockManager).releaseLock(anyString());
+        doNothing().when(appointmentIdempotencyLockManager).releaseLock(anyString());
 
         var ex = assertThrows(
                 InvalidStartDateTimeException.class,
@@ -90,7 +90,7 @@ public class BookAppointmentTest {
         );
 
         assertEquals("Appointments must start at the top of the hour and last 60 minutes", ex.getMessage());
-        verify(appointmentLockManager).releaseLock(idempotencyKey);
+        verify(appointmentIdempotencyLockManager).releaseLock(idempotencyKey);
     }
 
     @Test
@@ -98,10 +98,10 @@ public class BookAppointmentTest {
     void testBookingFailed() {
         when(appointmentIdempotencyStore.get(any())).thenReturn(null);
         Lock object = new ReentrantLock();
-        when(appointmentLockManager.getLock(any())).thenReturn(object);
+        when(appointmentIdempotencyLockManager.getLock(any())).thenReturn(object);
         when(appointmentValidator.validateAppointment(any(), anyLong())).thenReturn(true);
         when(appointmentBookingStrategy.book(any(), anyInt(), anyString())).thenReturn(false);
-        doNothing().when(appointmentLockManager).releaseLock(anyString());
+        doNothing().when(appointmentIdempotencyLockManager).releaseLock(anyString());
 
         var ex = assertThrows(
                 SlotAlreadyBookedException.class,
@@ -110,7 +110,7 @@ public class BookAppointmentTest {
 
         assertEquals("Appointment slot already booked for owner: 1", ex.getMessage());
 
-        verify(appointmentLockManager).releaseLock(idempotencyKey);
+        verify(appointmentIdempotencyLockManager).releaseLock(idempotencyKey);
     }
 
     @Test
@@ -118,10 +118,10 @@ public class BookAppointmentTest {
     void testBookAppointment() {
         when(appointmentIdempotencyStore.get(any())).thenReturn(null);
         Lock object = new ReentrantLock();
-        when(appointmentLockManager.getLock(any())).thenReturn(object);
+        when(appointmentIdempotencyLockManager.getLock(any())).thenReturn(object);
         when(appointmentValidator.validateAppointment(any(), anyLong())).thenReturn(true);
         when(appointmentBookingStrategy.book(any(), anyInt(), anyString())).thenReturn(true);
-        doNothing().when(appointmentLockManager).releaseLock(anyString());
+        doNothing().when(appointmentIdempotencyLockManager).releaseLock(anyString());
         doNothing().when(appointmentIdempotencyStore).put(anyString(), anyString());
 
         BookAppointmentResult result = appointmentService.bookAppointment(idempotencyKey, validRequest);
@@ -133,7 +133,7 @@ public class BookAppointmentTest {
 
         verify(appointmentValidator).validateAppointment(validRequest, 60);
         verify(appointmentBookingStrategy).book(validRequest, 60, result.getAppointmentId());
-        verify(appointmentLockManager).releaseLock(idempotencyKey);
+        verify(appointmentIdempotencyLockManager).releaseLock(idempotencyKey);
         verify(appointmentIdempotencyStore).put(idempotencyKey, result.getAppointmentId());
     }
 }

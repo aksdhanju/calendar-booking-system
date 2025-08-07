@@ -1,3 +1,5 @@
+single slot same start time and end time. what will be the journey and scenarios?
+
 Step 1: Create 4 users. Galen, Mohit, Akash, Prince.
 Have their name, email in metadata
 q: can we create user with same name and email id with different id?

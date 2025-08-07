@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class AppointmentLockManager {
+public class AppointmentIdempotencyLockManager {
     private final Cache<String, Object> appointmentLockCache;
 
-    public AppointmentLockManager() {
+    public AppointmentIdempotencyLockManager() {
         this.appointmentLockCache = Caffeine.newBuilder()
                 .expireAfterWrite(5, TimeUnit.MINUTES)
                 .maximumSize(10_000)

@@ -29,7 +29,7 @@ public class AppointmentService {
     private final AppointmentBookingStrategy appointmentBookingStrategy;
     private final AppointmentRepository appointmentRepository;
     private final AppointmentIdempotencyStore appointmentIdempotencyStore;
-    private final AppointmentLockManager appointmentLockManager;
+    private final AppointmentIdempotencyLockManager appointmentIdempotencyLockManager;
     private final AppointmentValidator appointmentValidator;
     private final UserService userService;
 
@@ -45,7 +45,7 @@ public class AppointmentService {
                     .newlyCreated(false).build();
 
         // Get or create a lock per idempotency key
-        var lock = appointmentLockManager.getLock(idempotencyKey);
+        var lock = appointmentIdempotencyLockManager.getLock(idempotencyKey);
 
         synchronized (lock) {
             try {
@@ -76,7 +76,7 @@ public class AppointmentService {
                         .build();
             } finally {
                 // clean up lockMap explicitly to avoid memory bloat
-                appointmentLockManager.releaseLock(idempotencyKey);
+                appointmentIdempotencyLockManager.releaseLock(idempotencyKey);
             }
         }
     }

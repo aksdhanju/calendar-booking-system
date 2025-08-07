@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Component
 @ConditionalOnProperty(name = "appointment.time-validator-strategy", havingValue = "fullHour", matchIfMissing = true)
-public class FullHour60MinValidator implements AppointmentTimeValidator {
+public class FullHourSixtyMinValidator implements AppointmentTimeValidator {
     @Override
     public void validate(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         if (!(startDateTime.getMinute() == 0 && startDateTime.getSecond() == 0 && startDateTime.getNano() == 0)) {
@@ -16,7 +16,7 @@ public class FullHour60MinValidator implements AppointmentTimeValidator {
         }
         // Validate that end time is exactly start time + duration
         if (!endDateTime.minusMinutes(60).equals(startDateTime)) {
-            throw new InvalidStartDateTimeException("Appointment must be exactly " + 60 + " minutes long");
+            throw new InvalidStartDateTimeException("Appointment must be exactly 60 minutes long");
         }
     }
 }
