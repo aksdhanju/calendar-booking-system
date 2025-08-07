@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class AppointmentProperties {
-    private int durationMinutes = 60; // fallback default
-    private String timeValidatorStrategy = "fullHour";  // default value
-    private String bookingStrategy = AppointmentBookingStrategy.OPTIMISTIC.name(); // "optimistic" as default
+    private int durationMinutes = 60;
+    private String timeValidatorStrategy = "fullHour";
+    private String bookingStrategy = AppointmentBookingStrategy.OPTIMISTIC.name();
     private String repository = "in-memory";
 }

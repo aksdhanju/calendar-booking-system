@@ -4,9 +4,11 @@ import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.dto.appointment.BookAppointmentResponseDto;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.service.appointment.AppointmentService;
+import com.company.calendar.utils.DateUtils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/appointments")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
@@ -31,6 +34,9 @@ public class AppointmentController {
                 @Valid
                 @NotNull
                 BookAppointmentRequest request) {
+        log.info("Received appointment booking request. Idempotency-Key: {}, owner id: {}, invitee id: {}, dateTime={}",
+                idempotencyKey, request.getOwnerId(), request.getInviteeId(), DateUtils.formatDateTime(request.getStartDateTime()));
+
         var bookAppointmentResult = appointmentService.bookAppointment(idempotencyKey, request);
         return ResponseEntity
                 .status(bookAppointmentResult.isNewlyCreated() ? HttpStatus.CREATED : HttpStatus.OK)
@@ -56,6 +62,7 @@ public class AppointmentController {
             @Min(value = 1, message = "Page size must be at least 1")
             @Max(value = 100, message = "Page size must not exceed 100")
             int size) {
+        log.info("Fetching upcoming appointments for owner id: {}, page: {}, size: {}", ownerId, page, size);
         var upcomingAppointments = appointmentService.getUpcomingAppointments(ownerId, page, size);
         return ResponseEntity.ok(upcomingAppointments);
     }

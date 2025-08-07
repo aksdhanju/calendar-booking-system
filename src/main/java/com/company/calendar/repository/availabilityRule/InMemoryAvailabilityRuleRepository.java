@@ -19,7 +19,6 @@ public class InMemoryAvailabilityRuleRepository implements AvailabilityRuleRepos
     }
 
     public boolean saveIfAbsent(String ownerId, List<AvailabilityRule> rules) {
-        // Only put if absent
         return store.computeIfAbsent(ownerId, id -> rules) == rules;
     }
 

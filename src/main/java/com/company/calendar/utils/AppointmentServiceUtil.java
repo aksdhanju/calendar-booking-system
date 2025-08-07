@@ -5,16 +5,16 @@ import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.entity.Appointment;
 import com.company.calendar.entity.User;
 import com.company.calendar.entity.UserMetadata;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AppointmentServiceUtil {
-
-    private AppointmentServiceUtil() {
-    }
 
     public static UpcomingAppointmentResponse toResponse(Appointment appointment, Map<String, User> inviteeMap) {
         var invitee = inviteeMap.get(appointment.getInviteeId());
