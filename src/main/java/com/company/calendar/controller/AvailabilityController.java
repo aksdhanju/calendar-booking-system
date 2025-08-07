@@ -7,6 +7,7 @@ import com.company.calendar.service.availability.AvailabilityService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 @RequestMapping("/availability")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class AvailabilityController {
 
     private final AvailabilityService availabilityService;
@@ -28,6 +30,7 @@ public class AvailabilityController {
         //C in CRUD
         //Use Only if you want a first-time creation endpoint that fails if rules already exist for the user.
         //POST → used once per ownerId; error if already exists.
+        log.info("Received POST /setup request to create availability rules for ownerId: {}", request.getOwnerId());
         var message = availabilityService.createAvailabilityRules(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -43,6 +46,7 @@ public class AvailabilityController {
         //avoiding PATCH. Can be a future requirement.
         //idempotency key handling can be done in PUT
         //exception handling changes to be done
+        log.info("Received PUT /setup request to set/update availability rules for ownerId: {}", request.getOwnerId());
         var result = availabilityService.updateAvailabilityRules(request);
         return ResponseEntity
                 .status(result.isCreated() ? HttpStatus.OK : HttpStatus.CREATED)
@@ -68,8 +72,10 @@ public class AvailabilityController {
         //Search Available Time Slots API: Implement an API endpoint that allows an Invitee to
         //search for available time slots on a particular date.
         //actually in cal.com, its a month but for now we are supporting day.
+        log.info("Received GET /{}/slots request for ownerId: {} on date: {}", ownerId, ownerId, date);
         var slots = availabilityService.getAvailableSlots(ownerId, date);
         var message = slots.isEmpty() ? "No Available slots found" : "Available slots fetched successfully";
+        log.info("Slot fetch result for ownerId: {} on {}: {}", ownerId, date, message);
         return ResponseEntity.ok(
                 AvailableSlotsResponse.builder()
                         .success(true)
