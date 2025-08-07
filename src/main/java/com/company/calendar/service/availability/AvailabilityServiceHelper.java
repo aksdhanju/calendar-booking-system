@@ -9,6 +9,7 @@ import com.company.calendar.utils.DateUtils;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
@@ -24,20 +25,20 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AvailabilityServiceHelper {
 
     private final AppointmentProperties appointmentProperties;
     private final AvailabilityRuleRepository availabilityRuleRepository;
 
-    /**
-     * Helper method to generate available slots from rules excluding already booked ones
-     */
     public List<AvailableSlotDto> generateAvailableSlotsFromRules(@NotEmpty List<AvailabilityRule> rules,
                                                                   Set<LocalTime> bookedStartTimes,
                                                                   @NotNull LocalDate date) {
         //rules for particular date and hence day
         //bookedStartTimes would be a subset of times in rules
         //only consider rules which has day same as that of date
+        log.debug("Generating available slots for date: {}, rules count: {}, booked slots count: {}",
+                date, rules.size(), bookedStartTimes.size());
         List<AvailableSlotDto> availableSlots = new ArrayList<>();
         int duration = appointmentProperties.getDurationMinutes();
 
@@ -74,14 +75,18 @@ public class AvailabilityServiceHelper {
                 slotStart = slotStart.plusMinutes(duration);
             }
         }
+        log.info("Available slots generated for date {}: {} slot(s) found", date, availableSlots.size());
         return availableSlots;
     }
 
     public List<AvailabilityRule> getRulesForOwnerAndDay(String ownerId, DayOfWeek dayOfWeek) {
-        return availabilityRuleRepository.findByOwnerIdAndDayOfWeek(ownerId, dayOfWeek);
+        var rules = availabilityRuleRepository.findByOwnerIdAndDayOfWeek(ownerId, dayOfWeek);
+        log.debug("Fetched {} availability rules for owner id: {}, day:{}", rules.size(), ownerId, dayOfWeek);
+        return rules;
     }
 
     public List<AvailabilityRuleSetupRequest.AvailabilityRuleRequest> mergeOverlappingSlots(List<AvailabilityRuleSetupRequest.AvailabilityRuleRequest> rules) {
+        log.debug("Merging {} availability slot(s)", rules.size());
         // Step 1: Group by DayOfWeek
         Map<DayOfWeek, List<AvailabilityRuleSetupRequest.AvailabilityRuleRequest>> rulesByDay = rules.stream()
                 .collect(Collectors.groupingBy(AvailabilityRuleSetupRequest.AvailabilityRuleRequest::getDayOfWeek));
@@ -91,7 +96,11 @@ public class AvailabilityServiceHelper {
 
         // Step 2: For each day, sort and merge intervals
         for (Map.Entry<DayOfWeek, List<AvailabilityRuleSetupRequest.AvailabilityRuleRequest>> entry : rulesByDay.entrySet()) {
+            var day = entry.getKey();
             var dayRules = entry.getValue();
+
+            log.debug("Merging {} slot(s) for day {}", dayRules.size(), day);
+
             if (dayRules.size() == 1) {
                 mergedRules.add(dayRules.getFirst());
                 continue;
@@ -123,7 +132,11 @@ public class AvailabilityServiceHelper {
 
             mergedDayRules.add(current); // Add the last interval
             mergedRules.addAll(mergedDayRules);
+
+            log.debug("Merged slots for day {}: {} -> {}", day, dayRules.size(), mergedDayRules.size());
         }
+
+        log.info("Total merged availability slots: {}", mergedRules.size());
         return mergedRules;
     }
 

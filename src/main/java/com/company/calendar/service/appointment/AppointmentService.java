@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.company.calendar.utils.AppointmentServiceUtil.*;
 
 @Service
@@ -33,78 +34,89 @@ public class AppointmentService {
     private final AppointmentValidator appointmentValidator;
     private final UserService userService;
 
-    // Book an appointment if it's not already taken
     public BookAppointmentResult bookAppointment(String idempotencyKey, BookAppointmentRequest request) {
-        // Fast path – return if already present
         var ownerId = request.getOwnerId();
+        log.info("Received appointment booking request for ownerId: {}, idempotencyKey: {}", ownerId, idempotencyKey);
+
         var existing = appointmentIdempotencyStore.get(idempotencyKey);
-        if (existing != null)
+        if (existing != null) {
+            log.info("Returning cached appointment for idempotencyKey: {}, appointmentId: {}", idempotencyKey, existing);
             return BookAppointmentResult.builder()
                     .appointmentId(existing)
                     .message("Appointment already exists for owner id: " + ownerId)
                     .newlyCreated(false).build();
+        }
 
-        // Get or create a lock per idempotency key
         var lock = appointmentIdempotencyLockManager.getLock(idempotencyKey);
 
         synchronized (lock) {
             try {
-                // Recheck after acquiring lock (double-checked locking)
                 existing = appointmentIdempotencyStore.get(idempotencyKey);
-                if (existing != null)
+                if (existing != null) {
+                    log.info("Returning cached appointment (post-lock) for idempotencyKey: {}, appointmentId: {}", idempotencyKey, existing);
                     return BookAppointmentResult.builder()
                             .appointmentId(existing)
                             .newlyCreated(false)
                             .message("Appointment already exists for owner id: " + ownerId)
                             .build();
+                }
 
                 var duration = appointmentProperties.getDurationMinutes();
+                log.debug("Validating appointment for ownerId: {}, duration: {} minutes", ownerId, duration);
                 appointmentValidator.validateAppointment(request, duration);
 
                 var appointmentId = UUID.randomUUID().toString();
+                log.info("Generated new appointmentId: {} for ownerId: {}", appointmentId, ownerId);
+
                 var success = appointmentBookingStrategy.book(request, duration, appointmentId);
                 if (!success) {
-                    log.info("Slot already booked, not saving appointment for key: {}", ownerId);
-                    throw new SlotAlreadyBookedException(request.getOwnerId()); // Booking failed
+                    log.warn("Slot already booked for ownerId: {}, startTime: {}", ownerId, request.getStartDateTime());
+                    throw new SlotAlreadyBookedException(ownerId);
                 }
 
                 appointmentIdempotencyStore.put(idempotencyKey, appointmentId);
+                log.info("Successfully booked appointment. Stored in idempotency store for key: {}", idempotencyKey);
+
                 return BookAppointmentResult.builder()
                         .appointmentId(appointmentId)
                         .newlyCreated(true)
                         .message("Appointment booked successfully for owner id: " + ownerId)
                         .build();
+            } catch (Exception e) {
+                log.error("Error while booking appointment for ownerId: {}, idempotencyKey: {}, error: {}", ownerId, idempotencyKey, e.getMessage(), e);
+                throw e;
             } finally {
-                // clean up lockMap explicitly to avoid memory bloat
                 appointmentIdempotencyLockManager.releaseLock(idempotencyKey);
+                log.debug("Released lock for idempotencyKey: {}", idempotencyKey);
             }
         }
     }
 
     public UpcomingAppointmentsResponseDto getUpcomingAppointments(String ownerId, int page, int size) {
+        log.info("Fetching upcoming appointments for ownerId: {}, page: {}, size: {}", ownerId, page, size);
+
         userService.validateUserExists(ownerId);
         var now = LocalDateTime.now();
         var pageable = PageRequest.of(page, size, Sort.by("startTime").ascending());
         var pagedAppointments = appointmentRepository.findByOwnerIdAndStartTimeAfter(ownerId, now, pageable);
 
         if (pagedAppointments.isEmpty()) {
+            log.info("No upcoming appointments found for ownerId: {}", ownerId);
             return emptyResponse(ownerId, page);
         }
-        // N+1 Query Problem
-        // Inside the .map(), we are calling userService.getUser(inviteeId) for every appointment.
-        // If there are 100 appointments, this will make 100 DB/API calls.
 
-        // Batch fetch invitees
         var inviteeIds = pagedAppointments.stream()
                 .map(Appointment::getInviteeId)
                 .collect(Collectors.toSet());
 
-        var inviteeMap = userService.getUsersByIds(inviteeIds); // Map<String, User>
+        log.debug("Fetching user details for invitees: {}", inviteeIds);
+        var inviteeMap = userService.getUsersByIds(inviteeIds);
 
         var upcomingAppointments = pagedAppointments.stream()
                 .map(appointment -> toResponse(appointment, inviteeMap))
                 .toList();
 
+        log.info("Returning {} upcoming appointments for ownerId: {}", upcomingAppointments.size(), ownerId);
         return successResponse(ownerId, pagedAppointments, upcomingAppointments);
     }
 }
