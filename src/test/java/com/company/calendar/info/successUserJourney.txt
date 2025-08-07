@@ -26,6 +26,16 @@ Scenario 1: Both do booking of different slot
 Scenario 2: Both do booking of same slot but for different owner.
 Scenario 3: Both do booking of same slot for same owner.
 
+Step 5:
+Call getupcoming appointments for Galen(ownerId = 1)
+Call getupcoming appointments for Mohit(ownerId = 2)
+
+Step 3,4,5 can be retried multiple times
+Try to book an appointment for an owner and invitee.
+That slot should not come in Step 3(get available slots api)
+and should come in Step 5(get upcoming appointments)
+
+
 Scenario 1:
 First Akash does booking, then Prince. one after the other.
 Akash does booking for Galen for Saturday 4pm. He should be able to do booking successful.
@@ -212,43 +222,43 @@ curl --location 'http://localhost:8080/availability/1/slots?date=2025-08-03' \
     "message": "Available slots fetched successfully.",
     "slots": [
         {
-            "startTime": "2025-08-03T16:00:00",
-            "endTime": "2025-08-03T17:00:00",
+            "startTime": "2025-08-03 16:00:00",
+            "endTime": "2025-08-03 17:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-03T17:00:00",
-            "endTime": "2025-08-03T18:00:00",
+            "startTime": "2025-08-03 17:00:00",
+            "endTime": "2025-08-03 18:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-03T18:00:00",
-            "endTime": "2025-08-03T19:00:00",
+            "startTime": "2025-08-03 18:00:00",
+            "endTime": "2025-08-03 19:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-03T19:00:00",
-            "endTime": "2025-08-03T20:00:00",
+            "startTime": "2025-08-03 19:00:00",
+            "endTime": "2025-08-03 20:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-03T20:00:00",
-            "endTime": "2025-08-03T21:00:00",
+            "startTime": "2025-08-03 20:00:00",
+            "endTime": "2025-08-03 21:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-03T21:00:00",
-            "endTime": "2025-08-03T22:00:00",
+            "startTime": "2025-08-03 21:00:00",
+            "endTime": "2025-08-03 22:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-03T22:00:00",
-            "endTime": "2025-08-03T23:00:00",
+            "startTime": "2025-08-03 22:00:00",
+            "endTime": "2025-08-03 23:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-03T23:00:00",
-            "endTime": "2025-08-04T00:00:00",
+            "startTime": "2025-08-03 23:00:00",
+            "endTime": "2025-08-04 00:00:00",
             "bookable": true
         }
     ]
@@ -263,49 +273,185 @@ curl --location 'http://localhost:8080/availability/2/slots?date=2025-08-04' \
     "message": "Available slots fetched successfully.",
     "slots": [
         {
-            "startTime": "2025-08-04T09:00:00",
-            "endTime": "2025-08-04T10:00:00",
+            "startTime": "2025-08-04 09:00:00",
+            "endTime": "2025-08-04 10:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-04T10:00:00",
-            "endTime": "2025-08-04T11:00:00",
+            "startTime": "2025-08-04 10:00:00",
+            "endTime": "2025-08-04 11:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-04T11:00:00",
-            "endTime": "2025-08-04T12:00:00",
+            "startTime": "2025-08-04 11:00:00",
+            "endTime": "2025-08-04 12:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-04T12:00:00",
-            "endTime": "2025-08-04T13:00:00",
+            "startTime": "2025-08-04 12:00:00",
+            "endTime": "2025-08-04 13:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-04T13:00:00",
-            "endTime": "2025-08-04T14:00:00",
+            "startTime": "2025-08-04 13:00:00",
+            "endTime": "2025-08-04 14:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-04T14:00:00",
-            "endTime": "2025-08-04T15:00:00",
+            "startTime": "2025-08-04 14:00:00",
+            "endTime": "2025-08-04 15:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-04T15:00:00",
-            "endTime": "2025-08-04T16:00:00",
+            "startTime": "2025-08-04 15:00:00",
+            "endTime": "2025-08-04 16:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-04T16:00:00",
-            "endTime": "2025-08-04T17:00:00",
+            "startTime": "2025-08-04 16:00:00",
+            "endTime": "2025-08-04 17:00:00",
             "bookable": true
         },
         {
-            "startTime": "2025-08-04T17:00:00",
-            "endTime": "2025-08-04T18:00:00",
+            "startTime": "2025-08-04 17:00:00",
+            "endTime": "2025-08-04 18:00:00",
             "bookable": true
         }
     ]
+}
+
+
+Step 4:
+If Invitee 3 does the booking again with owner id = 3
+Request:
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: ascc123' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "inviteeId" : "3",
+  "startDateTime" : "2025-08-08 17:00:00"
+}'
+Response 201 Created
+{
+    "success": true,
+    "message": "Appointment booked successfully for owner id: 1",
+    "appointmentId": "c0430a81-b688-4855-885a-f9b40845c1e5",
+    "errorCode": null
+}
+
+If Invitee 3 does the booking again with owner id = 3 with same idempotency key
+Request:
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: ascc12' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "inviteeId" : "3",
+  "startDateTime" : "2025-08-08 17:00:00"
+}'
+Response 200 OK
+{
+    "success": true,
+    "message": "Appointment already exists for owner id: 1",
+    "appointmentId": "c0430a81-b688-4855-885a-f9b40845c1e5",
+    "errorCode": null
+}
+
+If Invitee 3 does the booking again with owner id = 3 with different idempotency key
+Request:
+curl --location 'http://localhost:8080/appointments/book' \
+--header 'Idempotency-Key: ascc12' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ownerId": "1",
+  "inviteeId" : "3",
+  "startDateTime" : "2025-08-08 17:00:00"
+}'
+
+Response 409 Conflict
+{
+    "success": false,
+    "message": "Appointment slot already booked for owner: 1"
+}
+
+Step 5:
+Now invitee 3 booked lot of slots fro owner 1
+Owner 1 now wants to see his upcoming appointments:
+
+Request
+curl --location 'http://localhost:8080/appointments/owner/1/upcoming'
+
+Response: 200 OK
+{
+    "success": true,
+    "message": "Fetched upcoming appointments successfully for owner id: 1",
+    "appointments": [
+        {
+            "appointmentId": "de560d31-57d5-486b-807e-35ac38d4767f",
+            "startTime": "2025-08-08 16:00:00",
+            "endTime": "2025-08-08 17:00:00",
+            "inviteeId": "3",
+            "inviteeName": "Akash",
+            "inviteeEmail": "asingh@gmail.com"
+        },
+        {
+            "appointmentId": "c0430a81-b688-4855-885a-f9b40845c1e5",
+            "startTime": "2025-08-08 17:00:00",
+            "endTime": "2025-08-08 18:00:00",
+            "inviteeId": "3",
+            "inviteeName": "Akash",
+            "inviteeEmail": "asingh@gmail.com"
+        },
+        {
+            "appointmentId": "fc6e772f-0efc-45df-88d2-d5a9251c2c3e",
+            "startTime": "2025-08-08 18:00:00",
+            "endTime": "2025-08-08 19:00:00",
+            "inviteeId": "3",
+            "inviteeName": "Akash",
+            "inviteeEmail": "asingh@gmail.com"
+        },
+        {
+            "appointmentId": "7b8d2685-ad5b-4139-b937-3b188e22b468",
+            "startTime": "2025-08-08 20:00:00",
+            "endTime": "2025-08-08 21:00:00",
+            "inviteeId": "3",
+            "inviteeName": "Akash",
+            "inviteeEmail": "asingh@gmail.com"
+        },
+        {
+            "appointmentId": "bdf2e709-9f89-4d9e-90bc-f36db218bdd8",
+            "startTime": "2025-08-08 21:00:00",
+            "endTime": "2025-08-08 22:00:00",
+            "inviteeId": "3",
+            "inviteeName": "Akash",
+            "inviteeEmail": "asingh@gmail.com"
+        },
+        {
+            "appointmentId": "3d1ce2c7-71e5-4bb6-89cf-6fafdb4e5946",
+            "startTime": "2025-08-08 22:00:00",
+            "endTime": "2025-08-08 23:00:00",
+            "inviteeId": "3",
+            "inviteeName": "Akash",
+            "inviteeEmail": "asingh@gmail.com"
+        }
+    ],
+    "currentPage": 0,
+    "totalPages": 1,
+    "totalItems": 6
+}
+
+
+If owner 2 sees his upcoming appointments, he will see:
+Request:
+curl --location 'http://localhost:8080/appointments/owner/2/upcoming'
+
+Response 200 OK:
+{
+    "success": true,
+    "message": "No upcoming appointments found for owner id: 2",
+    "appointments": [],
+    "currentPage": 0,
+    "totalPages": 0,
+    "totalItems": 0
 }
