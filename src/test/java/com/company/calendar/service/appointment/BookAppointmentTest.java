@@ -53,7 +53,6 @@ public class BookAppointmentTest {
                 .inviteeId("3")
                 .startDateTime(LocalDateTime.of(2025, 8, 25, 22, 0))
                 .build();
-        when(appointmentProperties.getDurationMinutes()).thenReturn(60);
     }
 
     @Test
@@ -83,6 +82,7 @@ public class BookAppointmentTest {
         when(appointmentValidator.validateAppointment(any(), anyLong()))
                 .thenThrow(new InvalidStartDateTimeException("Appointments must start at the top of the hour and last 60 minutes"));
         doNothing().when(appointmentIdempotencyLockManager).releaseLock(anyString());
+        when(appointmentProperties.getDurationMinutes()).thenReturn(60);
 
         var ex = assertThrows(
                 InvalidStartDateTimeException.class,
@@ -102,6 +102,7 @@ public class BookAppointmentTest {
         when(appointmentValidator.validateAppointment(any(), anyLong())).thenReturn(true);
         when(appointmentBookingStrategy.book(any(), anyInt(), anyString())).thenReturn(false);
         doNothing().when(appointmentIdempotencyLockManager).releaseLock(anyString());
+        when(appointmentProperties.getDurationMinutes()).thenReturn(60);
 
         var ex = assertThrows(
                 SlotAlreadyBookedException.class,
@@ -123,6 +124,7 @@ public class BookAppointmentTest {
         when(appointmentBookingStrategy.book(any(), anyInt(), anyString())).thenReturn(true);
         doNothing().when(appointmentIdempotencyLockManager).releaseLock(anyString());
         doNothing().when(appointmentIdempotencyStore).put(anyString(), anyString());
+        when(appointmentProperties.getDurationMinutes()).thenReturn(60);
 
         BookAppointmentResult result = appointmentService.bookAppointment(idempotencyKey, validRequest);
 

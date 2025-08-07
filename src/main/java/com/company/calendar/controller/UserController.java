@@ -2,6 +2,8 @@ package com.company.calendar.controller;
 
 import com.company.calendar.dto.user.*;
 import com.company.calendar.service.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -18,10 +20,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
+@Tag(name = "Users", description = "APIs for managing user accounts")
 public class UserController {
 
     private final UserService userService;
 
+    @Operation(summary = "Create user", description = "Creates a new user with ID, email and name. Fails if already exists")
     @PostMapping
     public ResponseEntity<UserResponse<Object>> createUser(@RequestBody @Valid CreateUserRequest request) {
         log.info("Received request to create user with id: {}, email: {}, name: {}", request.getId(), request.getEmail(), request.getName());
@@ -31,6 +35,7 @@ public class UserController {
                 .body(UserResponse.builder().success(true).message(message).build());
     }
 
+    @Operation(summary = "Update user", description = "Updates the user's details like name or email.")
     @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<UserResponse<Object>> updateUser(@PathVariable
                                                            @NotBlank(message = "Id should not be blank")
@@ -51,6 +56,7 @@ public class UserController {
                         .build());
     }
 
+    @Operation(summary = "Delete user", description = "Deletes a user by Id.")
     @DeleteMapping("/{id}")
     public ResponseEntity<UserResponse<Object>> deleteUser(@PathVariable
                                                            @NotBlank(message = "Id should not be blank")
@@ -63,6 +69,7 @@ public class UserController {
         return ResponseEntity.ok(UserResponse.builder().success(true).message(message).build());
     }
 
+    @Operation(summary = "Get user details", description = "Retrieves user details by Id.")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse<GetUserResponse>> getUser(@PathVariable
                                                                  @NotBlank(message = "Id should not be blank")

@@ -1,6 +1,7 @@
 package com.company.calendar.dto.availability;
 
 import com.company.calendar.validator.ValidAvailabilityRules;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,18 +22,23 @@ public class AvailabilityRuleSetupRequest {
     @NotBlank(message = "Owner Id must not be blank")
     @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Owner Id can only contain letters, digits, hyphens, and underscores")
     @Size(max = 64, message = "Owner Id must be between 1 and 64 characters")
+    @Schema(example = "1", description = "Owner ID who owns the availability rules")
     private String ownerId;
 
     @NotNull(message = "Rules list must not be null")
     @Size(max = 30, message = "A maximum of 30 rules per user is allowed")
     @Valid
+    @Schema(description = "List of availability rules", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<AvailabilityRuleRequest> rules;
 
     @Getter
     @Builder
     public static class AvailabilityRuleRequest {
+        @Schema(example = "MONDAY", description = "Day of the week")
         private DayOfWeek dayOfWeek;
+        @Schema(example = "16:00", description = "Start time in HH:mm format")
         private LocalTime startTime;
+        @Schema(example = "23:00", description = "End time in HH:mm format")
         private LocalTime endTime;
     }
 }

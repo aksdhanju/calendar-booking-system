@@ -43,7 +43,7 @@ public class AppointmentValidator {
 
         var availableSlots =  availabilityServiceHelper.generateAvailableSlotsFromRules(availabilityRules, Set.of(), startDateTime.toLocalDate());
         var isAvailableSlotPresent = availableSlots.stream()
-                .anyMatch(rule -> rule.getStartDateTime().equals(startDateTime));
+                .anyMatch(rule -> rule.getStartDateTime().equals(DateUtils.formatDateTime(startDateTime)));
 
         if (!isAvailableSlotPresent) {
             log.warn("No available slot found for appointment start date time: {} for owner id: {}", startDateTime, request.getOwnerId());

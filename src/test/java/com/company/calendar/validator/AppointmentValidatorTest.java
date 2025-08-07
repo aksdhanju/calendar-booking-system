@@ -123,8 +123,8 @@ public class AppointmentValidatorTest {
                 .thenReturn(availabilityRules);
         List<AvailableSlotDto> availableSlotDtos = new ArrayList<>();
         availableSlotDtos.add(AvailableSlotDto.builder()
-                .startDateTime(startDateTime)
-                .endDateTime(startDateTime.plusMinutes(60))
+                .startDateTime(DateUtils.formatDateTime(startDateTime))
+                .endDateTime(DateUtils.formatDateTime(startDateTime.plusMinutes(60)))
                 .build());
         when(availabilityServiceHelper.generateAvailableSlotsFromRules(any(), any(), any()))
                 .thenReturn(availableSlotDtos);
@@ -154,8 +154,8 @@ public class AppointmentValidatorTest {
                 .thenReturn(availabilityRules);
         List<AvailableSlotDto> availableSlotDtos = new ArrayList<>();
         availableSlotDtos.add(AvailableSlotDto.builder()
-                .startDateTime(startDateTime)
-                .endDateTime(startDateTime.plusMinutes(60))
+                .startDateTime(DateUtils.formatDateTime(startDateTime))
+                .endDateTime(DateUtils.formatDateTime(startDateTime.plusMinutes(60)))
                 .build());
         when(availabilityServiceHelper.generateAvailableSlotsFromRules(any(), any(), any()))
                 .thenReturn(availableSlotDtos);

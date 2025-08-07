@@ -1,5 +1,6 @@
 package com.company.calendar.service.availability;
 
+import com.company.calendar.dto.availability.AvailableSlotDto;
 import com.company.calendar.dto.availability.UpdateAvailabilityRulesResult;
 import com.company.calendar.entity.AvailabilityRule;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
@@ -77,7 +78,7 @@ public class AvailabilityService {
                 ).collect(Collectors.toList());
     }
 
-    public List<Map<String, String>> getAvailableSlots(String ownerId, LocalDate date) {
+    public List<AvailableSlotDto> getAvailableSlots(String ownerId, LocalDate date) {
         userService.validateUserExists(ownerId);
         //available = total - booked
         var rules = availabilityServiceHelper.getRulesForOwnerAndDay(ownerId, date.getDayOfWeek());
@@ -88,12 +89,6 @@ public class AvailabilityService {
                 .map(appt -> appt.getStartTime().toLocalTime())
                 .collect(Collectors.toSet());
 
-        return availabilityServiceHelper.generateAvailableSlotsFromRules(rules, bookedStartTimes, date)
-                .stream()
-                .map(slot -> Map.of(
-                        "startDateTime", DateUtils.formatDateTime(slot.getStartDateTime()),
-                        "endDateTime", DateUtils.formatDateTime(slot.getEndDateTime())
-                ))
-                .toList();
+        return availabilityServiceHelper.generateAvailableSlotsFromRules(rules, bookedStartTimes, date);
     }
 }

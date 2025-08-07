@@ -4,6 +4,8 @@ import com.company.calendar.dto.availability.AvailabilityRuleSetupResponse;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.dto.availability.AvailableSlotsResponse;
 import com.company.calendar.service.availability.AvailabilityService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +23,12 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
+@Tag(name = "Availability", description = "APIs for managing and viewing availability rules and slots")
 public class AvailabilityController {
 
     private final AvailabilityService availabilityService;
 
+    @Operation(summary = "Create availability rules", description = "Creates availability rules for the owner. Fails if already exists.")
     @PostMapping("/setup")
     public ResponseEntity<AvailabilityRuleSetupResponse> createAvailability(@RequestBody @Valid AvailabilityRuleSetupRequest request) {
         //C in CRUD
@@ -40,6 +44,7 @@ public class AvailabilityController {
                         .build());
     }
 
+    @Operation(summary = "Update availability rules", description = "Sets or overwrites availability rules for the owner.")
     @PutMapping("/setup")
     public ResponseEntity<AvailabilityRuleSetupResponse> setAvailability(@RequestBody @Valid AvailabilityRuleSetupRequest request) {
         //This is like a create or overwrite all endpoint for setting availability for fist time by owner
@@ -56,8 +61,13 @@ public class AvailabilityController {
                         .build());
     }
 
-
+    @Operation(summary = "Get available slots", description = "Fetches available time slots for the given owner on a specific date.")
     @GetMapping("/{ownerId}/slots")
+    //    @ApiResponses(value = {
+    //            @ApiResponse(responseCode = "200", description = "Available slots fetched successfully"),
+    //            @ApiResponse(responseCode = "400", description = "Invalid ownerId or date"),
+    //            @ApiResponse(responseCode = "500", description = "Unexpected error")
+    //    })
     public ResponseEntity<AvailableSlotsResponse> getAvailableSlots(
             @PathVariable
             @NotBlank

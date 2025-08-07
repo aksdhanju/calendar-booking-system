@@ -5,6 +5,7 @@ import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.dto.availability.AvailableSlotDto;
 import com.company.calendar.entity.AvailabilityRule;
 import com.company.calendar.repository.availabilityRule.AvailabilityRuleRepository;
+import com.company.calendar.utils.DateUtils;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -60,8 +61,8 @@ public class AvailabilityServiceHelper {
                     }
 
                     availableSlots.add(AvailableSlotDto.builder()
-                            .startDateTime(startDateTime)
-                            .endDateTime(endDateTime)
+                            .startDateTime(DateUtils.formatDateTime(startDateTime))
+                            .endDateTime(DateUtils.formatDateTime(endDateTime))
                             .build());
                 }
 

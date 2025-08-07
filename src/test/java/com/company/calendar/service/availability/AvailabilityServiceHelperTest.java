@@ -103,6 +103,7 @@ public class AvailabilityServiceHelperTest {
     void testForMultipleSlotsOnSingleDay() {
         //Note: there would be no overlapping intervals for a particular day
         // we ensured that while saving rules.
+        when(appointmentProperties.getDurationMinutes()).thenReturn(60);
         List<AvailabilityRule> rules = new ArrayList<>();
         rules.add(AvailabilityRule.builder()
                 .ownerId(ownerId)
@@ -215,6 +216,8 @@ public class AvailabilityServiceHelperTest {
     @DisplayName("Test when multiple slots on multiple days are overlapping in respective days")
     void testMergeOverlappingSlotsMultipleDays() {
         List<AvailabilityRuleSetupRequest.AvailabilityRuleRequest> rules  = new ArrayList<>();
+
+        // MONDAY
         rules.add(AvailabilityRuleSetupRequest.AvailabilityRuleRequest.builder()
                 .dayOfWeek(DayOfWeek.MONDAY)
                 .startTime(LocalTime.of(4, 0))
@@ -225,6 +228,8 @@ public class AvailabilityServiceHelperTest {
                 .startTime(LocalTime.of(14, 0))
                 .endTime(LocalTime.of(20, 0))
                 .build());
+
+        // THURSDAY
         rules.add(AvailabilityRuleSetupRequest.AvailabilityRuleRequest.builder()
                 .dayOfWeek(DayOfWeek.THURSDAY)
                 .startTime(LocalTime.of(4, 0))
@@ -240,18 +245,42 @@ public class AvailabilityServiceHelperTest {
                 .startTime(LocalTime.of(16, 0))
                 .endTime(LocalTime.of(21, 0))
                 .build());
+
+        // Run merge
         var mergedRules = availabilityServiceHelper.mergeOverlappingSlots(rules);
+
         assertEquals(3, mergedRules.size());
-        assertEquals(LocalTime.of(4, 0), mergedRules.getFirst().getStartTime());
-        assertEquals(LocalTime.of(20, 0), mergedRules.getFirst().getEndTime());
-        assertEquals(DayOfWeek.MONDAY, mergedRules.getFirst().getDayOfWeek());
 
-        assertEquals(LocalTime.of(4, 0), mergedRules.get(1).getStartTime());
-        assertEquals(LocalTime.of(13, 0), mergedRules.get(1).getEndTime());
-        assertEquals(DayOfWeek.THURSDAY, mergedRules.get(1).getDayOfWeek());
+        // Check merged slot for MONDAY
+        var mondayRule = mergedRules.stream()
+                .filter(r -> r.getDayOfWeek() == DayOfWeek.MONDAY)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Expected Monday rule not found"));
 
-        assertEquals(LocalTime.of(16, 0), mergedRules.get(2).getStartTime());
-        assertEquals(LocalTime.of(21, 0), mergedRules.get(2).getEndTime());
-        assertEquals(DayOfWeek.THURSDAY, mergedRules.get(2).getDayOfWeek());
+        assertEquals(LocalTime.of(4, 0), mondayRule.getStartTime());
+        assertEquals(LocalTime.of(20, 0), mondayRule.getEndTime());
+
+        // Check merged slots for THURSDAY
+        var thursdayRules = mergedRules.stream()
+                .filter(r -> r.getDayOfWeek() == DayOfWeek.THURSDAY)
+                .toList();
+
+        assertEquals(2, thursdayRules.size());
+
+        // First THURSDAY slot: 04:00 - 13:00
+        var thursdayRule1 = thursdayRules.stream()
+                .filter(r -> r.getStartTime().equals(LocalTime.of(4, 0)))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Expected Thursday rule [4:00 - 13:00] not found"));
+
+        assertEquals(LocalTime.of(13, 0), thursdayRule1.getEndTime());
+
+        // Second THURSDAY slot: 16:00 - 21:00
+        var thursdayRule2 = thursdayRules.stream()
+                .filter(r -> r.getStartTime().equals(LocalTime.of(16, 0)))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Expected Thursday rule [16:00 - 21:00] not found"));
+
+        assertEquals(LocalTime.of(21, 0), thursdayRule2.getEndTime());
     }
 }

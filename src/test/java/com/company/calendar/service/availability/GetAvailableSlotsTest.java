@@ -6,6 +6,7 @@ import com.company.calendar.entity.AvailabilityRule;
 import com.company.calendar.exceptions.user.UserNotFoundException;
 import com.company.calendar.repository.appointment.AppointmentRepository;
 import com.company.calendar.service.user.UserService;
+import com.company.calendar.utils.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -88,16 +89,16 @@ public class GetAvailableSlotsTest {
 
         List<AvailableSlotDto> slotsExpected = List.of(
                 AvailableSlotDto.builder()
-                        .startDateTime(LocalDateTime.of(date, LocalTime.of(9, 0)))
-                        .endDateTime(LocalDateTime.of(date, LocalTime.of(10, 0)))
+                        .startDateTime(DateUtils.formatDateTime(LocalDateTime.of(date, LocalTime.of(9, 0))))
+                        .endDateTime(DateUtils.formatDateTime(LocalDateTime.of(date, LocalTime.of(10, 0))))
                         .build(),
                 AvailableSlotDto.builder()
-                        .startDateTime(LocalDateTime.of(date, LocalTime.of(10, 0)))
-                        .endDateTime(LocalDateTime.of(date, LocalTime.of(11, 0)))
+                        .startDateTime(DateUtils.formatDateTime(LocalDateTime.of(date, LocalTime.of(10, 0))))
+                        .endDateTime(DateUtils.formatDateTime(LocalDateTime.of(date, LocalTime.of(11, 0))))
                         .build(),
                 AvailableSlotDto.builder()
-                        .startDateTime(LocalDateTime.of(date, LocalTime.of(11, 0)))
-                        .endDateTime(LocalDateTime.of(date, LocalTime.of(12, 0)))
+                        .startDateTime(DateUtils.formatDateTime(LocalDateTime.of(date, LocalTime.of(11, 0))))
+                        .endDateTime(DateUtils.formatDateTime(LocalDateTime.of(date, LocalTime.of(12, 0))))
                         .build()
         );
 
@@ -129,12 +130,12 @@ public class GetAvailableSlotsTest {
 
         List<AvailableSlotDto> slotsExpected = List.of(
                 AvailableSlotDto.builder()
-                        .startDateTime(LocalDateTime.of(date, LocalTime.of(9, 0)))
-                        .endDateTime(LocalDateTime.of(date, LocalTime.of(10, 0)))
+                        .startDateTime(DateUtils.formatDateTime(LocalDateTime.of(date, LocalTime.of(9, 0))))
+                        .endDateTime(DateUtils.formatDateTime(LocalDateTime.of(date, LocalTime.of(10, 0))))
                         .build(),
                 AvailableSlotDto.builder()
-                        .startDateTime(LocalDateTime.of(date, LocalTime.of(11, 0)))
-                        .endDateTime(LocalDateTime.of(date, LocalTime.of(12, 0)))
+                        .startDateTime(DateUtils.formatDateTime(LocalDateTime.of(date, LocalTime.of(11, 0))))
+                        .endDateTime(DateUtils.formatDateTime(LocalDateTime.of(date, LocalTime.of(12, 0))))
                         .build()
         );
 

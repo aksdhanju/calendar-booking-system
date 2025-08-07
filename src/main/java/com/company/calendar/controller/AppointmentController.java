@@ -5,6 +5,8 @@ import com.company.calendar.dto.appointment.BookAppointmentResponseDto;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.service.appointment.AppointmentService;
 import com.company.calendar.utils.DateUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +21,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
+@Tag(name = "Appointments", description = "APIs related to appointment booking and retrieval")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
 
+    @Operation(
+            summary = "Book an appointment",
+            description = "Allows booking of an appointment with idempotency support"
+    )
     @PostMapping("/book")
     public ResponseEntity<BookAppointmentResponseDto> bookAppointment(
                 @RequestHeader("Idempotency-Key")
@@ -47,6 +54,10 @@ public class AppointmentController {
                         .build());
     }
 
+    @Operation(
+            summary = "Get upcoming appointments",
+            description = "Retrieves a list of upcoming appointments for a specific owner."
+    )
     @GetMapping("/owner/{ownerId}/upcoming")
     public ResponseEntity<UpcomingAppointmentsResponseDto> getUpcomingAppointments(
             @PathVariable
