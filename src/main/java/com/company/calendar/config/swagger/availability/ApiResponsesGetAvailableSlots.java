@@ -1,4 +1,4 @@
-package com.company.calendar.config.swagger;
+package com.company.calendar.config.swagger.availability;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

@@ -1,5 +1,7 @@
 package com.company.calendar.controller;
 
+import com.company.calendar.config.swagger.appointment.ApiResponsesBookAppointment;
+import com.company.calendar.config.swagger.appointment.ApiResponsesGetUpcomingAppointments;
 import com.company.calendar.dto.appointment.BookAppointmentRequest;
 import com.company.calendar.dto.appointment.BookAppointmentResponseDto;
 import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
@@ -30,6 +32,7 @@ public class AppointmentController {
             summary = "Book an appointment",
             description = "Allows booking of an appointment with idempotency support"
     )
+    @ApiResponsesBookAppointment
     @PostMapping("/book")
     public ResponseEntity<BookAppointmentResponseDto> bookAppointment(
                 @RequestHeader("Idempotency-Key")
@@ -58,6 +61,7 @@ public class AppointmentController {
             summary = "Get upcoming appointments",
             description = "Retrieves a list of upcoming appointments for a specific owner."
     )
+    @ApiResponsesGetUpcomingAppointments
     @GetMapping("/owner/{ownerId}/upcoming")
     public ResponseEntity<UpcomingAppointmentsResponseDto> getUpcomingAppointments(
             @PathVariable

@@ -1,8 +1,8 @@
 package com.company.calendar.controller;
 
-import com.company.calendar.config.swagger.ApiResponsesCreateAvailability;
-import com.company.calendar.config.swagger.ApiResponsesGetAvailableSlots;
-import com.company.calendar.config.swagger.ApiResponsesSetAvailability;
+import com.company.calendar.config.swagger.availability.ApiResponsesCreateAvailability;
+import com.company.calendar.config.swagger.availability.ApiResponsesGetAvailableSlots;
+import com.company.calendar.config.swagger.availability.ApiResponsesSetAvailability;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupResponse;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupRequest;
 import com.company.calendar.dto.availability.AvailableSlotsResponse;

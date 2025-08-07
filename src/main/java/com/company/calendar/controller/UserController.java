@@ -1,5 +1,9 @@
 package com.company.calendar.controller;
 
+import com.company.calendar.config.swagger.user.ApiResponsesCreateUser;
+import com.company.calendar.config.swagger.user.ApiResponsesDeleteUser;
+import com.company.calendar.config.swagger.user.ApiResponsesGetUser;
+import com.company.calendar.config.swagger.user.ApiResponsesUpdateUser;
 import com.company.calendar.dto.user.*;
 import com.company.calendar.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +29,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @ApiResponsesCreateUser
     @Operation(summary = "Create user", description = "Creates a new user with ID, email and name. Fails if already exists")
     @PostMapping
     public ResponseEntity<UserResponse<Object>> createUser(@RequestBody @Valid CreateUserRequest request) {
@@ -35,6 +40,7 @@ public class UserController {
                 .body(UserResponse.builder().success(true).message(message).build());
     }
 
+    @ApiResponsesUpdateUser
     @Operation(summary = "Update user", description = "Updates the user's details like name or email.")
     @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<UserResponse<Object>> updateUser(@PathVariable
@@ -56,6 +62,7 @@ public class UserController {
                         .build());
     }
 
+    @ApiResponsesDeleteUser
     @Operation(summary = "Delete user", description = "Deletes a user by Id.")
     @DeleteMapping("/{id}")
     public ResponseEntity<UserResponse<Object>> deleteUser(@PathVariable
@@ -69,6 +76,7 @@ public class UserController {
         return ResponseEntity.ok(UserResponse.builder().success(true).message(message).build());
     }
 
+    @ApiResponsesGetUser
     @Operation(summary = "Get user details", description = "Retrieves user details by Id.")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse<GetUserResponse>> getUser(@PathVariable
