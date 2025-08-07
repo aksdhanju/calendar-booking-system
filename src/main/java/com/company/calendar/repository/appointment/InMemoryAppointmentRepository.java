@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @ConditionalOnProperty(name = "appointment.repository", havingValue = "in-memory", matchIfMissing = true)
-public class InMemoryAppointmentRepository implements AppointmentRepository{
+public class InMemoryAppointmentRepository implements AppointmentRepository {
 
     private final Map<String, List<Appointment>> store = new ConcurrentHashMap<>();
 
@@ -42,7 +42,7 @@ public class InMemoryAppointmentRepository implements AppointmentRepository{
 
     @Override
     //You can add a new method to atomically check-and-insert an appointment in a thread-safe way:
-        public boolean saveIfSlotFree(Appointment appointment) {
+    public boolean saveIfSlotFree(Appointment appointment) {
         String ownerId = appointment.getOwnerId();
         LocalDateTime startTime = appointment.getStartTime();
 

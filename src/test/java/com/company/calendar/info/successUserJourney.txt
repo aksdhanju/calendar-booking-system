@@ -95,7 +95,8 @@ Response: 200 OK(in each of above case)
 
 
 Step 2:
-Galen will set up his availability slots from 4pm(16:00) to 11pm(23:00) every day
+Galen will set up his availability slots from 4pm(16:00) to 11pm(23:00) every day.
+It means 23:00 to 24:00 is included in his availability slots
 
 curl --location --request PUT 'http://localhost:8080/availability/setup' \
 --header 'Content-Type: application/json' \
@@ -144,7 +145,7 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
 Response 200 OK:
 {
     "success": true,
-    "message": "Availability rules set successfully"
+    "message": "Availability rules created successfully for owner id: 1"
 }
 
 Mohit will set his availability slots from 9am(09:00) to 5pm(17:00) every day except Saturday, Sunday
@@ -193,13 +194,11 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
   ]
 }'
 
-
-Response 200 OK:
+Response 201 CREATED/200 OK
 {
     "success": true,
-    "message": "Availability rules set successfully"
+    "message": "Availability rules created successfully for owner id: 2"
 }
-
 
 Step 3:
 Call get free slots for Galen for a particular day. You should get slots as per above setting.

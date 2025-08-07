@@ -7,3 +7,6 @@ appointment:
   duration-minutes: 60
   booking-strategy: pessimistic
   repository: in-memory
+
+server:
+  port: 8080

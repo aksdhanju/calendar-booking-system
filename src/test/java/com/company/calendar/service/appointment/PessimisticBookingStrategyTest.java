@@ -88,7 +88,7 @@ public class PessimisticBookingStrategyTest {
     // even though mocks don't retain actual state.
     // That’s where AtomicInteger and CountDownLatch come in.
     @Test
-    void testConcurrentBooking_sameSlot() throws InterruptedException {
+    void testConcurrentBookingSameSlot() throws InterruptedException {
         CountDownLatch thread1Ready = new CountDownLatch(1);
         CountDownLatch thread2Proceed = new CountDownLatch(1);
         CountDownLatch allDone = new CountDownLatch(2);
