@@ -11,14 +11,14 @@ A simple calendar booking system inspired by [cal.com](https://cal.com), allowin
 - [Features](#features)
 - [Getting Started](#getting-started)
 - [API Endpoints](#api-endpoints)
-- [Assumptions](#assumptions)
+- [Assumptions](#overall-assumptions)
 - [Running Tests](#running-tests)
-- [Design Decisions](#design-decisions)
+- [Design Decisions](#overall-design-decisions)
 - [Technology Stack](#technology-stack)
 
 ---
 
-## 📌 Overview
+## 📌 Overview {#overview}
 
 This system enables Calendar Owners to define their availability, and Invitees to search and book 60-minute time slots without overlaps.
 
@@ -30,7 +30,7 @@ This system enables Calendar Owners to define their availability, and Invitees t
 
 ---
 
-## 🚀 Features
+## 🚀 Features {#features}
 
 - Set up availability rules for each day of the week(configurable)
 - Search available 60-minute time slots on a given day
@@ -103,7 +103,6 @@ http://localhost:8080/swagger-ui/index.html
 ```
 
 ---
-
 ## 📡 API Endpoints
 Note: Please refer to [APIS.md](./APIS.md) file for endpoint specific details
 
@@ -138,11 +137,24 @@ src/test/java/com/company/calendar/info/
 
 ---
 
-## 🧱Overall Design Decisions
+## 🧱 Overall Design Decisions
 Note: Please refer to endpoint specific design decisions in [APIS.md](./APIS.md) file
-- Used Spring Boot for REST API and dependency injection.
-- Applied strategy pattern for time validation.
-- Used DTOs and validators for clean request validation.
+
+- Tried to incorporate SOLID principles, design patterns (Strategy Pattern) while creating classes and DTOs.
+- Designed code to be **extensible** for future requirement changes.
+- Followed **modular and maintainable** approach using layered architecture of a Spring Boot application (Controller → Service → Repository).
+- Used **Spring Boot** for REST API, dependency injection, and configuration management.
+- Applied **Strategy Pattern** for time validation logic to support multiple booking strategies in the future.
+- Used **DTOs and custom validators** for strict and clean request validation.
+- Implemented **centralized exception handling** using `@ControllerAdvice` for consistent error responses.
+- Adopted **OpenAPI/Swagger** for clear API documentation.
+- Ensured **separation of concerns** between persistence logic, business logic, and presentation.
+- Optimized for **concurrency safety** in appointment booking using optimistic locking.
+- Incorporated **unit tests** and **integration tests** to validate functionality and prevent regressions.
+- Structured project for **easy onboarding** — meaningful package structure, descriptive class names, and in-code comments.
+- Chose **Java Time API** (`LocalDate`, `LocalTime`, `DayOfWeek`) to avoid timezone pitfalls.
+- Designed APIs to return **consistent response structure** (status, message, data) for both success and error scenarios.
+- Ensured **scalability readiness** — services are stateless and can be deployed in multiple instances.
 
 ---
 
