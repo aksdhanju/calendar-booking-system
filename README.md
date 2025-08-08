@@ -105,111 +105,12 @@ http://localhost:8080/swagger-ui/index.html
 ---
 
 ## 📡 API Endpoints
+Note: Please refer to [APIS.md](./APIS.md) file for endpoint specific details
 
-### 1. (Availability Setup API) Create Availability Rules for an owner 
-
-```
-POST /api/v1/availability/setup
-- **Request Body** (JSON)  
-  - Contains the availability rules to be created.  
-  - Must include `ownerId` and at least one rule.  
-- **Behavior**  
-  - Creates availability rules for the specified owner.  
-  - Fails if rules already exist for that owner.  
-- **Response**  
-  - `201 Created` with success message if rules are created. 
-```
-
-### 2. (Availability Setup API) Update Availability Rules for an owner
-
-```
-PUT /api/v1/availability/setup
-- **Request Body** (JSON)  
-  - Contains the new availability rules to be set/updated.  
-  - Must include `ownerId` and at least one rule.  
-- **Behavior**  
-  - Creates or overwrites availability rules for the specified owner.  
-  - Idempotent — repeated calls with the same data will not create duplicates.  
-- **Response**  
-  - `200 OK` if rules are updated.  
-  - `201 Created` if rules are newly created.
-```
-
-### 3. Search Available Time Slots API
-
-```
-GET /api/v1/availability/{ownerId}/slots?date=yyyy-MM-dd
-- **Path Parameter**  
-  - `ownerId` → Unique identifier for the owner.  
-- **Query Parameter**  
-  - `date` → Date for which available slots are to be fetched, in `yyyy-MM-dd` format.  
-
-- **Behavior**  
-  - Fetches all available time slots for the specified owner on the given date.  
-  - Returns an empty list if no available slots are found.  
-
-- **Response**  
-  - `200 OK` with JSON containing:  
-    - `success` → Boolean indicating request success.  
-    - `message` → Informative message (e.g., "Available slots fetched successfully" or "No Available slots found").  
-    - `slots` → Array of available slot objects (may be empty if none found).
-
-```
-
-### 4. Book Appointment (Invitee)
-
-```
-POST /api/v1/appointments/book
-- **Headers**  
-  - `Idempotency-Key` → Required string to ensure duplicate booking requests are safely ignored.  
-    - Allowed characters: letters, digits, hyphens (`-`), underscores (`_`).  
-    - Max length: 64 characters.  
-
-- **Request Body** (JSON)  
-  - Contains appointment details such as:
-    - `ownerId` → Calendar owner’s ID.
-    - `inviteeId` → ID of the person booking the appointment.
-    - `startDateTime` → Appointment start time (ISO 8601 format).
-    - Other appointment-specific fields.  
-
-- **Behavior**  
-  - Books an appointment with the specified owner for the given date/time.  
-  - If the `Idempotency-Key` was already used with the same request, returns the previously created appointment without duplication.  
-
-- **Response**  
-  - `201 Created` → Appointment successfully created.  
-  - `200 OK` → Appointment already exists for the given `Idempotency-Key` and details.  
-  - JSON contains:
-    - `success` → Boolean indicating operation result.
-    - `message` → Status message.
-    - `appointmentId` → Unique identifier for the appointment
-
-```
-
-### 5. Upcoming Appointments (Calendar Owner)
-
-```
-GET /api/v1/appointments/owner/{ownerId}/upcoming?page={page}&size={size}
-- **Path Parameter**  
-  - `ownerId` → Unique identifier for the calendar owner.  
-
-- **Query Parameters**  
-  - `page` → Page index (default: 0).  
-  - `size` → Page size (default: 10, max: 100).  
-
-- **Behavior**  
-  - Retrieves a paginated list of upcoming appointments for the specified owner.  
-
-- **Response**  
-  - `200 OK` with JSON containing:
-    - `success` → Boolean indicating operation result.  
-    - `message` → Informative message.  
-    - `appointments` → Array of upcoming appointment objects.  
-    - Pagination metadata.  
-```
 ---
 
-## 💡 Assumptions
+## Overall Assumptions
+Note: Please refer to endpoint specific assumptions in [APIS.md](./APIS.md) file
 
 - Users (owners/invitees) are already authenticated.
 - No authentication or session management is implemented.
@@ -238,7 +139,7 @@ src/test/java/com/company/calendar/info/
 ---
 
 ## 🧱Overall Design Decisions
-- - Note: Please refer to endpoint specific design decisions in [APIS.md](./APIS.md) file
+Note: Please refer to endpoint specific design decisions in [APIS.md](./APIS.md) file
 - Used Spring Boot for REST API and dependency injection.
 - Applied strategy pattern for time validation.
 - Used DTOs and validators for clean request validation.
