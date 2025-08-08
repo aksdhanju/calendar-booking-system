@@ -153,6 +153,7 @@ Note: Please refer to endpoint specific design decisions in [APIS.md](./APIS.md)
 - Chose **Java Time API** (`LocalDate`, `LocalTime`, `DayOfWeek`) to avoid timezone pitfalls.
 - Designed APIs to return **consistent response structure** (status, message, data) for both success and error scenarios.
 - Ensured **scalability readiness** — services are stateless and can be deployed in multiple instances.
+- Self explanatory debug,info,warn,error logs added at various places in the application
 
 ---
 

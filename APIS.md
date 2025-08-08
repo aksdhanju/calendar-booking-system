@@ -119,14 +119,29 @@ Please refer to file createAvailabilityRulesScenarios.txt in below path for all 
 src/test/java/com/company/calendar/info/createAvailabilityRulesScenarios.txt
 ```
 
-**Design Decisions**
-- Rules are stored per owner and do not overlap existing ones.
-- Validation is handled at the request DTO level.
-
-**Assumptions**
-- An owner can have only one set of rules at a time.
-- No duplicate time slots are allowed.
-
+** Design Decisions/Assumptions/Information**
+- I created 2 separate endpoints for create availability rules and update availability rules.
+- Input validation is done at request DTO level using annotations provided by Jakarta Validation framework.
+- Custom annotation class(@ValidAvailabilityRules) is created for specific validations. We cannot have any
+field as null. We need start time and end time to be at full hour. We need start time to be before or equal to end time.
+  No duplicate time slots are allowed.
+- By default POST endpoint is not idempotent. If duplicate requests to create availability
+rules come at same time, we use compare and swap approach(similar to optimistic locking)
+and make sure we do not create 2 records in our data store(concurrent hash map in our case).
+To implement above, computeIfAbsent method of ConcurrentHashMap is used.
+- (How computeIfAbsent is working here) If the current value at hashmap's heap address is the expected value,
+then it is replaced by the new value and return true. 
+It means the last time we read this address and now, no other thread has modified this location.
+If it is not the case, then it returns false. Means between last time we read
+the expected value at this location and now, some other thread has modified this location.
+So we do not modify this location and return false. This is real concurrency.
+All this comparison is done in single, atomic assembly instruction.
+During this time, we are sure that no other thread can interrupt our process.
+This is essential for the CASing to work.
+We can modify values at given location in memory without using synchronization tools.
+- In case there is less thread contention, this approach is much more efficient than synchronization.
+- Rules are stored per owner. Logic is added to method to merge overlapping slots/intervals. Ultimately when we save rules in data store,
+we need them to be non overlapping. Though there can be more than 1 rule for a day.
 
 ## 2. (Availability Setup API) Update Availability Rules for an owner
 
@@ -253,6 +268,17 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
 - An owner can have only one set of rules at a time.
 - No duplicate time slots are allowed.
 
+
+** Design Decisions/Assumptions/Information**
+- This endpoint is similar to  create availability rules endpoint. It is PUT endpoint and be definition it 
+is expected to be idempotent which it is. 
+- I am assuming we are fine with lost updates as a read pheonomenon in this method. If 2 threads come 
+of same owner id and try to update availability rules, the second threads changes would be persisted in DB
+ultimately.
+- This endpoint supports both create and update availability rules with different response codes.
+- All input validations and other logic is similar as described in create availability rules endpoint.
+- I am assuming creating and updating availability rules is a 1 time thing. So there would be less 
+possibility of high concurrency in this endpoint.
 
 ## 3. Search Available Time Slots API
 
@@ -620,4 +646,11 @@ src/test/java/com/company/calendar/info/userScenarios.txt
 **Assumptions**
 - An owner can have only one set of rules at a time.
 - No duplicate time slots are allowed.
+
+
+
+
+My Thoughts
+On Optimistic vs Pessimistic locking
+or Synchronized keyword vs Compare and Swap approach
 
