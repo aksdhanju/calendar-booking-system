@@ -444,13 +444,16 @@ Please refer to file bookAppointmentScenarios.txt in below path for all test sce
 src/test/java/com/company/calendar/info/bookAppointmentScenarios.txt
 ```
 
-**Design Decisions**
-- Rules are stored per owner and do not overlap existing ones.
-- Validation is handled at the request DTO level.
-
-**Assumptions**
-- An owner can have only one set of rules at a time.
-- No duplicate time slots are allowed.
+**Design Decisions/Assumptions/Information**
+- I have created this endpoint as POST for now. As of now, no support is provided to update appointment.
+- For POST endpoints, we need to explicitly handle idempotency. This is achieved by passing Idempotency-Key in request header.
+We use appointmentIdempotencyStore and appointmentIdempotencyLockManager to synchronize access to core booking logic.
+Reason is because of network errors, backend latency, retries, it may be possible that duplicate request goes to same endpoint
+with same request body and headers
+- Once we ensure request is not duplicate, we do validations on appointment
+- Once request is validated, we move to do the booking. There are 2 approaches - using Pessimistic and Optimistic locking. This is 
+configurable using config key - appointment.booking-strategy. It has 2 possible values - pessimistic and optimistic
+- Once booking is done, we update idempotency key in idempotency store, release lock for the same and return success response.
 
 ## 5. Get Upcoming Appointments (Calendar Owner)
 
@@ -528,14 +531,10 @@ Please refer to file getUpcomingAppointmentsScenarios.txt in below path for all 
 src/test/java/com/company/calendar/info/getUpcomingAppointmentsScenarios.txt
 ```
 
-**Design Decisions**
-- Rules are stored per owner and do not overlap existing ones.
-- Validation is handled at the request DTO level.
-
-**Assumptions**
-- An owner can have only one set of rules at a time.
-- No duplicate time slots are allowed.
-
+**Design Decisions/Assumptions/Information**
+- This is a GET endpoint. We are required to return all the upcoming appointments for an owner after current date(including current date)
+- I have implemented pagination support in this endpoint since get endpoint response can be quite large
+- We are also returning user metadata along with other fields related to appointment in response
 
 ## 6. Create User
 
@@ -590,14 +589,15 @@ Please refer to file userScenarios.txt in below path for all test scenarios
 ```
 src/test/java/com/company/calendar/info/userScenarios.txt
 ```
+**Design Decisions/Assumptions/Information**
+- user entity will have id and other metadata. This is as per description in problem statement.
+We are keeping UserMetadata in a separate class considering Single responsibility principle. If in future 
+new metadata fields are added, we should not change User class.
+- We do usual input validation on input request.
+- This is a POST endpoint. If we hit endpoint for first time, new user is created. We get 201 CREATED response for the same.
+On hitting endpoint again second time with same payload, we get 409 Conflict because user may already exist with this email.
+- If 2 threads try to create user with same paylaod at same time, we ensure only one will succeed using locking mechanisms at repository layer.
 
-**Design Decisions**
-- Rules are stored per owner and do not overlap existing ones.
-- Validation is handled at the request DTO level.
-
-**Assumptions**
-- An owner can have only one set of rules at a time.
-- No duplicate time slots are allowed.
 
 ## 6. Update User
 
@@ -654,18 +654,16 @@ Please refer to file userScenarios.txt in below path for all test scenarios
 src/test/java/com/company/calendar/info/userScenarios.txt
 ```
 
-**Design Decisions**
-- Rules are stored per owner and do not overlap existing ones.
-- Validation is handled at the request DTO level.
+**Design Decisions/Assumptions/Information**
+- update user is a PUT endpoint. Since we are updating resource.
+- We do usual input validation on input request.
+- If we hit endpoint for first time, new user is created. We get 201 CREATED response for the same.
+  On hitting endpoint again second time with same payload, we get 200 OK. We override already existing user for same id.
+- But if our request has an email id for a user id and in our storage, already an email id is associated with another user id, we return 409 Conflict(User already exists)
+- email id is like unique key of user entity/table. So we are maintaining a email to user mapping in our table. 
+While saving id to user mapping in our storage, we also store email to user mapping in our storage. We ensure this operation is synchronized.
+- If 2 threads try to create user with same payload at same time, we are ok with lost updates here. The last thread will win in this case.
+Our only concern area is that writes to storage should be atomic and should not lead to inconsistency in storage layer. Hence we used ConcurrentHashMap
+and also synchronized the block in which 2 writes are happening.
 
-**Assumptions**
-- An owner can have only one set of rules at a time.
-- No duplicate time slots are allowed.
-
-
-
-
-My Thoughts
-On Optimistic vs Pessimistic locking
-or Synchronized keyword vs Compare and Swap approach
 
