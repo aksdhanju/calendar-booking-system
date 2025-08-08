@@ -1,6 +1,5 @@
 package com.company.calendar.config.swagger.availability;
 
-import com.company.calendar.dto.availability.AvailabilityRuleSetupResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,20 +14,29 @@ import java.lang.annotation.*;
         @ApiResponse(
                 responseCode = "200",
                 description = "Availability rules updated successfully",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = AvailabilityRuleSetupResponse.class))
+                content = @Content(mediaType = "application/json", schema = @Schema(example = """
+            {
+              "success": true,
+              "message": "Availability rules updated successfully for owner id: 1"
+            }
+        """))
         ),
         @ApiResponse(
                 responseCode = "201",
                 description = "Availability rules created successfully (first time)",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = AvailabilityRuleSetupResponse.class))
+                content = @Content(mediaType = "application/json", schema = @Schema(example = """
+            {
+              "success": true,
+              "message": "Availability rules created successfully for owner id: 1"
+            }
+        """))
         ),
         @ApiResponse(
                 responseCode = "400",
-                description = "Bad Request - Invalid input or conflict",
                 content = @Content(mediaType = "application/json", schema = @Schema(example = """
             {
               "success": false,
-              "message": "Invalid request data or conflicting rules"
+              "message": "Invalid request data"
             }
         """))
         ),
