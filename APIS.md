@@ -119,7 +119,8 @@ Please refer to file createAvailabilityRulesScenarios.txt in below path for all 
 src/test/java/com/company/calendar/info/createAvailabilityRulesScenarios.txt
 ```
 
-** Design Decisions/Assumptions/Information**
+**Design Decisions/Assumptions/Information**
+
 - I created 2 separate endpoints for create availability rules and update availability rules.
 - Input validation is done at request DTO level using annotations provided by Jakarta Validation framework.
 - Custom annotation class(@ValidAvailabilityRules) is created for specific validations. We cannot have any
@@ -260,17 +261,8 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
 }'
 ```
 
-**Design Decisions**
-- Rules are stored per owner and do not overlap existing ones.
-- Validation is handled at the request DTO level.
-
-**Assumptions**
-- An owner can have only one set of rules at a time.
-- No duplicate time slots are allowed.
-
-
-** Design Decisions/Assumptions/Information**
-- This endpoint is similar to  create availability rules endpoint. It is PUT endpoint and be definition it 
+**Design Decisions/Assumptions/Information**
+- This endpoint is similar to  create availability rules endpoint. It is PUT endpoint and by definition it 
 is expected to be idempotent which it is. 
 - I am assuming we are fine with lost updates as a read pheonomenon in this method. If 2 threads come 
 of same owner id and try to update availability rules, the second threads changes would be persisted in DB
