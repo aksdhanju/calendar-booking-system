@@ -186,7 +186,7 @@ POST /api/v1/appointments/book
 
 ```
 
-### 4. Upcoming Appointments (Calendar Owner)
+### 5. Upcoming Appointments (Calendar Owner)
 
 ```
 GET /api/v1/appointments/owner/{ownerId}/upcoming?page={page}&size={size}
@@ -234,8 +234,6 @@ Please refer to files(.txt) in below path for various test scenarios
 ```bash
 src/test/java/com/company/calendar/info/
 ```
-
-
 
 ---
 

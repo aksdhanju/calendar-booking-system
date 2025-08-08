@@ -19,13 +19,13 @@ public class CreateUserRequest {
     private String id;
 
     @NotBlank(message = "Name should not be blank")
-    @Size(max = 50, message = "Id must be between 1 and 50 characters")
+    @Size(max = 50, message = "Name must be between 1 and 50 characters")
     @Schema(description = "Name of the user", example = "Akashdeep Singh")
     private String name;
 
     @Email
     @NotBlank(message = "Email should not be blank")
-    @Size(max = 50, message = "Id must be between 1 and 50 characters")
+    @Size(max = 50, message = "Email must be between 1 and 50 characters")
     @Schema(description = "Email address of the user", example = "akash.singh@gmail.com")
     private String email;
 }
