@@ -237,8 +237,8 @@ src/test/java/com/company/calendar/info/
 
 ---
 
-## 🧱 Design Decisions
-
+## 🧱Overall Design Decisions
+- - Note: Please refer to endpoint specific design decisions in [APIS.md](./APIS.md) file
 - Used Spring Boot for REST API and dependency injection.
 - Applied strategy pattern for time validation.
 - Used DTOs and validators for clean request validation.
