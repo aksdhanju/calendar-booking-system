@@ -1,6 +1,9 @@
 # 📡 API Endpoints
 This document outlines the API endpoints for the Calendar Booking System, along with design decisions, assumptions, and request/response specifications.
 
+Please refer to file successUserJourney.txt in below path for a general success user journey
+<a href="https://github.com/aksdhanju/calendar-booking-system/blob/main/src/test/java/com/company/calendar/info/successUserJourney.txt" target="_blank">src/test/java/com/company/calendar/info/successUserJourney.txt</a>
+
 ---
 ## 1. (Availability Setup API) Create Availability Rules for an Owner
 
@@ -115,9 +118,8 @@ curl --location 'http://localhost:8080/availability/setup' \
 ```
 
 Please refer to file createAvailabilityRulesScenarios.txt in below path for all test scenarios
-```
-src/test/java/com/company/calendar/info/createAvailabilityRulesScenarios.txt
-```
+<a href="https://github.com/aksdhanju/calendar-booking-system/blob/main/src/test/java/com/company/calendar/info/createAvailabilityRulesScenarios.txt" target="_blank">src/test/java/com/company/calendar/info/createAvailabilityRulesScenarios.txt</a>
+
 
 **Design Decisions/Assumptions/Information**
 
@@ -219,9 +221,8 @@ PUT /api/v1/availability/setup
 ```
 
 Please refer to file updateAvailabilityRulesScenarios.txt in below path for all test scenarios
-```
-src/test/java/com/company/calendar/info/updateAvailabilityRulesScenarios.txt
-```
+<a href="https://github.com/aksdhanju/calendar-booking-system/blob/main/src/test/java/com/company/calendar/info/updateAvailabilityRulesScenarios.txt" target="_blank">src/test/java/com/company/calendar/info/updateAvailabilityRulesScenarios.txt</a>
+
 
 **Sample curl**
 ```
@@ -342,9 +343,8 @@ curl --location 'http://localhost:8080/api/v1/availability/1/slots?date=2025-08-
 ```
 
 Please refer to file getAvailableSlotsScenarios.txt in below path for all test scenarios
-```
-src/test/java/com/company/calendar/info/getAvailableSlotsScenarios.txt
-```
+<a href="https://github.com/aksdhanju/calendar-booking-system/blob/main/src/test/java/com/company/calendar/info/getAvailableSlotsScenarios.txt" target="_blank">src/test/java/com/company/calendar/info/getAvailableSlotsScenarios.txt</a>
+
 
 **Design Decisions/Assumptions/Information**
 - This endpoint is a GET endpoint. 
@@ -440,9 +440,8 @@ curl --location 'http://localhost:8080/appointments/book' \
 ```
 
 Please refer to file bookAppointmentScenarios.txt in below path for all test scenarios
-```
-src/test/java/com/company/calendar/info/bookAppointmentScenarios.txt
-```
+<a href="https://github.com/aksdhanju/calendar-booking-system/blob/main/src/test/java/com/company/calendar/info/bookAppointmentScenarios.txt" target="_blank">src/test/java/com/company/calendar/info/bookAppointmentScenarios.txt</a>
+
 
 **Design Decisions/Assumptions/Information**
 - I have created this endpoint as POST for now. As of now, no support is provided to update appointment.
@@ -527,9 +526,7 @@ curl --location 'http://localhost:8080/appointments/owner/2/upcoming?page=0&size
 ```
 
 Please refer to file getUpcomingAppointmentsScenarios.txt in below path for all test scenarios
-```
-src/test/java/com/company/calendar/info/getUpcomingAppointmentsScenarios.txt
-```
+<a href="https://github.com/aksdhanju/calendar-booking-system/blob/main/src/test/java/com/company/calendar/info/getUpcomingAppointmentsScenarios.txt" target="_blank">src/test/java/com/company/calendar/info/getUpcomingAppointmentsScenarios.txt</a>
 
 **Design Decisions/Assumptions/Information**
 - This is a GET endpoint. We are required to return all the upcoming appointments for an owner after current date(including current date)
@@ -586,9 +583,8 @@ curl --location 'http://localhost:8080/api/v1/users' \
 ```
 
 Please refer to file userScenarios.txt in below path for all test scenarios
-```
-src/test/java/com/company/calendar/info/userScenarios.txt
-```
+<a href="https://github.com/aksdhanju/calendar-booking-system/blob/main/src/test/java/com/company/calendar/info/userScenarios.txt" target="_blank">src/test/java/com/company/calendar/info/userScenarios.txt</a>
+
 **Design Decisions/Assumptions/Information**
 - user entity will have id and other metadata. This is as per description in problem statement.
 We are keeping UserMetadata in a separate class considering Single responsibility principle. If in future 
@@ -650,9 +646,7 @@ curl --location --request PUT 'http://localhost:8080/users/1' \
 ```
 
 Please refer to file userScenarios.txt in below path for all test scenarios
-```
-src/test/java/com/company/calendar/info/userScenarios.txt
-```
+<a href="https://github.com/aksdhanju/calendar-booking-system/blob/main/src/test/java/com/company/calendar/info/userScenarios.txt" target="_blank">src/test/java/com/company/calendar/info/userScenarios.txt</a>
 
 **Design Decisions/Assumptions/Information**
 - update user is a PUT endpoint. Since we are updating resource.

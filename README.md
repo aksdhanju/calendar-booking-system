@@ -129,9 +129,7 @@ Run following gradle command to run tests:
 ```
 
 Please refer to files(.txt) in below path for various test scenarios
-```bash
-src/test/java/com/company/calendar/info/
-```
+<a href="https://github.com/aksdhanju/calendar-booking-system/tree/main/src/test/java/com/company/calendar/info" target="_blank">src/test/java/com/company/calendar/info/</a>
 
 ---
 
