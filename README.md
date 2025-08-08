@@ -44,17 +44,57 @@ This system enables Calendar Owners to define their availability, and Invitees t
 
 ### Prerequisites
 
-- Java 21
-- Gradle
-- 
+- Java 21 → Ensure JAVA_HOME is set to Java 21.
+- Gradle → You can use the included Gradle wrapper (./gradlew) without installing Gradle globally.
+- Git → For cloning the repository.
+- IDE (Optional) → IntelliJ IDEA, Eclipse, or VS Code with Java support.
+- No database setup is required.
 
-### Run the Application
+## ⚙️ Setup Instructions
+
+Follow the steps below to set up and run the application locally.
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/aksdhanju/calendar-booking-system.git
+cd calendar-booking-system
+```
+
+### 2. Storage
+```bash
+The application uses in-memory HashMaps for storing availability and appointment data.
+No database setup is required.
+Data will be lost when the application restarts.
+```
+
+### 3. Build the Application
+
+```bash
+./gradlew clean build --refresh-dependencies
+```
+
+### 4. Run the Application
 
 ```bash
 ./gradlew bootRun
 ```
+The application will start at:
+```bash
+http://localhost:8080
+```
+Note: To change port to new port(example 8081)
+Do below change in application.yml
+```bash
+server.port: 8081
+```
 
-### API Documentation
+To kill current process running on port 8080
+```bash
+lsof -i:8080
+kill -9 {process_id}
+```
+
+### 5. Access API Documentation
 
 Once the server is running, access Swagger UI at:
 
