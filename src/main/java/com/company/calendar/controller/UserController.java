@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import static com.company.calendar.constants.ApplicationConstants.ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -45,7 +47,7 @@ public class UserController {
     @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<UserResponse<Object>> updateUser(@PathVariable
                                                            @NotBlank(message = "Id should not be blank")
-                                                           @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Id can only contain letters, digits, hyphens, and underscores")
+                                                           @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Id can only contain letters, digits, hyphens, and underscores")
                                                            @Size(max = 64, message = "Id must be between 1 and 64 characters")
                                                            String id,
                                                            @RequestBody
@@ -67,7 +69,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<UserResponse<Object>> deleteUser(@PathVariable
                                                            @NotBlank(message = "Id should not be blank")
-                                                           @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Id can only contain letters, digits, hyphens, and underscores")
+                                                           @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Id can only contain letters, digits, hyphens, and underscores")
                                                            @Size(max = 64, message = "Id must be between 1 and 64 characters")
                                                            String id) {
         log.info("Received request to delete user with id: {}", id);
@@ -81,7 +83,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse<GetUserResponse>> getUser(@PathVariable
                                                                  @NotBlank(message = "Id should not be blank")
-                                                                 @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Id can only contain letters, digits, hyphens, and underscores")
+                                                                 @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Id can only contain letters, digits, hyphens, and underscores")
                                                                  @Size(max = 64, message = "Id must be between 1 and 64 characters")
                                                                  String id) {
         log.info("Fetching user details for id: {}", id);

@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+import static com.company.calendar.constants.ApplicationConstants.ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX;
+
 @RestController
 @RequestMapping("/availability")
 @RequiredArgsConstructor
@@ -65,7 +67,7 @@ public class AvailabilityController {
     public ResponseEntity<AvailableSlotsResponse> getAvailableSlots(
             @PathVariable
             @NotBlank
-            @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Owner Id can only contain letters, digits, hyphens, and underscores")
+            @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Owner Id can only contain letters, digits, hyphens, and underscores")
             @Size(max = 64, message = "Owner Id must be between 1 and 64 characters")
             String ownerId,
             @RequestParam

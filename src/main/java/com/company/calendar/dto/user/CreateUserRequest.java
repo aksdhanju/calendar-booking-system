@@ -8,12 +8,14 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 
+import static com.company.calendar.constants.ApplicationConstants.ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX;
+
 @Getter
 @Builder
 @Schema(description = "Request to create a new user")
 public class CreateUserRequest {
     @NotBlank(message = "Id should not be blank")
-    @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Id can only contain letters, digits, hyphens, and underscores")
+    @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Id can only contain letters, digits, hyphens, and underscores")
     @Size(max = 64, message = "Id must be between 1 and 64 characters")
     @Schema(description = "Unique Id for the user", example = "1")
     private String id;

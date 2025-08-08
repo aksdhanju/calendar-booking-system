@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import static com.company.calendar.constants.ApplicationConstants.ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX;
+
 @RestController
 @RequestMapping("/appointments")
 @RequiredArgsConstructor
@@ -37,7 +39,7 @@ public class AppointmentController {
     public ResponseEntity<BookAppointmentResponseDto> bookAppointment(
                 @RequestHeader("Idempotency-Key")
                 @NotBlank
-                @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Idempotency-Key can only contain letters, digits, hyphens, and underscores")
+                @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Idempotency-Key can only contain letters, digits, hyphens, and underscores")
                 @Size(max = 64, message = "Idempotency-Key must be between 1 and 64 characters")
                 String idempotencyKey,
                 @RequestBody
@@ -66,7 +68,7 @@ public class AppointmentController {
     public ResponseEntity<UpcomingAppointmentsResponseDto> getUpcomingAppointments(
             @PathVariable
             @NotBlank
-            @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Owner Id can only contain letters, digits, hyphens, and underscores")
+            @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Owner Id can only contain letters, digits, hyphens, and underscores")
             @Size(max = 64, message = "Owner Id must be between 1 and 64 characters")
             String ownerId,
             @RequestParam(defaultValue = "0")

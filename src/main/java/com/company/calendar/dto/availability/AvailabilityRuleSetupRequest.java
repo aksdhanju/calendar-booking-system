@@ -14,13 +14,15 @@ import java.time.DayOfWeek;
 import java.util.List;
 import java.time.LocalTime;
 
+import static com.company.calendar.constants.ApplicationConstants.ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX;
+
 @Getter
 @ValidAvailabilityRules
 @Builder
 public class AvailabilityRuleSetupRequest {
 
     @NotBlank(message = "Owner Id must not be blank")
-    @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Owner Id can only contain letters, digits, hyphens, and underscores")
+    @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Owner Id can only contain letters, digits, hyphens, and underscores")
     @Size(max = 64, message = "Owner Id must be between 1 and 64 characters")
     @Schema(example = "1", description = "Owner ID who owns the availability rules")
     private String ownerId;
