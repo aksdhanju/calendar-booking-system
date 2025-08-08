@@ -34,9 +34,6 @@ public class AvailabilityServiceHelper {
     public List<AvailableSlotDto> generateAvailableSlotsFromRules(@NotEmpty List<AvailabilityRule> rules,
                                                                   Set<LocalTime> bookedStartTimes,
                                                                   @NotNull LocalDate date) {
-        //rules for particular date and hence day
-        //bookedStartTimes would be a subset of times in rules
-        //only consider rules which has day same as that of date
         log.debug("Generating available slots for date: {}, rules count: {}, booked slots count: {}",
                 date, rules.size(), bookedStartTimes.size());
         List<AvailableSlotDto> availableSlots = new ArrayList<>();

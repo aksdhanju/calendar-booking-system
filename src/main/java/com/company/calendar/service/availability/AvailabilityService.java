@@ -69,7 +69,7 @@ public class AvailabilityService {
 
         var rules = buildRules(ownerId, mergedRules);
 
-        //no high contention here. Lost updates are fine here?
+        //no high contention here. Lost updates are fine here.
         //For the same owner, I am enabling latest update to be persisted in in-memory store
         availabilityRuleRepository.save(ownerId, rules);
         String message = (alreadyCreated ? "Availability rules updated successfully for owner id: "

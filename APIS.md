@@ -126,6 +126,8 @@ src/test/java/com/company/calendar/info/createAvailabilityRulesScenarios.txt
 - Custom annotation class(@ValidAvailabilityRules) is created for specific validations. We cannot have any
 field as null. We need start time and end time to be at full hour. We need start time to be before or equal to end time.
   No duplicate time slots are allowed.
+- the behaviour of endpoint is that on calling it for first time, rules will be created. On calling it for second time,
+it would throw an error that rules already exist. (C in CRUD)
 - By default POST endpoint is not idempotent. If duplicate requests to create availability
 rules come at same time, we use compare and swap approach(similar to optimistic locking)
 and make sure we do not create 2 records in our data store(concurrent hash map in our case).
@@ -143,6 +145,12 @@ We can modify values at given location in memory without using synchronization t
 - In case there is less thread contention, this approach is much more efficient than synchronization.
 - Rules are stored per owner. Logic is added to method to merge overlapping slots/intervals. Ultimately when we save rules in data store,
 we need them to be non overlapping. Though there can be more than 1 rule for a day.
+- Currently I am assuming there is no specific rule for a particular date. Lets say there is vacation on 15 August, 2025
+Currently rules are dependent on day of week, start time, end time. If in future we want to have rules for specific days,
+we would need to add day field in AvailabilityRuleRequest dto and AvailabilityRule entity
+- Note: If dayOfWeek = MONDAY, startTime = 20:00, endTime = 23:00 in AvailabilitySetupRequest, it would mean we want to create rules 
+for 4 slots 20:00 to 21:00, 21:00 to 22:00, 22:00 to 23:00, 23:00 to 00:00(next day). 
+Please note 23:00 to 00:00 is also considered a slot for above request.
 
 ## 2. (Availability Setup API) Update Availability Rules for an owner
 
@@ -262,10 +270,13 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
 ```
 
 **Design Decisions/Assumptions/Information**
-- This endpoint is similar to  create availability rules endpoint. It is PUT endpoint and by definition it 
+- This endpoint is similar to create availability rules endpoint. It is PUT endpoint and by definition it 
 is expected to be idempotent which it is. 
+- On first time hitting this endpoint, it would create a rule. On second time hitting the endpoint, it would update the rule.
+- I am not keeping this method as PATCH. It can be a future requirement. As per this method, you update entire resource.
+PATCH allows partial updates to resource which is not allowed as of now.
 - I am assuming we are fine with lost updates as a read pheonomenon in this method. If 2 threads come 
-of same owner id and try to update availability rules, the second threads changes would be persisted in DB
+of same owner id and try to update availability rules, the last threads changes would be persisted in DB
 ultimately.
 - This endpoint supports both create and update availability rules with different response codes.
 - All input validations and other logic is similar as described in create availability rules endpoint.
@@ -335,14 +346,26 @@ Please refer to file getAvailableSlotsScenarios.txt in below path for all test s
 src/test/java/com/company/calendar/info/getAvailableSlotsScenarios.txt
 ```
 
-**Design Decisions**
-- Rules are stored per owner and do not overlap existing ones.
-- Validation is handled at the request DTO level.
-
-**Assumptions**
-- An owner can have only one set of rules at a time.
-- No duplicate time slots are allowed.
-
+**Design Decisions/Assumptions/Information**
+- This endpoint is a GET endpoint. 
+- As per problem description, we are asked to implement an API endpoint that allows an Invitee to
+search for available time slots on a particular date. Actually in cal.com, its a month but for now we are supporting date.
+- Whenever we are making a GET endpoint, we should think of pagination because
+  want to return a finite amount of data in response. But because this endpoint is expected to return available slots for 
+a particular date(which means day like MONDAY), I am safely assuming at max for a day there would be 24 slots.
+Reason being we are already merging intervals in create/update availability rules endpoint and doing input validation on those rules.
+Hence pagination is not implemented in this endpoint.
+- To get available slots for an owner for a particular date, we use following formula:
+Available slots(3) = Total slots(1) - Booked slots(2)
+  - Total slots(1): We already had rules created for owner. We fetch total slots for a particular day.
+  - Booked slots(2): These are slots which are booked by invitee for her/his meeting with owner. They were booked using
+  Book appointment API by invitee. These slots are not available now because they are booked. And they should be removed.
+  - generateAvailableSlotsFromRules method has core logic to calculate (3) above. It has special check for endTime being midnight 
+  and it's the last slot of day 
+    - Only consider rules which has day same as that of date
+    - booked slots would always be a subset of total slots(1). This is an important **assumption** I am making. Via frontend, call
+    will first go to Search Available Time Slots API. From these available slots, invitee will select one of the slot and call
+      Book Appointment (Invitee) api to book a slot. So it would be never possible that booked start times are not present in start date time of total slots.
 
 ## 4. Book Appointment (Invitee)
 
