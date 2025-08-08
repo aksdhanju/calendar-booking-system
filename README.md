@@ -7,18 +7,19 @@ A simple calendar booking system inspired by [cal.com](https://cal.com), allowin
 
 ## 🧾 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Getting Started](#getting-started)
+- [Overview](#Overview)
+- [Features](#Features)
+- [Prerequisites](#Prerequisites)
+- [Setup Instructions](#Setup-Instructions)
 - [API Endpoints](#api-endpoints)
 - [Assumptions](#overall-assumptions)
 - [Running Tests](#running-tests)
-- [Design Decisions](#overall-design-decisions)
+- [Design Decisions](#design-decisions)
 - [Technology Stack](#technology-stack)
 
 ---
 
-## 📌 Overview {#overview}
+## Overview
 
 This system enables Calendar Owners to define their availability, and Invitees to search and book 60-minute time slots without overlaps.
 
@@ -30,7 +31,7 @@ This system enables Calendar Owners to define their availability, and Invitees t
 
 ---
 
-## 🚀 Features {#features}
+## Features
 
 - Set up availability rules for each day of the week(configurable)
 - Search available 60-minute time slots on a given day
@@ -40,17 +41,14 @@ This system enables Calendar Owners to define their availability, and Invitees t
 
 ---
 
-## 🛠 Getting Started
-
-### Prerequisites
-
+## Prerequisites
 - Java 21 → Ensure JAVA_HOME is set to Java 21.
 - Gradle → You can use the included Gradle wrapper (./gradlew) without installing Gradle globally.
 - Git → For cloning the repository.
 - IDE (Optional) → IntelliJ IDEA, Eclipse, or VS Code with Java support.
 - No database setup is required.
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 Follow the steps below to set up and run the application locally.
 
@@ -103,12 +101,12 @@ http://localhost:8080/swagger-ui/index.html
 ```
 
 ---
-## 📡 API Endpoints
+## API Endpoints
 Note: Please refer to [APIS.md](./APIS.md) file for endpoint specific details
 
 ---
 
-## Overall Assumptions
+## Assumptions
 Note: Please refer to endpoint specific assumptions in [APIS.md](./APIS.md) file
 
 - Users (owners/invitees) are already authenticated.
@@ -118,7 +116,7 @@ Note: Please refer to endpoint specific assumptions in [APIS.md](./APIS.md) file
 
 ---
 
-## 🧪 Running Tests
+## Running Tests
 
 Tests include unit coverage for:
 - Availability slot generation
@@ -137,7 +135,7 @@ src/test/java/com/company/calendar/info/
 
 ---
 
-## 🧱 Overall Design Decisions
+## Design Decisions
 Note: Please refer to endpoint specific design decisions in [APIS.md](./APIS.md) file
 
 - Tried to incorporate SOLID principles, design patterns (Strategy Pattern) while creating classes and DTOs.
@@ -158,7 +156,7 @@ Note: Please refer to endpoint specific design decisions in [APIS.md](./APIS.md)
 
 ---
 
-## ⚙️ Technology Stack
+## Technology Stack
 
 - **Programming Language**:
     - Java 21
