@@ -214,20 +214,28 @@ GET /api/v1/appointments/owner/{ownerId}/upcoming?page={page}&size={size}
 - Users (owners/invitees) are already authenticated.
 - No authentication or session management is implemented.
 - In-memory data storage is used; persistence is not required.
-- Appointments are always 60 minutes, and must start at the top of the hour.
+- Appointments are always 60 minutes, and must start at the top of the hour. Though its configurable.
 
 ---
 
 ## 🧪 Running Tests
 
-```bash
-./gradlew test
-```
-
 Tests include unit coverage for:
 - Availability slot generation
 - Validation logic
 - Appointment booking and conflict detection
+
+Run following gradle command to run tests:
+```bash
+./gradlew test
+```
+
+Please refer to files(.txt) in below path for various test scenarios
+```bash
+src/test/java/com/company/calendar/info/
+```
+
+
 
 ---
 
@@ -241,8 +249,22 @@ Tests include unit coverage for:
 
 ## ⚙️ Technology Stack
 
-- Java 21
-- Spring Boot
-- Lombok
-- JUnit 5
-- Gradle
+- **Programming Language**:
+    - Java 21
+- **Backend Framework**:
+    - Spring Boot 3.5.4 – Core application framework
+    - Spring Web – For building REST APIs
+    - Spring Validation (Jakarta Validation) – For request validation
+    - Springdoc OpenAPI 2.6.0 – API documentation (Swagger UI)
+- **Utilities & Libraries**:
+    - Lombok – Reduces boilerplate code
+- **Build & Dependency Management**:
+    - Gradle – Build automation tool
+- **Testing**:
+    - JUnit 5 – Unit and integration testing
+    - Mockito – Mocking framework
+- **Logging & Monitoring**:
+  - SLF4J with Logback – Logging framework
+- **Version Control**:
+  - Git – Version control system 
+  - GitHub – Code hosting
