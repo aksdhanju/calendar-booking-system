@@ -1,6 +1,4 @@
 Test Scenarios
-Add merging logic of intervals. Currently assuming all intervals are mutually
-exclusive/ non overlapping
 
 0. request body is null
 1. Owner id must not be blank

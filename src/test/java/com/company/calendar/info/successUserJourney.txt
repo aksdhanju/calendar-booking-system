@@ -1,22 +1,13 @@
-single slot same start time and end time. what will be the journey and scenarios?
-
 Step 1: Create 4 users. Galen, Mohit, Akash, Prince.
 Have their name, email in metadata
-q: can we create user with same name and email id with different id?
 
 Step 2:
-@Validated
-duplicate in request body
-merge intervals case?
 Important note: endTime is included in interval. Its start time of available slot
 start time can be equal to end time?
 Galen will set up his availability slots from 4pm(16:00) to 11pm(23:00) every day
 Mohit will set his availability slots from 9am(09:00) to 5pm(17:00) every day except Saturday, Sunday
 
 Step 3:
-date in input should be greater than current date
-@validated
-date format supported is yyyy-MM-dd
 Call get free slots for Galen for a particular day. You should get slots as per above setting.
 Similarly for Mohit. No booking has been done by any invitee till now.
 
