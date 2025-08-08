@@ -16,7 +16,7 @@ exclusive/ non overlapping
 11. Owner does not exist in system
 12. (Success scenario)Now create user. And create availability rules for the user.
 Update rule to set availability slot as 16:00 to 23:00 every day for owner 1
-13. Again hit PUT http://localhost:8080/availability/setup endpoint with same request body
+13. Again hit PUT http://localhost:8080/api/v1/availability/setup endpoint with same request body
 You would experience idempotent behaviour. Rules would be updated/overwritten in in-memory store.
 
 
@@ -25,7 +25,7 @@ Some extra scenarios
 
 
 0. request body is null
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --data ''
 400 Bad Request
 {
@@ -34,7 +34,7 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
 }
 
 1. Owner id must not be blank
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "",
@@ -54,7 +54,7 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
 }
 
 2. Owner Id can only contain letters, digits, hyphens, and underscores
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "$$123",
@@ -75,7 +75,7 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
 3. Owner Id must be between 1 and 64 characters
 
 4. rules should not be null
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "123",
@@ -92,7 +92,7 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
 5. Max 24 rules can be set for an owner
 
 6. rules list should not be empty
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "123",
@@ -105,7 +105,7 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
 }
 
 7. If any rules startTime, endTime, dayOfWeek is null, we throw exception
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "123",
@@ -124,7 +124,7 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
     "message": "Invalid value for field 'dayOfWeek': "
 }
 8. startTime and endTime must be at full hour. Cant be 08:30. Should be 08:00
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "123",
@@ -144,7 +144,7 @@ curl --location --request PUT 'http://localhost:8080/availability/setup' \
 
 9. startTime must be equal to or before endTime
 Request:
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "123",
@@ -165,7 +165,7 @@ Response:
 }
 10. There should be no duplicate rules. dayOfWeek, startTime and endTime make a unique combination
 Request:
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "123",
@@ -190,7 +190,7 @@ Response 400 Bad Request
 
 
 11. Owner does not exist in system
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "123",
@@ -210,7 +210,7 @@ Response 404 Not found
 
 12.Now create user. And create availability rules for the user
 Create user curl
-curl --location --request PUT 'http://localhost:8080/users/1' \
+curl --location --request PUT 'http://localhost:8080/api/v1/users/1' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "name": "Galen",
@@ -225,7 +225,7 @@ Response 201 CREATED
 
 Create/Update availability rules curl
 Request:
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "1",
@@ -275,7 +275,7 @@ Response 201 CREATED
 }
 
 
-13. Again hit PUT http://localhost:8080/availability/setup endpoint with same request body
+13. Again hit PUT http://localhost:8080/api/v1/availability/setup endpoint with same request body
 You would experience idempotent behaviour. Rules would be updated/overwritten in in-memory store.
 Response 200 OK:
 {

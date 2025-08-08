@@ -30,7 +30,7 @@ Final values returned:
 
 1. Owner id is blank
 Request
-curl --location 'http://localhost:8080/appointments/owner//upcoming'
+curl --location 'http://localhost:8080/api/v1/appointments/owner//upcoming'
 Response 404 Not Found
 {
     "success": false,
@@ -50,7 +50,7 @@ Response 400 Bad Request
 3. Owner id corresponds to owner not present in system. Should return UserNotFoundException
 
 Request:
-curl --location 'http://localhost:8080/appointments/owner/55/upcoming'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/55/upcoming'
 
 Response:
 {
@@ -59,7 +59,7 @@ Response:
 }
 4. Owner id contains chars other than letters, digits, hyphens, and underscores
 Request:
-curl --location 'http://localhost:8080/appointments/owner/$/upcoming'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/$/upcoming'
 
 Response 400 Bad Request
 {
@@ -70,7 +70,7 @@ Response 400 Bad Request
 
 5. Page value is less than 0
 Request:
-curl --location 'http://localhost:8080/appointments/owner/2/upcoming?page=-1'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/2/upcoming?page=-1'
 
 Response 400 Bad Request
 {
@@ -79,7 +79,7 @@ Response 400 Bad Request
 }
 6. Page value is greater than 100
 Request:
-curl --location 'http://localhost:8080/appointments/owner/2/upcoming?page=101'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/2/upcoming?page=101'
 Response 400 Bad Request
 {
     "success": false,
@@ -89,7 +89,7 @@ Response 400 Bad Request
 
 7. Size value is less than 1
 Request:
-curl --location 'http://localhost:8080/appointments/owner/2/upcoming?size=-2'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/2/upcoming?size=-2'
 Response 400 Bad Request
 {
     "success": false,
@@ -98,7 +98,7 @@ Response 400 Bad Request
 
 8. Size value is Greater than 100
 Request:
-curl --location 'http://localhost:8080/appointments/owner/2/upcoming?size=102'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/2/upcoming?size=102'
 Response 400 Bad Request
 {
     "success": false,
@@ -111,7 +111,7 @@ default value of page = 0 and size = 10
 10. What if no upcoming appointments after current time. Provide expected response here. Its 200 OK
 Create user 2(owner)
 Request:
-curl --location 'http://localhost:8080/appointments/owner/2/upcoming'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/2/upcoming'
 
 Response 200 OK
 {
@@ -133,7 +133,7 @@ Response 200 OK
 (11.4.1)
 Response on creating first booking by user = 3(invitee) and then calling upcoming appointments  for user = 1(owner)
 Request
-curl --location 'http://localhost:8080/appointments/owner/1/upcoming'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/1/upcoming'
 Response:
 {
     "success": true,
@@ -156,7 +156,7 @@ Response:
 (11.4.2)
 Response on creating first booking by user = 4(invitee) and then calling upcoming appointments  for user = 1(owner)
 Request
-curl --location 'http://localhost:8080/appointments/owner/1/upcoming'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/1/upcoming'
 Response:
 {
     "success": true,

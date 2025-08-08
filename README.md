@@ -32,11 +32,11 @@ This system enables Calendar Owners to define their availability, and Invitees t
 
 ## 🚀 Features
 
-- Set up availability rules for each day of the week
+- Set up availability rules for each day of the week(configurable)
 - Search available 60-minute time slots on a given day
 - Book appointments from available slots
 - Prevent double-booking
-- View upcoming appointments
+- View upcoming appointments for an owner
 
 ---
 
@@ -45,7 +45,8 @@ This system enables Calendar Owners to define their availability, and Invitees t
 ### Prerequisites
 
 - Java 21
-- Maven or Gradle
+- Gradle
+- 
 
 ### Run the Application
 
@@ -55,7 +56,7 @@ This system enables Calendar Owners to define their availability, and Invitees t
 
 ### API Documentation
 
-Once the server is running, access Swagger UI (if enabled) at:
+Once the server is running, access Swagger UI at:
 
 ```
 http://localhost:8080/swagger-ui/index.html
@@ -65,10 +66,16 @@ http://localhost:8080/swagger-ui/index.html
 
 ## 📡 API Endpoints
 
-### 1. Availability Setup (Calendar Owner)
+### 1. (Availability Setup API) Create Availability Rules for an owner 
 
 ```
 POST /api/v1/availability/setup
+```
+
+### 2. (Availability Setup API) Update Availability Rules for an owner
+
+```
+PUT /api/v1/availability/setup
 ```
 
 ### 2. Search Available Slots (Invitee)

@@ -22,7 +22,7 @@ Update rule to set availability slot as 16:00 to 23:00 every day for owner 1
 12. (Success scenario)Now create user. And create availability rules for the user.
 Create rule to set availability slot as 16:00 to 23:00 every day for owner 1
 
-curl --location 'http://localhost:8080/availability/setup' \
+curl --location 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --data '{
   "ownerId": "1",

@@ -66,7 +66,7 @@ Step 1:
 Create 4 users. Galen, Mohit, Akash, Prince.
 Have their name, email in metadata
 
-curl --location --request PUT 'http://localhost:8080/users/1' \
+curl --location --request PUT 'http://localhost:8080/api/v1/users/1' \
 --header 'Content-Type: application/json' \
 --header 'Cookie: JSESSIONID=D768B0EA8A86FAB4D0E43246C6AF8B3E' \
 --data-raw '{
@@ -74,7 +74,7 @@ curl --location --request PUT 'http://localhost:8080/users/1' \
     "email": "gsimmons@dealmerridion.com"
 }'
 
-curl --location --request PUT 'http://localhost:8080/users/2' \
+curl --location --request PUT 'http://localhost:8080/api/v1/users/2' \
 --header 'Content-Type: application/json' \
 --header 'Cookie: JSESSIONID=D768B0EA8A86FAB4D0E43246C6AF8B3E' \
 --data-raw '{
@@ -82,7 +82,7 @@ curl --location --request PUT 'http://localhost:8080/users/2' \
     "email": "maggarwal@dealmerridion.com"
 }'
 
-curl --location --request PUT 'http://localhost:8080/users/3' \
+curl --location --request PUT 'http://localhost:8080/api/v1/users/3' \
 --header 'Content-Type: application/json' \
 --header 'Cookie: JSESSIONID=D768B0EA8A86FAB4D0E43246C6AF8B3E' \
 --data-raw '{
@@ -90,7 +90,7 @@ curl --location --request PUT 'http://localhost:8080/users/3' \
     "email": "asingh@gmail.com"
 }'
 
-curl --location --request PUT 'http://localhost:8080/users/4' \
+curl --location --request PUT 'http://localhost:8080/api/v1/users/4' \
 --header 'Content-Type: application/json' \
 --header 'Cookie: JSESSIONID=D768B0EA8A86FAB4D0E43246C6AF8B3E' \
 --data-raw '{
@@ -108,7 +108,7 @@ Step 2:
 Galen will set up his availability slots from 4pm(16:00) to 11pm(23:00) every day.
 It means 23:00 to 24:00 is included in his availability slots
 
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --header 'Cookie: JSESSIONID=D768B0EA8A86FAB4D0E43246C6AF8B3E' \
 --data '{
@@ -160,7 +160,7 @@ Response 200 OK:
 
 Mohit will set his availability slots from 9am(09:00) to 5pm(17:00) every day except Saturday, Sunday
 
-curl --location --request PUT 'http://localhost:8080/availability/setup' \
+curl --location --request PUT 'http://localhost:8080/api/v1/availability/setup' \
 --header 'Content-Type: application/json' \
 --header 'Cookie: JSESSIONID=D768B0EA8A86FAB4D0E43246C6AF8B3E' \
 --data '{
@@ -214,7 +214,7 @@ Step 3:
 Call get free slots for Galen for a particular day. You should get slots as per above setting.
 Similarly for Mohit. No booking has been done by any invitee till now.
 
-curl --location 'http://localhost:8080/availability/1/slots?date=2025-08-03' \
+curl --location 'http://localhost:8080/api/v1/availability/1/slots?date=2025-08-03' \
 --header 'Cookie: JSESSIONID=D768B0EA8A86FAB4D0E43246C6AF8B3E'
 
 {
@@ -265,7 +265,7 @@ curl --location 'http://localhost:8080/availability/1/slots?date=2025-08-03' \
 }
 
 Similarly for Mohit. No booking has been done by any invitee till now.
-curl --location 'http://localhost:8080/availability/2/slots?date=2025-08-04' \
+curl --location 'http://localhost:8080/api/v1/availability/2/slots?date=2025-08-04' \
 --header 'Cookie: JSESSIONID=D768B0EA8A86FAB4D0E43246C6AF8B3E'
 
 {
@@ -324,7 +324,7 @@ curl --location 'http://localhost:8080/availability/2/slots?date=2025-08-04' \
 Step 4:
 If Invitee 3 does the booking again with owner id = 3
 Request:
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: ascc123' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -342,7 +342,7 @@ Response 201 Created
 
 If Invitee 3 does the booking again with owner id = 3 with same idempotency key
 Request:
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: ascc12' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -360,7 +360,7 @@ Response 200 OK
 
 If Invitee 3 does the booking again with owner id = 3 with different idempotency key
 Request:
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: ascc12' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -380,7 +380,7 @@ Now invitee 3 booked lot of slots fro owner 1
 Owner 1 now wants to see his upcoming appointments:
 
 Request
-curl --location 'http://localhost:8080/appointments/owner/1/upcoming'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/1/upcoming'
 
 Response: 200 OK
 {
@@ -444,7 +444,7 @@ Response: 200 OK
 
 If owner 2 sees his upcoming appointments, he will see:
 Request:
-curl --location 'http://localhost:8080/appointments/owner/2/upcoming'
+curl --location 'http://localhost:8080/api/v1/appointments/owner/2/upcoming'
 
 Response 200 OK:
 {

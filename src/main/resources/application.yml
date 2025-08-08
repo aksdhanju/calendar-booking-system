@@ -2,6 +2,10 @@ spring:
   application:
     name: calendar-booking-system
 
+  mvc:
+    servlet:
+      path: /api/v1
+
 appointment:
   time-validator-strategy: fullHour
   duration-minutes: 60

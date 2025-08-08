@@ -19,7 +19,7 @@ These scenarios are common for all above endpoints
 Create User Scenarios
 10. user successful creation
 Request:
-curl --location 'http://localhost:8080/users' \
+curl --location 'http://localhost:8080/api/v1/users' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id" : "1",
@@ -33,7 +33,7 @@ Response: 201 Created
     "message": "User created successfully for id: 1"
 }
 11. User already created. We hit api again
-curl --location 'http://localhost:8080/users' \
+curl --location 'http://localhost:8080/api/v1/users' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id" : "1",
@@ -55,7 +55,7 @@ Update User Scenarios
 
 10. user successful creation
 Request
-curl --location --request PUT 'http://localhost:8080/users/1' \
+curl --location --request PUT 'http://localhost:8080/api/v1/users/1' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "name": "Galen",
@@ -69,7 +69,7 @@ Response 201 CREATED
 
 11. User already created. We hit api again
 Request:
-curl --location --request PUT 'http://localhost:8080/users/1' \
+curl --location --request PUT 'http://localhost:8080/api/v1/users/1' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "name": "Galen",

@@ -22,7 +22,7 @@ Test scenarios
 
 
 1. Pass startDateTime in different format from yyyy-MM-dd HH:mm:ss
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: abc-123' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -53,7 +53,7 @@ Response 404 Not Found
 }
 
 4. Pass ownerId or inviteeId or startDateTime as "" or "  " or null
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: abc-123' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -67,7 +67,7 @@ Response: 400 Bad Request
     "message": "Validation failed: inviteeId: must not be blank"
 }
 5. pass request body as null
-curl --location --request POST 'http://localhost:8080/appointments/book' \
+curl --location --request POST 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: abc-123' \
 --data ''
 Response: 400 Bad Request
@@ -85,7 +85,7 @@ Response: 400 Bad Request
 
 7. start minute or start second or start nano second is not 0
 Give startDateTime like
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: abc-123' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -108,7 +108,7 @@ appointment.duration-minutes = 30
  appointment.time-validator-strategy = fullHour
 
 Request:
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: abc-123' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -132,7 +132,7 @@ Ideally call will come to bookAppointment endpoint for only free slots(some of w
  have been booked in the meanwhile because of concurrent users/same user)
 Request:
 Note: There should no free slot from 2024-08-04 22:00:00 to 2024-08-04 23:00:00 for ownerId = 1
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: abc-123' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -163,7 +163,7 @@ Response: 400 Bad Request
 11. I should not be allowed to do bookings in past time
 Give startDateTime in past
 Request:
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: xyz13eewc' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -185,7 +185,7 @@ updateAvailabilityRules endpoint
 
  12.Appointment booked successfully
  Request:
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: abc-123' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -206,7 +206,7 @@ curl --location 'http://localhost:8080/appointments/book' \
  13. Now try with same idempotency key
 
  Request:
- curl --location 'http://localhost:8080/appointments/book' \
+ curl --location 'http://localhost:8080/api/v1/appointments/book' \
  --header 'Idempotency-Key: abc-123' \
  --header 'Content-Type: application/json' \
  --data '{
@@ -225,7 +225,7 @@ curl --location 'http://localhost:8080/appointments/book' \
 
  14. Now try with different idempotency key but same request body
  Request
- curl --location 'http://localhost:8080/appointments/book' \
+ curl --location 'http://localhost:8080/api/v1/appointments/book' \
  --header 'Idempotency-Key: xyz-456' \
  --header 'Content-Type: application/json' \
  --data '{
@@ -243,7 +243,7 @@ Response 400 Bad Request
 
 15 Now different invitee tries to book same slot as above
 Request:
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: abc123' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -259,7 +259,7 @@ Response: 400 Bad Request
 
 
 16. Please note: Akash(User 3 - Invitee)can still do booking on Mohit's calendar(User 2- Owner)
-curl --location 'http://localhost:8080/appointments/book' \
+curl --location 'http://localhost:8080/api/v1/appointments/book' \
 --header 'Idempotency-Key: xyz13eewc' \
 --header 'Content-Type: application/json' \
 --data '{
