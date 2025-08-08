@@ -8,6 +8,7 @@ import com.company.calendar.dto.appointment.UpcomingAppointmentsResponseDto;
 import com.company.calendar.service.appointment.AppointmentService;
 import com.company.calendar.utils.DateUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -41,6 +42,10 @@ public class AppointmentController {
                 @NotBlank
                 @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Idempotency-Key can only contain letters, digits, hyphens, and underscores")
                 @Size(max = 64, message = "Idempotency-Key must be between 1 and 64 characters")
+                @Parameter(
+                        example = "idemKey_20250808_ABC123",
+                        description = "Unique key to ensure idempotency for booking requests. If the same key is sent twice, the same result will be returned."
+                )
                 String idempotencyKey,
                 @RequestBody
                 @Valid
@@ -70,14 +75,26 @@ public class AppointmentController {
             @NotBlank
             @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Owner Id can only contain letters, digits, hyphens, and underscores")
             @Size(max = 64, message = "Owner Id must be between 1 and 64 characters")
+            @Parameter(
+                    example = "1",
+                    description = "Unique identifier of the owner whose upcoming appointments will be retrieved."
+            )
             String ownerId,
             @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "Page index must be 0 or greater")
             @Max(value = 100, message = "Page index must not exceed 100")
+            @Parameter(
+                    example = "0",
+                    description = "Page number for pagination. Starts from 0."
+            )
             int page,
             @RequestParam(defaultValue = "10")
             @Min(value = 1, message = "Page size must be at least 1")
             @Max(value = 100, message = "Page size must not exceed 100")
+            @Parameter(
+                    example = "10",
+                    description = "Number of records to fetch per page."
+            )
             int size) {
         log.info("Fetching upcoming appointments for owner id: {}, page: {}, size: {}", ownerId, page, size);
         var upcomingAppointments = appointmentService.getUpcomingAppointments(ownerId, page, size);
