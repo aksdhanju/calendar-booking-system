@@ -102,7 +102,10 @@ http://localhost:8080/api/v1/swagger-ui/index.html
 
 ---
 ## API Endpoints
-Note: Please refer to [APIS.md](./APIS.md) file for endpoint specific details
+
+- Please refer to [APIS.md](./APIS.md) file for endpoint specific details
+- Postman collection: Please import the file cal.com.postman_collection.json in your postman. 
+<a href="https://github.com/aksdhanju/calendar-booking-system/blob/main/src/test/java/com/company/calendar/info/cal.com.postman_collection.json" target="_blank">src/test/java/com/company/calendar/info/cal.com.postman_collection.json</a>
 
 ---
 
