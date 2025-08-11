@@ -67,6 +67,11 @@ public class InMemoryAppointmentRepository implements AppointmentRepository {
                         a.getInviteeId().equals(appointment.getInviteeId()) &&
                         a.getAppointmentId().equals(appointment.getAppointmentId())
         );
+        //confirm insertion step
+        //After .compute() finishes, it returns the updated list.
+        //We double-check if the newly added appointment is really in the list.
+        //If yes → return true.
+        //If no (slot taken by another thread in the same compute call) → return false.
     }
 
     @Override
