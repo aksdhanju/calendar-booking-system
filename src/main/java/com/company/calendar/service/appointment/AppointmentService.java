@@ -66,7 +66,7 @@ public class AppointmentService {
                 appointmentValidator.validateAppointment(request, duration);
 
                 var appointmentId = UUID.randomUUID().toString();
-                log.info("Generated new appointmentId: {} for ownerId: {}", appointmentId, ownerId);
+                log.info("Generated new appointmentId: {} for ownerId: {}, inviteeId: {}", appointmentId, ownerId, request.getInviteeId());
 
                 var success = appointmentBookingStrategy.book(request, duration, appointmentId);
                 if (!success) {

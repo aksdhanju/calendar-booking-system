@@ -14,3 +14,8 @@ appointment:
 
 server:
   port: 8080
+
+logging:
+  level:
+    root: INFO #TRACE < DEBUG < INFO < WARN < ERROR
+    com.company.calendar: DEBUG

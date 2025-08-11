@@ -49,7 +49,7 @@ public class AppointmentValidator {
             log.warn("No available slot found for appointment start date time: {} for owner id: {}", startDateTime, request.getOwnerId());
             throw new AvailableSlotNotFoundException(DateUtils.formatDateTime(startDateTime), request.getOwnerId());
         }
-        log.debug("Appointment validation successful for start date time: {} and ownerId: {}", startDateTime, request.getOwnerId());
+        log.debug("Appointment validation successful for start date time: {} and ownerId: {}, inviteeId: {}", startDateTime, request.getOwnerId(), request.getInviteeId());
         return true;
     }
 }
