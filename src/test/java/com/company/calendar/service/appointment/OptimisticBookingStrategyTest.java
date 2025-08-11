@@ -39,6 +39,7 @@ public class OptimisticBookingStrategyTest {
         Callable<Boolean> bookingTask = () -> {
             readyLatch.countDown(); // Notify ready
             startLatch.await();     // Wait for both threads
+            //Both threads call startLatch.await() and get blocked until the main thread calls startLatch.countDown().
             var appointmentId = UUID.randomUUID().toString();
             var request = BookAppointmentRequest.builder()
                     .inviteeId(inviteeId)
@@ -51,8 +52,10 @@ public class OptimisticBookingStrategyTest {
         Future<Boolean> result1 = executor.submit(bookingTask);
         Future<Boolean> result2 = executor.submit(bookingTask);
 
-        readyLatch.await();   // Both threads are ready
+        readyLatch.await();   // main thread waits until Both threads are ready
+        //Once both threads have reached the “ready” point, the main thread can release them together.
         startLatch.countDown(); // Let them start at the same time
+        //Once the count reaches 0, both threads unblock at exactly the same time, simulating a race condition.
 
         boolean r1 = result1.get();
         boolean r2 = result2.get();
