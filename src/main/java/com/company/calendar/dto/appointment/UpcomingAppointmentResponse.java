@@ -6,23 +6,23 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UpcomingAppointmentResponse {
+public final class UpcomingAppointmentResponse {
 
     @Schema(description = "Unique identifier of the appointment", example = "1")
-    private String appointmentId;
+    private final String appointmentId;
 
     @Schema(description = "Start time of the appointment in yyyy-MM-dd HH:mm:ss format", example = "2025-08-15 14:00:00")
-    private String startTime;
+    private final String startTime;
 
     @Schema(description = "End time of the appointment in yyyy-MM-dd HH:mm:ss format", example = "2025-08-15 15:00:00")
-    private String endTime;
+    private final String endTime;
 
     @Schema(description = "Unique identifier of the invitee", example = "3")
-    private String inviteeId;
+    private final String inviteeId;
 
     @Schema(description = "Full name of the invitee", example = "Akashdeep Singh")
-    private String inviteeName;
+    private final String inviteeName;
 
     @Schema(description = "Email address of the invitee", example = "akash.singh@gmail.com")
-    private String inviteeEmail;
+    private final String inviteeEmail;
 }

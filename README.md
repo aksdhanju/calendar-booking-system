@@ -116,6 +116,8 @@ Note: Please refer to endpoint specific assumptions in [APIS.md](./APIS.md) file
 - No authentication or session management is implemented.
 - In-memory data storage is used; persistence is not required.
 - Appointments are always 60 minutes, and must start at the top of the hour. Though its configurable.
+- There a lot of places in code where more design patterns could be used. My thinking is system should be simple
+and extensible. Let's not overengineer the system. And lets not solve problems which are not itself problems for now. 
 
 ---
 

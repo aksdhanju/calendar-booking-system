@@ -19,28 +19,28 @@ import static com.company.calendar.constants.ApplicationConstants.ALPHANUMERIC_H
 @Getter
 @ValidAvailabilityRules
 @Builder
-public class AvailabilityRuleSetupRequest {
+public final class AvailabilityRuleSetupRequest {
 
     @NotBlank(message = "Owner Id must not be blank")
     @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Owner Id can only contain letters, digits, hyphens, and underscores")
     @Size(max = 64, message = "Owner Id must be between 1 and 64 characters")
     @Schema(example = "1", description = "Owner ID who owns the availability rules")
-    private String ownerId;
+    private final String ownerId;
 
     @NotNull(message = "Rules list must not be null")
     @Size(max = 30, message = "A maximum of 30 rules per user is allowed")
     @Valid
     @Schema(description = "List of availability rules", requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<AvailabilityRuleRequest> rules;
+    private final List<AvailabilityRuleRequest> rules;
 
     @Getter
     @Builder
     public static class AvailabilityRuleRequest {
         @Schema(example = "MONDAY", description = "Day of the week")
-        private DayOfWeek dayOfWeek;
+        private final DayOfWeek dayOfWeek;
         @Schema(example = "16:00", description = "Start time in HH:mm format")
-        private LocalTime startTime;
+        private final LocalTime startTime;
         @Schema(example = "23:00", description = "End time in HH:mm format")
-        private LocalTime endTime;
+        private final LocalTime endTime;
     }
 }

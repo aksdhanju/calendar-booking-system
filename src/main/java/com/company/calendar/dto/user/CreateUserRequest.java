@@ -13,21 +13,21 @@ import static com.company.calendar.constants.ApplicationConstants.ALPHANUMERIC_H
 @Getter
 @Builder
 @Schema(description = "Request to create a new user")
-public class CreateUserRequest {
+public final class CreateUserRequest {
     @NotBlank(message = "Id should not be blank")
     @Pattern(regexp = ALPHANUMERIC_HYPHEN_UNDERSCORE_REGEX, message = "Id can only contain letters, digits, hyphens, and underscores")
     @Size(max = 64, message = "Id must be between 1 and 64 characters")
     @Schema(description = "Unique Id for the user", example = "1")
-    private String id;
+    private final String id;
 
     @NotBlank(message = "Name should not be blank")
     @Size(max = 50, message = "Name must be between 1 and 50 characters")
     @Schema(description = "Name of the user", example = "Akashdeep Singh")
-    private String name;
+    private final String name;
 
     @Email
     @NotBlank(message = "Email should not be blank")
     @Size(max = 50, message = "Email must be between 1 and 50 characters")
     @Schema(description = "Email address of the user", example = "akash.singh@gmail.com")
-    private String email;
+    private final String email;
 }

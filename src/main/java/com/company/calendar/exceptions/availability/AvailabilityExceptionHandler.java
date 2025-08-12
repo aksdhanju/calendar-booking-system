@@ -1,6 +1,5 @@
 package com.company.calendar.exceptions.availability;
 
-import com.company.calendar.controller.AvailabilityController;
 import com.company.calendar.dto.availability.AvailabilityRuleSetupResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;

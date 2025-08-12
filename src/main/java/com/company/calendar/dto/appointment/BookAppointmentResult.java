@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class BookAppointmentResult {
-    private String appointmentId;
-    private boolean newlyCreated;
-    private String message;
+public final class BookAppointmentResult {
+    private final String appointmentId;
+    private final boolean newlyCreated;
+    private final String message;
 }

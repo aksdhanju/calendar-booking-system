@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class AvailableSlotDto {
-    private String startDateTime;
-    private String endDateTime;
+public final class AvailableSlotDto {
+    private final String startDateTime;
+    private final String endDateTime;
 }

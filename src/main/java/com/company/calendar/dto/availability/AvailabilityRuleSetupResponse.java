@@ -6,9 +6,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class AvailabilityRuleSetupResponse {
+public final class AvailabilityRuleSetupResponse {
     @Schema(description = "Indicates if operation was successful")
-    private boolean success;
+    private final boolean success;
     @Schema(description = "Response message")
-    private String message;
+    private final String message;
 }

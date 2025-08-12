@@ -8,22 +8,22 @@ import java.util.List;
 
 @Getter
 @Builder
-public class UpcomingAppointmentsResponseDto {
+public final class UpcomingAppointmentsResponseDto {
     @Schema(description = "Indicates if the request was successful")
-    private boolean success;
+    private final boolean success;
 
     @Schema(description = "Response message providing details about the result")
-    private String message;
+    private final String message;
 
     @Schema(description = "List of upcoming appointments")
-    private List<UpcomingAppointmentResponse> appointments;
+    private final List<UpcomingAppointmentResponse> appointments;
 
     @Schema(description = "Current page number in the paginated response")
-    private int currentPage;
+    private final int currentPage;
 
     @Schema(description = "Total number of pages available")
-    private int totalPages;
+    private final int totalPages;
 
     @Schema(description = "Total number of appointments available")
-    private long totalItems;
+    private final long totalItems;
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class UpdateAvailabilityRulesResult {
-    private String message;
-    private boolean created;
+public final class UpdateAvailabilityRulesResult {
+    private final String message;
+    private final boolean created;
 }

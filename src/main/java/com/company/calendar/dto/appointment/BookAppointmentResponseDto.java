@@ -7,19 +7,19 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class BookAppointmentResponseDto {
+public final class BookAppointmentResponseDto {
     @Schema(description = "Indicates if the appointment was booked successfully")
-    private boolean success;
+    private final boolean success;
 
     @Schema(description = "Response message providing details about the booking result")
-    private String message;
+    private final String message;
 
     @Schema(description = "Unique identifier of the booked appointment")
-    private String appointmentId;
+    private final String appointmentId;
 
     @Schema(description = "Error code in case the booking request failed")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String errorCode;
+    private final String errorCode;
 }
 
 
